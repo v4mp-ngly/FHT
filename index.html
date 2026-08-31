@@ -852,11 +852,21 @@
         @media(max-width:700px){.pss-options{grid-template-columns:1fr 1fr}.integral-summary{grid-template-columns:1fr 1fr}.integral-card{padding:20px}.integral-head{display:block}}
 
     
-/* ===== PORTAL DE ACCESO NUMED v7 ===== */
-#access-portal{display:flex;min-height:100vh;background:linear-gradient(145deg,#f5f8fb 0%,#eef4f7 55%,#f5faed 100%);align-items:center;justify-content:center;padding:28px;box-sizing:border-box;position:relative;overflow:hidden}
-#access-portal:before{content:"";position:absolute;width:430px;height:430px;border-radius:50%;background:rgba(127,174,54,.10);right:-160px;top:-150px}
-.portal-shell{width:min(1040px,100%);position:relative;z-index:2}.portal-brand{text-align:center;margin-bottom:28px}.portal-logo{width:120px;height:auto;max-height:70px;object-fit:contain}.portal-brand h1{color:#102a4c;font-size:30px;margin:12px 0 6px}.portal-brand p{color:#718096;font-size:12px;margin:0}.portal-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.portal-card{background:#fff;border:1px solid #e1e9ef;border-radius:25px;padding:28px;box-shadow:0 16px 45px rgba(15,42,76,.08);position:relative;overflow:hidden}.portal-card.patient{border-top:4px solid #7fae36}.portal-card.doctor{border-top:4px solid #1B3D6E}.portal-icon{width:56px;height:56px;border-radius:17px;display:grid;place-items:center;font-size:25px;margin-bottom:18px}.patient .portal-icon{background:#eff7e3}.doctor .portal-icon{background:#eaf0f7}.portal-card h2{color:#102a4c;font-size:21px;margin:0 0 7px}.portal-card p{color:#718096;font-size:11px;line-height:1.6;margin:0 0 18px}.portal-flow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}.portal-flow span{font-size:9px;font-weight:800;padding:6px 8px;border-radius:999px;background:#f4f7fa;color:#526173}.portal-actions{display:flex;gap:9px;flex-wrap:wrap}.portal-primary,.portal-secondary{border:0;border-radius:12px;padding:12px 15px;font:inherit;font-size:10px;font-weight:900;cursor:pointer}.portal-primary{background:#1B3D6E;color:#fff}.patient .portal-primary{background:#6f9b2e}.portal-secondary{background:#f2f5f7;color:#1B3D6E}.portal-note{text-align:center;color:#8a98a7;font-size:9px;margin-top:18px}.qr-modal{display:none;position:fixed;inset:0;z-index:9950;background:rgba(7,24,44,.72);align-items:center;justify-content:center;padding:20px}.qr-card{width:min(430px,100%);background:#fff;border-radius:26px;padding:28px;text-align:center;box-shadow:0 28px 80px rgba(0,0,0,.28)}.qr-card h2{color:#102a4c;margin:0 0 7px}.qr-card p{color:#718096;font-size:11px;line-height:1.5}.qr-box{width:220px;height:220px;margin:18px auto;padding:12px;border:1px solid #e1e9ef;border-radius:18px;display:grid;place-items:center;background:#fff}.qr-url{font-size:9px;color:#718096;word-break:break-all;background:#f6f8fa;padding:10px;border-radius:10px;margin:12px 0}.share-card{background:linear-gradient(135deg,#f7faef,#fff);border:1px solid #dce9c7;border-radius:18px;padding:18px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-bottom:20px}.share-card h3{margin:0 0 5px;color:#102a4c;font-size:15px}.share-card p{margin:0;color:#718096;font-size:10px}.share-mini-qr{width:92px;height:92px;background:#fff;border-radius:12px;padding:6px;display:grid;place-items:center}.share-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-@media(max-width:720px){.portal-grid{grid-template-columns:1fr}.portal-brand h1{font-size:25px}.portal-card{padding:22px}.share-card{grid-template-columns:1fr}.share-mini-qr{display:none}}
+/* ===== PORTAL DE ACCESO NUMED v9 · INICIO PROFESIONAL ===== */
+#access-portal{display:flex;min-height:100vh;background:#f5f7f9;align-items:stretch;justify-content:center;box-sizing:border-box;position:relative;overflow:hidden;font-family:Montserrat,Arial,sans-serif}
+#access-portal:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 88% 8%,rgba(171,201,66,.16),transparent 27%),radial-gradient(circle at 6% 92%,rgba(39,76,113,.10),transparent 30%);pointer-events:none}
+.portal-shell{width:100%;max-width:1440px;min-height:100vh;position:relative;z-index:2;display:grid;grid-template-rows:auto 1fr auto;padding:0 64px;box-sizing:border-box}
+.portal-topbar{height:92px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(39,76,113,.10)}
+.portal-brandline{display:flex;align-items:center;gap:18px}.portal-logo{width:128px;height:48px;object-fit:contain;object-position:left center}.portal-brandcopy{border-left:1px solid #d9e1e7;padding-left:18px}.portal-brandcopy strong{display:block;color:#274C71;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.portal-brandcopy span{display:block;color:#8493a1;font-size:10px;margin-top:3px}
+.portal-secure{display:flex;align-items:center;gap:8px;color:#637485;font-size:10px;font-weight:700}.portal-secure i{width:8px;height:8px;border-radius:50%;background:#ABC942;box-shadow:0 0 0 5px rgba(171,201,66,.14)}
+.portal-main{display:grid;grid-template-columns:1.05fr .95fr;gap:72px;align-items:center;padding:60px 0}
+.portal-intro{max-width:650px}.portal-kicker{display:inline-flex;align-items:center;gap:8px;color:#668329;background:#f0f5df;border:1px solid #dfe9bd;border-radius:999px;padding:8px 12px;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.portal-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#ABC942}.portal-intro h1{font-size:clamp(38px,4.6vw,68px);line-height:1.02;letter-spacing:-.045em;color:#274C71;margin:22px 0 20px;font-weight:800}.portal-intro h1 span{color:#ABC942}.portal-intro>p{max-width:570px;color:#657789;font-size:14px;line-height:1.8;margin:0}.portal-trust{display:flex;gap:26px;margin-top:32px;padding-top:25px;border-top:1px solid #e0e6eb}.portal-trust div{display:flex;align-items:center;gap:10px;color:#536779;font-size:10px;font-weight:700}.trust-icon{width:30px;height:30px;border-radius:9px;background:#fff;border:1px solid #e1e7ec;display:grid;place-items:center;color:#274C71;font-size:13px}
+.portal-access{background:#fff;border:1px solid #e0e7ec;border-radius:28px;padding:12px;box-shadow:0 24px 70px rgba(39,76,113,.11)}.portal-access-head{padding:22px 22px 16px}.portal-access-head small{color:#ABC942;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.portal-access-head h2{color:#274C71;font-size:23px;margin:6px 0 5px}.portal-access-head p{color:#8493a1;font-size:10px;margin:0;line-height:1.5}
+.portal-grid{display:grid;gap:10px}.portal-card{border:1px solid #e5eaee;border-radius:19px;padding:20px;background:#fff;display:grid;grid-template-columns:52px 1fr auto;gap:16px;align-items:center;transition:.25s ease;cursor:default}.portal-card:hover{transform:translateY(-2px);border-color:#cbd8e1;box-shadow:0 12px 30px rgba(39,76,113,.08)}.portal-card.patient:hover{border-color:#d3e1a6}.portal-icon{width:52px;height:52px;border-radius:15px;display:grid;place-items:center}.portal-icon svg{width:23px;height:23px}.patient .portal-icon{background:#f1f6e3;color:#7e9f31}.doctor .portal-icon{background:#edf2f6;color:#274C71}.portal-card-copy h3{color:#274C71;font-size:14px;margin:0 0 5px}.portal-card-copy p{color:#7c8b98;font-size:9.5px;line-height:1.55;margin:0}.portal-card-action{width:42px;height:42px;border-radius:12px;border:0;display:grid;place-items:center;cursor:pointer;font-size:18px;transition:.2s}.patient .portal-card-action{background:#ABC942;color:#fff}.doctor .portal-card-action{background:#274C71;color:#fff}.portal-card-action:hover{transform:translateX(2px)}
+.portal-qr-link{margin:10px 0 0;border:0;background:transparent;color:#274C71;font:inherit;font-size:9px;font-weight:800;cursor:pointer;text-decoration:underline;text-decoration-color:#ABC942;text-underline-offset:3px}.portal-footer{min-height:70px;border-top:1px solid rgba(39,76,113,.10);display:flex;align-items:center;justify-content:space-between;color:#8996a2;font-size:9px}.portal-footer strong{color:#657789}.portal-footer-right{display:flex;gap:18px}
+.qr-modal{display:none;position:fixed;inset:0;z-index:9950;background:rgba(20,42,65,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}.qr-card{width:min(430px,100%);background:#fff;border-radius:26px;padding:30px;text-align:center;box-shadow:0 28px 80px rgba(0,0,0,.25)}.qr-card h2{color:#274C71;margin:0 0 7px}.qr-card p{color:#718096;font-size:11px;line-height:1.5}.qr-box{width:220px;height:220px;margin:18px auto;padding:12px;border:1px solid #e1e9ef;border-radius:18px;display:grid;place-items:center;background:#fff}.qr-url{font-size:9px;color:#718096;word-break:break-all;background:#f6f8fa;padding:10px;border-radius:10px;margin:12px 0}.share-card{background:linear-gradient(135deg,#f7faef,#fff);border:1px solid #dce9c7;border-radius:18px;padding:18px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-bottom:20px}.share-card h3{margin:0 0 5px;color:#274C71;font-size:15px}.share-card p{margin:0;color:#718096;font-size:10px}.share-mini-qr{width:92px;height:92px;background:#fff;border-radius:12px;padding:6px;display:grid;place-items:center}.share-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+@media(max-width:900px){.portal-shell{padding:0 28px}.portal-main{grid-template-columns:1fr;gap:36px;padding:45px 0}.portal-intro{max-width:720px}.portal-trust{margin-top:24px}.portal-access{max-width:700px;width:100%}}
+@media(max-width:600px){.portal-shell{padding:0 18px}.portal-topbar{height:78px}.portal-brandcopy,.portal-secure{display:none}.portal-logo{width:112px}.portal-main{padding:34px 0}.portal-intro h1{font-size:39px}.portal-intro>p{font-size:12px}.portal-trust{gap:12px;flex-wrap:wrap}.portal-card{grid-template-columns:46px 1fr auto;padding:16px;gap:12px}.portal-icon{width:46px;height:46px}.portal-footer{display:block;padding:20px 0;min-height:0}.portal-footer-right{margin-top:8px}.share-card{grid-template-columns:1fr}.share-mini-qr{display:none}}
 
 /* ===== FLUJO PACIENTE + PANEL DOCTOR NUMED v4 ===== */
 .role-switch{display:flex;gap:8px;justify-content:flex-end;margin-bottom:14px}.role-pill{border:1px solid #dbe4ec;background:#fff;color:var(--navy);padding:9px 14px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer}.role-pill.active{background:var(--navy);color:#fff}
@@ -868,26 +878,41 @@
 <body>
 <div id="access-portal">
  <div class="portal-shell">
-  <div class="portal-brand">
-   <img class="portal-logo" id="portal-logo" alt="NUMED">
-   <h1>Evaluación Integral NUMED</h1>
-   <p>Selecciona cómo deseas acceder a la plataforma.</p>
-  </div>
-  <div class="portal-grid">
-   <section class="portal-card patient">
-    <div class="portal-icon">👤</div><h2>Evaluación del paciente</h2>
-    <p>Acceso exclusivo al formulario. El paciente completa sus datos, PSS-10 y el cuestionario de Edad Biológica.</p>
-    <div class="portal-flow"><span>Datos</span><span>PSS-10</span><span>Cuestionario</span><span>Finalizar</span></div>
-    <div class="portal-actions"><button class="portal-primary" onclick="openPatientQuestionnaires()">Comenzar evaluación →</button><button class="portal-secondary" onclick="openPatientQR()">▦ Ver QR</button></div>
+  <header class="portal-topbar">
+   <div class="portal-brandline">
+    <img class="portal-logo" id="portal-logo" alt="NUMED">
+    <div class="portal-brandcopy"><strong>Evaluación Integral</strong><span>Plataforma de evaluación de salud</span></div>
+   </div>
+   <div class="portal-secure"><i></i> Acceso seguro · NUMED</div>
+  </header>
+  <main class="portal-main">
+   <section class="portal-intro">
+    <div class="portal-kicker">Tecnología aplicada a la salud</div>
+    <h1>Conoce tu salud<br>desde una visión <span>integral.</span></h1>
+    <p>Una experiencia digital diseñada para recopilar información, evaluar indicadores y acompañar el proceso de valoración de cada paciente de forma organizada y eficiente.</p>
+    <div class="portal-trust">
+     <div><span class="trust-icon">✓</span> Evaluación estructurada</div>
+     <div><span class="trust-icon">⌁</span> Seguimiento clínico</div>
+     <div><span class="trust-icon">▦</span> Acceso por QR</div>
+    </div>
    </section>
-   <section class="portal-card doctor">
-    <div class="portal-icon">🩺</div><h2>Administración médica</h2>
-    <p>Acceso directo para el doctor. No pasa por los cuestionarios del paciente.</p>
-    <div class="portal-flow"><span>Login</span><span>Dashboard</span><span>Pacientes</span><span>Mediciones</span><span>Resultados</span></div>
-    <div class="portal-actions"><button class="portal-primary" onclick="openDoctorLogin()">Entrar como doctor →</button></div>
+   <section class="portal-access">
+    <div class="portal-access-head"><small>Portal de acceso</small><h2>¿Cómo deseas ingresar?</h2><p>Selecciona el acceso correspondiente para continuar.</p></div>
+    <div class="portal-grid">
+     <article class="portal-card patient">
+      <div class="portal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-4.1 3-6.2 7-6.2s6.4 2.1 7 6.2"/></svg></div>
+      <div class="portal-card-copy"><h3>Evaluación del paciente</h3><p>Completa tus datos, PSS-10 y cuestionario de Edad Biológica.</p><button class="portal-qr-link" onclick="event.stopPropagation();openPatientQR()">Ver QR de la evaluación</button></div>
+      <button class="portal-card-action" aria-label="Comenzar evaluación" onclick="openPatientQuestionnaires()">→</button>
+     </article>
+     <article class="portal-card doctor">
+      <div class="portal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4v5a4 4 0 0 0 8 0V4"/><path d="M6 4h4M14 4h4M12 13v2a5 5 0 0 0 5 5h1"/><circle cx="19" cy="19" r="2"/></svg></div>
+      <div class="portal-card-copy"><h3>Administración médica</h3><p>Acceso profesional para pacientes, mediciones, resultados y reportes.</p></div>
+      <button class="portal-card-action" aria-label="Entrar al panel médico" onclick="openDoctorLogin()">→</button>
+     </article>
+    </div>
    </section>
-  </div>
-  <div class="portal-note">NUMED · Evaluación Integral de Salud</div>
+  </main>
+  <footer class="portal-footer"><div><strong>NUMED</strong> · Evaluación Integral de Salud</div><div class="portal-footer-right"><span>Paciente</span><span>Profesional de salud</span></div></footer>
  </div>
 </div>
 <div id="patient-qr-modal" class="qr-modal" onclick="if(event.target===this)closePatientQR()"><div class="qr-card"><h2>QR · Evaluación del paciente</h2><p>Escanea este código para abrir directamente los cuestionarios del paciente.</p><div id="patient-qr" class="qr-box"></div><div id="patient-qr-url" class="qr-url"></div><button class="portal-primary" onclick="copyPatientLink()">Copiar enlace</button> <button class="portal-secondary" onclick="closePatientQR()">Cerrar</button></div></div>
