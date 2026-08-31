@@ -7,14 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --navy:    #1B3D6E;
-            --lime:    #7AB52A;
-            --lime-lt: #A3D17E;
-            --lime-bg: #F0F8E8;
+            --navy:    #274C71;
+            --lime:    #ABC942;
+            --lime-lt: #D2E58A;
+            --lime-bg: #F6F9E9;
             --white:   #FFFFFF;
             --off-white: #F7F9FC;
             --slate:   #4A5568;
@@ -32,7 +33,7 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(160deg, #0d1f3c 0%, #1B3D6E 45%, #234f8c 100%);
+            background: linear-gradient(160deg, #17324F 0%, #274C71 52%, #315D87 100%);
             min-height: 100vh;
             color: var(--navy);
         }
@@ -182,14 +183,14 @@
         .btn:active { transform: translateY(0); }
 
         .btn-primary {
-            background: #7AB52A;
+            background: #ABC942;
             color: var(--white);
             box-shadow: 0 4px 12px rgba(122,181,42,0.25);
         }
-        .btn-primary:hover { background: #6aa020; box-shadow: 0 5px 16px rgba(122,181,42,0.35); }
+        .btn-primary:hover { background: #93AF35; box-shadow: 0 5px 16px rgba(171,201,66,0.35); }
 
         .btn-navy {
-            background: linear-gradient(135deg, var(--navy) 0%, #112a52 100%);
+            background: linear-gradient(135deg, var(--navy) 0%, #1C3855 100%);
             color: var(--white);
             box-shadow: 0 4px 14px rgba(27,61,110,0.30);
         }
@@ -702,7 +703,7 @@
         #welcome-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(160deg, #0d1f3c 0%, #1B3D6E 50%, #112a52 100%);
+            background: linear-gradient(160deg, #0d1f3c 0%, #1B3D6E 50%, #1C3855 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -784,7 +785,7 @@
             border-radius: 50px;
             padding: 18px 52px;
             cursor: pointer;
-            box-shadow: 0 8px 32px rgba(122,181,42,0.35);
+            box-shadow: 0 8px 32px rgba(171,201,66,0.35);
             transition: transform 0.2s, box-shadow 0.2s;
             animation: wc-fade 0.6s ease 1s both;
             position: relative;
@@ -851,6 +852,12 @@
         @media(max-width:700px){.pss-options{grid-template-columns:1fr 1fr}.integral-summary{grid-template-columns:1fr 1fr}.integral-card{padding:20px}.integral-head{display:block}}
 
     
+/* ===== PORTAL DE ACCESO NUMED v7 ===== */
+#access-portal{display:flex;min-height:100vh;background:linear-gradient(145deg,#f5f8fb 0%,#eef4f7 55%,#f5faed 100%);align-items:center;justify-content:center;padding:28px;box-sizing:border-box;position:relative;overflow:hidden}
+#access-portal:before{content:"";position:absolute;width:430px;height:430px;border-radius:50%;background:rgba(127,174,54,.10);right:-160px;top:-150px}
+.portal-shell{width:min(1040px,100%);position:relative;z-index:2}.portal-brand{text-align:center;margin-bottom:28px}.portal-logo{width:120px;height:auto;max-height:70px;object-fit:contain}.portal-brand h1{color:#102a4c;font-size:30px;margin:12px 0 6px}.portal-brand p{color:#718096;font-size:12px;margin:0}.portal-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.portal-card{background:#fff;border:1px solid #e1e9ef;border-radius:25px;padding:28px;box-shadow:0 16px 45px rgba(15,42,76,.08);position:relative;overflow:hidden}.portal-card.patient{border-top:4px solid #7fae36}.portal-card.doctor{border-top:4px solid #1B3D6E}.portal-icon{width:56px;height:56px;border-radius:17px;display:grid;place-items:center;font-size:25px;margin-bottom:18px}.patient .portal-icon{background:#eff7e3}.doctor .portal-icon{background:#eaf0f7}.portal-card h2{color:#102a4c;font-size:21px;margin:0 0 7px}.portal-card p{color:#718096;font-size:11px;line-height:1.6;margin:0 0 18px}.portal-flow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}.portal-flow span{font-size:9px;font-weight:800;padding:6px 8px;border-radius:999px;background:#f4f7fa;color:#526173}.portal-actions{display:flex;gap:9px;flex-wrap:wrap}.portal-primary,.portal-secondary{border:0;border-radius:12px;padding:12px 15px;font:inherit;font-size:10px;font-weight:900;cursor:pointer}.portal-primary{background:#1B3D6E;color:#fff}.patient .portal-primary{background:#6f9b2e}.portal-secondary{background:#f2f5f7;color:#1B3D6E}.portal-note{text-align:center;color:#8a98a7;font-size:9px;margin-top:18px}.qr-modal{display:none;position:fixed;inset:0;z-index:9950;background:rgba(7,24,44,.72);align-items:center;justify-content:center;padding:20px}.qr-card{width:min(430px,100%);background:#fff;border-radius:26px;padding:28px;text-align:center;box-shadow:0 28px 80px rgba(0,0,0,.28)}.qr-card h2{color:#102a4c;margin:0 0 7px}.qr-card p{color:#718096;font-size:11px;line-height:1.5}.qr-box{width:220px;height:220px;margin:18px auto;padding:12px;border:1px solid #e1e9ef;border-radius:18px;display:grid;place-items:center;background:#fff}.qr-url{font-size:9px;color:#718096;word-break:break-all;background:#f6f8fa;padding:10px;border-radius:10px;margin:12px 0}.share-card{background:linear-gradient(135deg,#f7faef,#fff);border:1px solid #dce9c7;border-radius:18px;padding:18px;display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-bottom:20px}.share-card h3{margin:0 0 5px;color:#102a4c;font-size:15px}.share-card p{margin:0;color:#718096;font-size:10px}.share-mini-qr{width:92px;height:92px;background:#fff;border-radius:12px;padding:6px;display:grid;place-items:center}.share-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+@media(max-width:720px){.portal-grid{grid-template-columns:1fr}.portal-brand h1{font-size:25px}.portal-card{padding:22px}.share-card{grid-template-columns:1fr}.share-mini-qr{display:none}}
+
 /* ===== FLUJO PACIENTE + PANEL DOCTOR NUMED v4 ===== */
 .role-switch{display:flex;gap:8px;justify-content:flex-end;margin-bottom:14px}.role-pill{border:1px solid #dbe4ec;background:#fff;color:var(--navy);padding:9px 14px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer}.role-pill.active{background:var(--navy);color:#fff}
 #doctor-panel{display:none;min-height:100vh;background:#f4f7fa;padding:28px 14px}.doctor-shell{max-width:1120px;margin:auto}.doctor-hero{background:linear-gradient(135deg,#102a4c,#1B3D6E);color:#fff;border-radius:24px;padding:28px;display:flex;justify-content:space-between;gap:20px;align-items:center;box-shadow:0 18px 45px rgba(15,42,76,.16)}.doctor-hero h2{font-size:26px;margin:0 0 6px}.doctor-hero p{opacity:.8;font-size:12px;margin:0}.doctor-card{background:#fff;border:1px solid #e4eaf0;border-radius:20px;padding:22px;margin-top:18px;box-shadow:0 10px 30px rgba(15,42,76,.06)}.doctor-search{display:grid;grid-template-columns:1fr auto;gap:10px}.doctor-search input{height:48px;border:1.5px solid #dce4ec;border-radius:13px;padding:0 16px;font:inherit}.patient-list{display:grid;gap:10px;margin-top:16px}.patient-row{display:grid;grid-template-columns:1.4fr .8fr 1.2fr auto;gap:12px;align-items:center;padding:14px;border:1px solid #e4eaf0;border-radius:14px;background:#fbfcfe}.patient-row strong{color:var(--navy)}.patient-row small{color:#718096}.status-stack{display:flex;gap:6px;flex-wrap:wrap}.status-chip{padding:5px 8px;border-radius:999px;font-size:9px;font-weight:900}.status-ok{background:#edf7dc;color:#557a20}.status-wait{background:#fff2dd;color:#9a641e}.patient-complete{display:none;position:fixed;inset:0;z-index:9500;background:linear-gradient(160deg,#0d1f3c,#1B3D6E);padding:24px;align-items:center;justify-content:center}.complete-card{max-width:600px;background:#fff;border-radius:26px;padding:38px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.3)}.complete-icon{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;background:#eef8dc;color:#638d25;font-size:34px;font-weight:900}.complete-card h2{color:var(--navy);font-size:25px;margin-bottom:8px}.complete-card p{color:#64748b;line-height:1.6;font-size:13px}.doctor-selected{display:none}.selected-banner{display:flex;justify-content:space-between;gap:16px;align-items:center;background:#f4f8ed;border:1px solid #dce9c7;border-radius:14px;padding:14px 16px;margin-bottom:18px}.selected-banner strong{color:var(--navy)}
@@ -859,6 +866,31 @@
 </style>
 </head>
 <body>
+<div id="access-portal">
+ <div class="portal-shell">
+  <div class="portal-brand">
+   <img class="portal-logo" id="portal-logo" alt="NUMED">
+   <h1>Evaluación Integral NUMED</h1>
+   <p>Selecciona cómo deseas acceder a la plataforma.</p>
+  </div>
+  <div class="portal-grid">
+   <section class="portal-card patient">
+    <div class="portal-icon">👤</div><h2>Evaluación del paciente</h2>
+    <p>Acceso exclusivo al formulario. El paciente completa sus datos, PSS-10 y el cuestionario de Edad Biológica.</p>
+    <div class="portal-flow"><span>Datos</span><span>PSS-10</span><span>Cuestionario</span><span>Finalizar</span></div>
+    <div class="portal-actions"><button class="portal-primary" onclick="openPatientQuestionnaires()">Comenzar evaluación →</button><button class="portal-secondary" onclick="openPatientQR()">▦ Ver QR</button></div>
+   </section>
+   <section class="portal-card doctor">
+    <div class="portal-icon">🩺</div><h2>Administración médica</h2>
+    <p>Acceso directo para el doctor. No pasa por los cuestionarios del paciente.</p>
+    <div class="portal-flow"><span>Login</span><span>Dashboard</span><span>Pacientes</span><span>Mediciones</span><span>Resultados</span></div>
+    <div class="portal-actions"><button class="portal-primary" onclick="openDoctorLogin()">Entrar como doctor →</button></div>
+   </section>
+  </div>
+  <div class="portal-note">NUMED · Evaluación Integral de Salud</div>
+ </div>
+</div>
+<div id="patient-qr-modal" class="qr-modal" onclick="if(event.target===this)closePatientQR()"><div class="qr-card"><h2>QR · Evaluación del paciente</h2><p>Escanea este código para abrir directamente los cuestionarios del paciente.</p><div id="patient-qr" class="qr-box"></div><div id="patient-qr-url" class="qr-url"></div><button class="portal-primary" onclick="copyPatientLink()">Copiar enlace</button> <button class="portal-secondary" onclick="closePatientQR()">Cerrar</button></div></div>
     <!-- ══════════════════════════════════════════════
          PANTALLA DE BIENVENIDA
     ══════════════════════════════════════════════ -->
@@ -3211,7 +3243,7 @@ function markCurrentPatientMeasured(evaluationData){
  const p=window.integralPatient;if(!p||!p.id)return;const rows=getPendingPatients();const ix=rows.findIndex(x=>String(x.id)===String(p.id));if(ix<0)return;rows[ix]={...rows[ix],measured:true,measuredAt:new Date().toISOString(),measurements:{presionSistolica:evaluationData.presionSistolica,presionDiastolica:evaluationData.presionDiastolica,fuerza:evaluationData.fuerzaOriginal,peso:evaluationData.peso,talla:evaluationData.talla,abdomen:evaluationData.abdomen,flexibilidad:evaluationData.flexibilidad,imc:evaluationData.imc,edadBiologica:evaluationData.edadBiologica}};localStorage.setItem('numedPacientesPendientes',JSON.stringify(rows));renderDoctorPatients();}
 function selectDoctorPatient(id){const r=getPendingPatients().find(x=>String(x.id)===String(id));if(!r)return;window.integralPatient={first:r.first,last:r.last,id:r.id,birth:r.birth,age:r.age,gender:r.gender,phone:r.phone};window.integralPSS=r.pss;window._questionnaireAnswers=r.questionnaire||{};lifestyleScore=r.lifestyleScore||0;window.lifestyleDisplay={score:r.lifestyleScore||0,label:r.lifestyleLabel||'No evaluado',normalized:'0'};window.questionnaireCompleted=true;applyPatientToBio();document.getElementById('doctor-selected-name').textContent=`${r.first} ${r.last} · ${r.id}`;document.getElementById('doctor-selected').style.display='block';document.getElementById('doctor-panel').style.display='none';document.getElementById('clinical-page').style.display='block';document.getElementById('main-btn-group').querySelector('button:first-child').style.display='none';const eb=document.getElementById('evaluate-btn');eb.style.display='inline-block';eb.disabled=false;eb.style.opacity='1';eb.style.cursor='pointer';document.getElementById('identity-summary').innerHTML=`<div class="is-stat"><small>Paciente</small><strong>${r.first} ${r.last}</strong></div><div class="is-stat"><small>Cédula</small><strong>${r.id}</strong></div><div class="is-stat"><small>Edad</small><strong>${r.age} años</strong></div><div class="is-stat"><small>PSS-10 · Independiente</small><strong>${r.pss?.score??'—'}/40 · ${r.pss?.level||'—'}</strong></div>`;const m=r.measurements||{};[['systolic-pressure',m.presionSistolica],['diastolic-pressure',m.presionDiastolica],['strength-value',m.fuerza],['patient-weight',m.peso],['patient-height',m.talla],['abdominal-perimeter',m.abdomen],['flexibility-value',m.flexibilidad]].forEach(([id,v])=>{if(v!==undefined&&v!==null)document.getElementById(id).value=v});calculateIMC();window.scrollTo({top:0,behavior:'smooth'})}
 // acceso rápido al panel médico desde la pantalla inicial
-window.addEventListener('DOMContentLoaded',()=>{const wc=document.querySelector('.welcome-card');if(wc){const b=document.createElement('button');b.className='role-pill';b.textContent='Área médica';b.style.marginTop='14px';b.onclick=(e)=>{e.stopPropagation();showDoctorPanel()};wc.appendChild(b)}});
+// v7: acceso médico separado en el portal principal.
 </script>
 
 
@@ -3235,13 +3267,14 @@ window.addEventListener('DOMContentLoaded',()=>{const wc=document.querySelector(
 
 <div id="doctor-admin">
  <div class="admin-topbar"><div class="admin-brand"><div class="admin-brand-mark">N</div><div><strong>NUMED</strong><small>ADMINISTRACIÓN MÉDICA</small></div></div><div class="admin-user"><div style="text-align:right"><strong id="admin-doctor-name" style="font-size:11px;color:#102a4c">Doctor</strong><small style="display:block;color:#8190a0;font-size:9px">Área clínica</small></div><div class="admin-avatar">DR</div><button class="admin-action alt" onclick="doctorLogout()">Salir</button></div></div>
- <div class="admin-layout"><aside class="admin-side"><div class="admin-nav"><button class="active" onclick="adminNav('dashboard',this)">▦ Dashboard</button><button onclick="adminNav('patients',this)">◉ Pacientes</button><button onclick="adminNav('pending',this)">⌁ Pendientes</button><button onclick="adminNav('completed',this)">✓ Evaluados</button></div></aside>
+ <div class="admin-layout"><aside class="admin-side"><div class="admin-nav"><button class="active" onclick="adminNav('dashboard',this)">▦ Dashboard</button><button onclick="adminNav('patients',this)">◉ Pacientes</button><button onclick="adminNav('pending',this)">⌁ Pendientes</button><button onclick="adminNav('completed',this)">✓ Evaluados</button><button onclick="adminNav('share',this)">▦ Compartir evaluación</button></div></aside>
  <main class="admin-main">
   <div id="admin-list-view">
    <section id="admin-dashboard" class="admin-section active"><div class="admin-title-row"><div><h1>Dashboard médico</h1><p>Seguimiento de evaluaciones integrales y mediciones clínicas.</p></div><button class="admin-action" onclick="showPatientFlowFromAdmin()">+ Nueva evaluación paciente</button></div><div id="admin-kpis" class="admin-kpis"></div><div class="admin-table-card"><div class="admin-tools"><input id="admin-search-dashboard" placeholder="Buscar paciente por nombre o cédula..." oninput="renderAdminTable('dashboard')"></div><div id="admin-table-dashboard"></div></div></section>
    <section id="admin-patients" class="admin-section"><div class="admin-title-row"><div><h1>Pacientes</h1><p>Todos los pacientes que completaron los cuestionarios.</p></div></div><div class="admin-table-card"><div class="admin-tools"><input id="admin-search-patients" placeholder="Buscar paciente..." oninput="renderAdminTable('patients')"></div><div id="admin-table-patients"></div></div></section>
    <section id="admin-pending" class="admin-section"><div class="admin-title-row"><div><h1>Mediciones pendientes</h1><p>Pacientes listos para evaluación clínica.</p></div></div><div class="admin-table-card"><div class="admin-tools"><input id="admin-search-pending" placeholder="Buscar paciente..." oninput="renderAdminTable('pending')"></div><div id="admin-table-pending"></div></div></section>
    <section id="admin-completed" class="admin-section"><div class="admin-title-row"><div><h1>Evaluados</h1><p>Pacientes con mediciones clínicas registradas.</p></div></div><div class="admin-table-card"><div class="admin-tools"><input id="admin-search-completed" placeholder="Buscar paciente..." oninput="renderAdminTable('completed')"></div><div id="admin-table-completed"></div></div></section>
+   <section id="admin-share" class="admin-section"><div class="admin-title-row"><div><h1>Compartir evaluación</h1><p>QR y enlace directo para que los pacientes completen sus cuestionarios.</p></div></div><div class="share-card"><div><h3>Evaluación Integral del Paciente</h3><p>Abre directamente Datos → PSS-10 → Cuestionario de Edad Biológica. El paciente no verá el panel médico.</p><div class="share-actions"><button class="admin-action" onclick="openPatientQR()">Ver QR grande</button><button class="admin-action alt" onclick="copyPatientLink()">Copiar enlace</button></div><div id="admin-patient-url" class="qr-url"></div></div><div id="admin-mini-qr" class="share-mini-qr"></div></div></section>
   </div>
   <div id="admin-detail" class="admin-detail"><button class="detail-back" onclick="closeAdminDetail()">← Volver a pacientes</button><div id="detail-head"></div><div class="detail-tabs"><button class="active" onclick="detailTab('general',this)">Resumen</button><button onclick="detailTab('pss',this)">PSS-10</button><button onclick="detailTab('questionnaire',this)">Cuestionario</button><button onclick="detailTab('measurements',this)">Mediciones</button><button onclick="detailTab('result',this)">Resultado</button></div><div id="detail-content"></div></div>
  </main></div>
@@ -3249,14 +3282,22 @@ window.addEventListener('DOMContentLoaded',()=>{const wc=document.querySelector(
 
 <script>
 // Prototipo local: credenciales editables. En producción este acceso debe conectarse al sistema de autenticación.
+function patientDirectURL(){const u=new URL(window.location.href);u.search='';u.hash='';u.searchParams.set('mode','patient');return u.toString()}
+function showAccessPortal(){['welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-login','doctor-admin'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});document.getElementById('access-portal').style.display='flex'}
+function openPatientQuestionnaires(){document.getElementById('access-portal').style.display='none';const w=document.getElementById('welcome-screen');w.classList.remove('hiding');w.style.display='flex'}
+function buildQR(target,size=190){const el=typeof target==='string'?document.getElementById(target):target;if(!el)return;el.innerHTML='';if(window.QRCode){new QRCode(el,{text:patientDirectURL(),width:size,height:size,correctLevel:QRCode.CorrectLevel.M})}else{el.innerHTML='<small style="color:#718096">QR disponible al publicar con conexión a internet.</small>'}}
+function openPatientQR(){document.getElementById('patient-qr-modal').style.display='flex';document.getElementById('patient-qr-url').textContent=patientDirectURL();buildQR('patient-qr',190)}
+function closePatientQR(){document.getElementById('patient-qr-modal').style.display='none'}
+async function copyPatientLink(){const url=patientDirectURL();try{await navigator.clipboard.writeText(url);alert('Enlace del paciente copiado.')}catch(e){prompt('Copia este enlace:',url)}}
+function renderShareQR(){const u=document.getElementById('admin-patient-url');if(u)u.textContent=patientDirectURL();buildQR('admin-mini-qr',80)}
 const NUMED_DOCTOR_AUTH={user:'doctor',pass:'numed2026',name:'Doctor NUMED'};
 let adminCurrentPatient=null;
-function openDoctorLogin(){['welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-admin'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});document.getElementById('doctor-login').style.display='flex';document.getElementById('doc-user').focus()}
-function closeDoctorLogin(){document.getElementById('doctor-login').style.display='none';document.getElementById('welcome-screen').style.display='flex'}
+function openDoctorLogin(){document.getElementById('access-portal').style.display='none';['welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-admin'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});document.getElementById('doctor-login').style.display='flex';document.getElementById('doc-user').focus()}
+function closeDoctorLogin(){document.getElementById('doctor-login').style.display='none';showAccessPortal()}
 function doctorLogin(){const u=document.getElementById('doc-user').value.trim(),p=document.getElementById('doc-pass').value;const ok=u===NUMED_DOCTOR_AUTH.user&&p===NUMED_DOCTOR_AUTH.pass;if(!ok){document.getElementById('doc-login-error').style.display='block';return}sessionStorage.setItem('numedDoctorSession','1');document.getElementById('doc-login-error').style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin()}
-function doctorLogout(){sessionStorage.removeItem('numedDoctorSession');document.getElementById('doctor-admin').style.display='none';document.getElementById('doc-pass').value='';document.getElementById('welcome-screen').style.display='flex'}
-function openDoctorAdmin(){if(sessionStorage.getItem('numedDoctorSession')!=='1'){openDoctorLogin();return}['welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-login'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});document.getElementById('doctor-admin').style.display='block';document.getElementById('admin-doctor-name').textContent=NUMED_DOCTOR_AUTH.name;renderAdminAll()}
-function adminNav(name,btn){document.querySelectorAll('.admin-section').forEach(x=>x.classList.remove('active'));document.getElementById('admin-'+name).classList.add('active');document.querySelectorAll('.admin-nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');closeAdminDetail();renderAdminTable(name)}
+function doctorLogout(){sessionStorage.removeItem('numedDoctorSession');document.getElementById('doctor-admin').style.display='none';document.getElementById('doc-pass').value='';showAccessPortal()}
+function openDoctorAdmin(){document.getElementById('access-portal').style.display='none';if(sessionStorage.getItem('numedDoctorSession')!=='1'){openDoctorLogin();return}['welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-login'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});document.getElementById('doctor-admin').style.display='block';document.getElementById('admin-doctor-name').textContent=NUMED_DOCTOR_AUTH.name;renderAdminAll()}
+function adminNav(name,btn){document.querySelectorAll('.admin-section').forEach(x=>x.classList.remove('active'));document.getElementById('admin-'+name).classList.add('active');document.querySelectorAll('.admin-nav button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');closeAdminDetail();if(name==='share'){renderShareQR();return}renderAdminTable(name)}
 function renderAdminAll(){const rows=getPendingPatients();const measured=rows.filter(x=>x.measured).length,pending=rows.length-measured;const avgPss=rows.length?Math.round(rows.reduce((a,r)=>a+(Number(r.pss?.score)||0),0)/rows.length):0;document.getElementById('admin-kpis').innerHTML=`<div class="admin-kpi"><small>Total pacientes</small><strong>${rows.length}</strong><span>Cuestionarios completados</span></div><div class="admin-kpi"><small>Pendientes</small><strong>${pending}</strong><span>Esperando mediciones</span></div><div class="admin-kpi"><small>Evaluados</small><strong>${measured}</strong><span>Mediciones registradas</span></div><div class="admin-kpi"><small>PSS-10 promedio</small><strong>${avgPss}</strong><span>de 40 puntos · independiente</span></div>`;['dashboard','patients','pending','completed'].forEach(renderAdminTable)}
 function adminRows(type){let rows=getPendingPatients();if(type==='pending')rows=rows.filter(x=>!x.measured);if(type==='completed')rows=rows.filter(x=>x.measured);const q=(document.getElementById('admin-search-'+type)?.value||'').toLowerCase().trim();return rows.filter(r=>!q||`${r.first} ${r.last} ${r.id||''}`.toLowerCase().includes(q))}
 function safeText(v){return String(v??'—').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
@@ -3272,7 +3313,7 @@ function evaluateFromAdmin(id){document.getElementById('doctor-admin').style.dis
 function showPatientFlowFromAdmin(){document.getElementById('doctor-admin').style.display='none';document.getElementById('integral-intake').style.display='block'}
 // al volver desde la evaluación clínica, el panel administrativo queda disponible por sesión.
 const _adminOldShowDoctorPanel=window.showDoctorPanel;window.showDoctorPanel=function(){if(sessionStorage.getItem('numedDoctorSession')==='1')openDoctorAdmin();else openDoctorLogin()};
-window.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.querySelectorAll('.role-pill').forEach(b=>{if(b.textContent.trim()==='Área médica')b.onclick=(e)=>{e.stopPropagation();openDoctorLogin()}})},0);document.getElementById('doc-pass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doctorLogin()})});
+window.addEventListener('DOMContentLoaded',()=>{const sourceLogo=document.querySelector('#welcome-screen .wc-logo');const portalLogo=document.getElementById('portal-logo');if(sourceLogo&&portalLogo)portalLogo.src=sourceLogo.src;document.getElementById('doc-pass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doctorLogin()});const mode=new URLSearchParams(location.search).get('mode');if(mode==='patient'){document.getElementById('access-portal').style.display='none';openPatientQuestionnaires()}else if(mode==='doctor'){document.getElementById('access-portal').style.display='none';openDoctorLogin()}else{showAccessPortal()}});
 </script>
 
 </body>
