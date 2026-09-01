@@ -2915,10 +2915,15 @@ window.questionnaireCompleted = true;
 closeQuestionnaire();
 if(window._patientQuestionnaireMode){
   try {
-    await savePatientPendingRecord();
+    // Guardado remoto explícito: funciona igual entrando directo o mediante ?mode=patient (QR).
+    const remoteId = await saveFullPatientToSupabase();
+    if (!remoteId) throw new Error('Supabase no devolvió un identificador de paciente.');
+    // Copia local secundaria; Supabase es la fuente principal.
+    savePatientPendingRecord();
+    console.info('NUMED: evaluación sincronizada en Supabase', { paciente_id: remoteId, acceso: new URLSearchParams(location.search).get('mode') === 'patient' ? 'QR/enlace paciente' : 'directo' });
   } catch (e) {
     console.error('Guardado final Supabase:', e);
-    alert('No se pudo guardar la evaluación en Supabase. No se marcará como completada hasta sincronizar correctamente.');
+    alert('No se pudo guardar la evaluación en Supabase. Revisa tu conexión e inténtalo nuevamente.\n\nDetalle: ' + (e?.message || e));
     return;
   }
   document.getElementById('clinical-page').style.display='none';
@@ -3277,7 +3282,7 @@ function selectDoctorPatient(id){const r=getPendingPatients().find(x=>String(x.i
 
 <script>
 // Prototipo local: credenciales editables. En producción este acceso debe conectarse al sistema de autenticación.
-function patientDirectURL(){const u=new URL(window.location.href);u.search='';u.hash='';u.searchParams.set('mode','patient');return u.toString()}
+function patientDirectURL(){const u=new URL(window.location.href);u.search='';u.hash='';u.searchParams.set('mode','patient');u.searchParams.set('source','qr');return u.toString()}
 function showAccessPortal(){['welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-login','doctor-admin'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});document.getElementById('access-portal').style.display='flex'}
 function openPatientQuestionnaires(){
   ['access-portal','welcome-screen','patient-complete','clinical-page','doctor-panel','doctor-login','doctor-admin'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none'});
@@ -3351,16 +3356,60 @@ async function saveFullPatientToSupabase(){
  await sbJSON('cuestionario_edad_biologica',{method:'POST',body:JSON.stringify({paciente_id:pid,fuma_actual:String(q.fuma_actual??''),ex_fumador:String(q.ex_fumador??''),alcohol:String(q.alcohol??''),actividad:String(q.actividad??''),fuerza:String(q.fuerza_q??''),sueno:String(q.sueno??''),dieta:String(q.dieta??''),enfermedades_cronicas:String(q.cronicas??''),antecedentes_familiares:String(q.familia??''),puntuacion_estilo_vida:window.lifestyleDisplay?.score??0,clasificacion_estilo_vida:window.lifestyleDisplay?.label||'No evaluado'})});
  return pid;
 }
-const _localSavePatientPendingRecord=window.savePatientPendingRecord;
-window.savePatientPendingRecord=async function(){
- await saveFullPatientToSupabase();
- return _localSavePatientPendingRecord.apply(this,arguments);
-};
 function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:m.presion_sistolica,presionDiastolica:m.presion_diastolica,fuerza:m.fuerza,peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,imc:m.imc,edadBiologica:m.edad_biologica}:{}}}
 async function loadPatientsFromSupabase(){try{const rows=await sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*)&order=created_at.desc',{},true);localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();return rows||[]}catch(e){console.error('Carga Supabase:',e);alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
 window.doctorLogin=async function(){const email=document.getElementById('doc-user').value.trim(),password=document.getElementById('doc-pass').value;const err=document.getElementById('doc-login-error');try{const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');sessionStorage.setItem('numedSbAccessToken',d.access_token);sessionStorage.setItem('numedDoctorSession','1');err.style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin();await loadPatientsFromSupabase();}catch(e){console.error(e);err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block';}};
 const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){const x=_openDoctorAdminV14.apply(this,arguments);if(sessionStorage.getItem('numedSbAccessToken'))setTimeout(loadPatientsFromSupabase,50);return x};
-const _markMeasuredLocal=window.markCurrentPatientMeasured;window.markCurrentPatientMeasured=async function(evaluationData){_markMeasuredLocal.apply(this,arguments);const p=window.integralPatient;if(!p?.supabaseId)return;try{const body={paciente_id:p.supabaseId,presion_sistolica:evaluationData.presionSistolica,presion_diastolica:evaluationData.presionDiastolica,peso_kg:evaluationData.peso,talla_cm:evaluationData.talla,imc:evaluationData.imc,perimetro_abdominal_cm:evaluationData.abdomen,fuerza:evaluationData.fuerzaOriginal,nivel_fuerza:evaluationData.nivelFuerza||null,flexibilidad_cm:evaluationData.flexibilidad,edad_cronologica:p.age,edad_biologica:evaluationData.edadBiologica,diferencia_edad:Number(evaluationData.edadBiologica)-Number(p.age)};await sbJSON('mediciones_edad_biologica',{method:'POST',body:JSON.stringify(body)},true);await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(p.supabaseId),{method:'PATCH',body:JSON.stringify({mediciones_completadas:true})},true);await loadPatientsFromSupabase();}catch(e){console.error('Mediciones Supabase:',e);alert('Las mediciones se calcularon, pero no pudieron sincronizarse con Supabase.');}};
+const _markMeasuredLocal=window.markCurrentPatientMeasured;
+window.markCurrentPatientMeasured=async function(evaluationData){
+ const p=window.integralPatient;
+ if(!p?.supabaseId){
+   console.error('Edad biologica: paciente sin supabaseId',p);
+   alert('No se pudo identificar el paciente en Supabase. Vuelve al panel médico, abre el paciente y repite la medición.');
+   return false;
+ }
+ const d=window._deltaDetalle||{};
+ const body={
+   paciente_id:p.supabaseId,
+   presion_sistolica:evaluationData.presionSistolica,
+   presion_diastolica:evaluationData.presionDiastolica,
+   peso_kg:evaluationData.peso,
+   talla_cm:evaluationData.talla,
+   imc:evaluationData.imc,
+   perimetro_abdominal_cm:evaluationData.abdomen,
+   fuerza:evaluationData.fuerzaOriginal,
+   nivel_fuerza:evaluationData.nivelFuerza||null,
+   flexibilidad_cm:evaluationData.flexibilidad,
+   nivel_flexibilidad:evaluationData.nivelFlexibilidad||null,
+   edad_cronologica:Number(p.age),
+   edad_biologica:Number(evaluationData.edadBiologica),
+   delta_fuerza:Number(d.fuerza||0),
+   delta_flexibilidad:Number(d.flexibilidad||0),
+   delta_imc:Number(d.imc||0),
+   delta_perimetro:Number(d.abdomen||0),
+   delta_presion_arterial:Number(d.presion||0),
+   delta_estilo_vida:Number(d.estilo||0),
+   diferencia_edad:Number(evaluationData.edadBiologica)-Number(p.age)
+ };
+ try{
+   // Una sola medicion vigente por paciente: si ya existe, se ACTUALIZA; si no, se crea.
+   const existing=await sbJSON('mediciones_edad_biologica?select=id&paciente_id=eq.'+encodeURIComponent(p.supabaseId)+'&order=created_at.desc&limit=1',{},true);
+   if(existing?.length){
+     await sbJSON('mediciones_edad_biologica?id=eq.'+encodeURIComponent(existing[0].id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)},true);
+   }else{
+     await sbJSON('mediciones_edad_biologica',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)},true);
+   }
+   await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(p.supabaseId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({mediciones_completadas:true})},true);
+   _markMeasuredLocal.call(this,evaluationData);
+   await loadPatientsFromSupabase();
+   console.info('NUMED: Edad biologica guardada correctamente en Supabase',body);
+   return true;
+ }catch(e){
+   console.error('Edad biologica Supabase:',e);
+   alert('La Edad Biológica se calculó, pero NO se guardó en Supabase.\n\nDetalle: '+(e?.message||e));
+   return false;
+ }
+};
 document.addEventListener('DOMContentLoaded',()=>{const u=document.getElementById('doc-user');if(u){u.placeholder='Correo del médico';u.type='email';}});
 </script>
 
