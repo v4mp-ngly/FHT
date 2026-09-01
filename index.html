@@ -905,6 +905,7 @@
 #integral-intake>.integral-shell>.integral-card{display:block!important;position:relative!important;width:100%!important;min-height:240px!important;background:#fff!important;color:#1f3550!important;visibility:visible!important;opacity:1!important;transform:none!important;}
 #integral-data-step{display:block;}
 </style>
+<meta name="numed-build" content="v20-revision-completa">
 </head>
 <body>
 <div id="access-portal">
@@ -979,7 +980,7 @@
 <form id="integral-form">
 <div id="integral-data-step"><div class="card-title">Datos generales</div><div class="form-grid">
 <div class="field"><label>Nombre</label><input id="i-first" required autocomplete="given-name"></div><div class="field"><label>Apellido</label><input id="i-last" required autocomplete="family-name"></div>
-<div class="field"><label>Cédula</label><input id="i-id" required inputmode="numeric"></div><div class="field"><label>Fecha de nacimiento</label><input id="i-birth" required type="date"></div>
+<div class="field"><label>Cédula</label><input id="i-id" required inputmode="numeric"></div><div class="field"><label>Fecha de nacimiento</label><input id="i-birth" required type="date" onchange="syncIntegralAge()" oninput="syncIntegralAge()"></div>
 <div class="field"><label>Edad</label><input id="i-age" required readonly type="number"></div><div class="field"><label>Género</label><select id="i-gender" required><option value="">Seleccionar</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div>
 <div class="field"><label>Número de celular</label><input id="i-phone" required type="tel"></div>
 <div class="field"><label>Selecciona localidad</label><select id="i-locality" required><option value="">Selecciona localidad</option><option value="Club Banreservas - Santo Domingo">Club Banreservas - Santo Domingo</option></select></div>
@@ -1499,8 +1500,8 @@ function updateNewUI(age, edadBiologicaFinal, deltaDetalle, comparacionTexto, bi
 // ============================================================
 //  SUPABASE CONFIG
 // ============================================================
-const SUPABASE_URL = 'https://umkgfptepjxdyhiukvwn.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVta2dmcHRlcGp4ZHloaXVrdnduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExODgzNTgsImV4cCI6MjA5Njc2NDM1OH0.UkWNt8XTqekc1BosTCiBZi1oRkaM_ccwVi2_XMtAASA';
+const SUPABASE_URL = 'https://fvbukwrdgsrvdinkmsph.supabase.co'; // legacy alias redirected to current project
+const SUPABASE_KEY = ''; // legacy connection disabled; NUMED_SB_ANON below is the only active key
 const SUPABASE_TABLE = 'evaluaciones_edad_biologica';
 
 // ── Pure fetch — no library, no postMessage / DataCloneError ──────────────
@@ -1509,48 +1510,7 @@ async function saveToSupabase(evaluationData) {
   return true;
 }
 
-async function loadFromSupabase() {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=*&order=fecha.desc&limit=100`,
-      {
-        headers: {
-          'apikey':        SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`
-        }
-      }
-    );
-
-    if (!res.ok) {
-      console.error('Supabase load error:', res.status);
-      return;
-    }
-
-    const data = await res.json();
-    if (data && data.length > 0) {
-      window.evaluations = data.map(row => ({
-        fecha:        row.fecha,
-        nombre:       row.nombre,
-        telefono:     row.telefono,
-        edad:         row.edad,
-        genero:       row.genero,
-        fuerzaOriginal: row.fuerza_original,
-        fuerzaAjustada: row.fuerza_ajustada,
-        abdomen:      row.abdomen,
-        peso:         row.peso,
-        talla:        row.talla,
-        imc:          row.imc,
-        imcCategoria: row.imc_categoria,
-        edadBiologica: row.edad_biologica,
-        estiloVidaScore: row.estilo_vida_score,
-        _id:          row.id
-      }));
-      renderHistoryTable();
-    }
-  } catch (err) {
-    console.error('Error inesperado al cargar desde Supabase:', err);
-  }
-}
+async function loadFromSupabase() { return []; }
 
         // Variables globales seguras
 window.questionnaireCompleted = false;
@@ -1563,7 +1523,6 @@ window.evaluations = JSON.parse(localStorage.getItem('numedEvaluaciones') || '[]
 // Al cargar la página, dibuja la tabla si ya hay datos guardados
 window.addEventListener('load', () => {
   renderHistoryTable();
-  loadFromSupabase();
 });
 
 
@@ -2886,7 +2845,7 @@ function closeQuestionnaire() {
 
 window.questionnaireCompleted = false;
 
-function saveQuestionnaire() {
+async function saveQuestionnaire() {
     window.questionnaireCompleted = false;
   const form = document.getElementById('questionnaire-form');
   const data = new FormData(form);
@@ -2955,7 +2914,13 @@ if (lifestyleResults) {
 window.questionnaireCompleted = true;
 closeQuestionnaire();
 if(window._patientQuestionnaireMode){
-  savePatientPendingRecord();
+  try {
+    await savePatientPendingRecord();
+  } catch (e) {
+    console.error('Guardado final Supabase:', e);
+    alert('No se pudo guardar la evaluación en Supabase. No se marcará como completada hasta sincronizar correctamente.');
+    return;
+  }
   document.getElementById('clinical-page').style.display='none';
   const done=document.getElementById('patient-complete'); done.style.display='flex';
   const p=window.integralPatient, ps=window.integralPSS;
@@ -3218,7 +3183,23 @@ window.integralPSS = null;
 const STRESS_SB_URL=NUMED_SB_URL; // v16: PSS unificado en Supabase actual
 const STRESS_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9'; // fallback disabled below
 const STRESS_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzd29jZmJjdGlkZWVnZW1jcGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjU3NDIsImV4cCI6MjEwMjEwMTc0Mn0.eh81_vT-Lci_ldK6v4wNxv60xOu_h2Z-tpHcduC_glc';
-function calcIntegralAge(v){if(!v)return '';const b=new Date(v+'T00:00:00'),t=new Date();let a=t.getFullYear()-b.getFullYear();const m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))a--;return a>=0&&a<=120?a:''}
+function calcIntegralAge(v){
+ if(!v)return '';
+ const parts=String(v).split('-').map(Number);
+ if(parts.length!==3||!parts[0]||!parts[1]||!parts[2])return '';
+ const [y,m,d]=parts, t=new Date();
+ let a=t.getFullYear()-y;
+ const tm=t.getMonth()+1, td=t.getDate();
+ if(tm<m||(tm===m&&td<d))a--;
+ return a>=0&&a<=120?a:'';
+}
+function syncIntegralAge(){
+ const birth=document.getElementById('i-birth');
+ const age=document.getElementById('i-age');
+ if(!birth||!age)return;
+ age.value=calcIntegralAge(birth.value);
+ age.dispatchEvent(new Event('change',{bubbles:true}));
+}
 function pssLevel(s){return s<=13?'Bajo':s<=26?'Moderado':'Alto'}
 function pssClass(l){return l==='Bajo'?'ib-low':l==='Moderado'?'ib-mid':'ib-high'}
 function toggleCollaboratorCode(show){const w=document.getElementById('collab-code-wrap'),i=document.getElementById('i-collab-code');w.style.display=show?'block':'none';i.required=!!show;if(!show)i.value=''}
@@ -3234,7 +3215,7 @@ function applyPatientToBio(){const p=window.integralPatient;document.getElementB
 }
 function renderIntegralFinal(){if(!window.integralPatient||!window.integralPSS)return;const p=window.integralPatient,ps=window.integralPSS,bio=window._edadBiologicaFinal??'—';const delta=typeof bio==='number'?bio-p.age:null;document.getElementById('integral-final-summary').innerHTML=`<div class="is-stat"><small>Edad cronológica</small><strong>${p.age} años</strong></div><div class="is-stat"><small>Edad biológica</small><strong>${bio} años</strong></div><div class="is-stat"><small>Diferencia</small><strong>${delta===null?'—':(delta>0?'+':'')+delta+' años'}</strong></div><div class="is-stat"><small>Estrés percibido</small><strong>${ps.score}/40 · ${ps.level}</strong></div>`;document.getElementById('integral-pss-copy').innerHTML=`<span class="integral-badge ${pssClass(ps.level)}">ESTRÉS ${ps.level.toUpperCase()}</span> &nbsp; El PSS-10 se presenta como un resultado independiente y no modifica el cálculo de la Edad Biológica.`}
 const _origEval=window.evaluateStrength;window.evaluateStrength=function(){const r=_origEval.apply(this,arguments);setTimeout(renderIntegralFinal,100);return r}
-document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('i-birth');b.max=new Date().toISOString().slice(0,10);b.addEventListener('change',()=>document.getElementById('i-age').value=calcIntegralAge(b.value));document.getElementById('integral-form').addEventListener('submit',async e=>{e.preventDefault();const answers={};for(let i=1;i<=10;i++){const x=document.querySelector(`input[name="ips_${i}"]:checked`);if(!x){alert('Responde las 10 preguntas de Estrés Percibido.');return}answers['pss_'+i]=Number(x.value)}const score=Object.values(answers).reduce((a,b)=>a+b,0);window.integralPSS={answers,score,level:pssLevel(score)};window.integralPatient={first:document.getElementById('i-first').value.trim(),last:document.getElementById('i-last').value.trim(),id:document.getElementById('i-id').value.trim(),birth:document.getElementById('i-birth').value,age:Number(document.getElementById('i-age').value),gender:document.getElementById('i-gender').value,phone:document.getElementById('i-phone').value.trim(),locality:document.getElementById('i-locality').value,hasCollaboratorCode:document.querySelector('input[name="has-collab-code"]:checked')?.value==='si',collaboratorCode:document.getElementById('i-collab-code').value.trim()};applyPatientToBio();saveIntegratedPSS(window.integralPatient);window._patientQuestionnaireMode=true;document.getElementById('integral-intake').style.display='none';document.getElementById('clinical-page').style.display='block';openQuestionnaire();});renderDoctorPatients();});
+document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('i-birth');b.max=new Date().toISOString().slice(0,10);b.addEventListener('change',syncIntegralAge);b.addEventListener('input',syncIntegralAge);syncIntegralAge();document.getElementById('integral-form').addEventListener('submit',async e=>{e.preventDefault();const answers={};for(let i=1;i<=10;i++){const x=document.querySelector(`input[name="ips_${i}"]:checked`);if(!x){alert('Responde las 10 preguntas de Estrés Percibido.');return}answers['pss_'+i]=Number(x.value)}const score=Object.values(answers).reduce((a,b)=>a+b,0);window.integralPSS={answers,score,level:pssLevel(score)};window.integralPatient={first:document.getElementById('i-first').value.trim(),last:document.getElementById('i-last').value.trim(),id:document.getElementById('i-id').value.trim(),birth:document.getElementById('i-birth').value,age:Number(document.getElementById('i-age').value),gender:document.getElementById('i-gender').value,phone:document.getElementById('i-phone').value.trim(),locality:document.getElementById('i-locality').value,hasCollaboratorCode:document.querySelector('input[name="has-collab-code"]:checked')?.value==='si',collaboratorCode:document.getElementById('i-collab-code').value.trim()};applyPatientToBio();saveIntegratedPSS(window.integralPatient);window._patientQuestionnaireMode=true;document.getElementById('integral-intake').style.display='none';document.getElementById('clinical-page').style.display='block';openQuestionnaire();});renderDoctorPatients();});
 // Reemplaza el inicio original: bienvenida -> evaluación integral.
 const _oldStart=window.startEvaluation;window.startEvaluation=function(){const screen=document.getElementById('welcome-screen');if(screen){screen.classList.add('hiding');screen.style.display='none';}const intake=document.getElementById('integral-intake');if(intake){intake.removeAttribute('hidden');intake.classList.remove('hidden','hiding');intake.style.setProperty('display','block','important');intake.style.setProperty('visibility','visible','important');intake.style.setProperty('opacity','1','important');const shell=intake.querySelector('.integral-shell');const card=intake.querySelector('.integral-card');if(shell){shell.style.setProperty('display','block','important');shell.style.setProperty('visibility','visible','important');shell.style.setProperty('opacity','1','important');}if(card){card.style.setProperty('display','block','important');card.style.setProperty('visibility','visible','important');card.style.setProperty('opacity','1','important');}}const data=document.getElementById('integral-data-step');if(data)data.style.display='block';window.scrollTo({top:0,behavior:'auto'});}
 </script>
@@ -3375,7 +3356,7 @@ async function saveFullPatientToSupabase(){
 }
 const _localSavePatientPendingRecord=window.savePatientPendingRecord;
 window.savePatientPendingRecord=async function(){
- try{await saveFullPatientToSupabase();}catch(e){console.error('Supabase paciente:',e);alert('No se pudo guardar la evaluación en Supabase. Revisa la conexión o las políticas. Se conservará una copia local en este dispositivo.');}
+ await saveFullPatientToSupabase();
  return _localSavePatientPendingRecord.apply(this,arguments);
 };
 function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:m.presion_sistolica,presionDiastolica:m.presion_diastolica,fuerza:m.fuerza,peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,imc:m.imc,edadBiologica:m.edad_biologica}:{}}}
