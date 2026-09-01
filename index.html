@@ -906,6 +906,39 @@
 #integral-data-step{display:block;}
 </style>
 <meta name="numed-build" content="v20-revision-completa">
+
+<style id="numed-v24-redesign">
+#doctor-admin{--navy:#062b5b;--navy2:#003b78;--lime:#78bd13;--blue:#1674d1;--teal:#10a79d;background:linear-gradient(135deg,#f8fbff 0%,#f3f7fb 65%,#fbfff5 100%);font-family:Montserrat,Arial,sans-serif;color:#0b2d59}
+#doctor-admin .admin-topbar{height:94px;padding:0 34px;border-bottom:1px solid #dce6f0;box-shadow:none;background:#fff}
+#doctor-admin .admin-brand-logo{width:58px;height:58px;object-fit:contain;border-radius:0;background:transparent;box-shadow:none}
+#doctor-admin .admin-brand-copy strong{font-size:25px;letter-spacing:2px;color:#0b2d59}.admin-brand-copy small{letter-spacing:1px}
+#doctor-admin .admin-avatar{background:#f2f8e9;color:#5c8e16;border:1px solid #dbeac5}
+#doctor-admin .admin-layout{grid-template-columns:272px 1fr;min-height:calc(100vh - 94px)}
+#doctor-admin .admin-side{background:linear-gradient(180deg,#05295a 0%,#06396e 100%);padding:34px 16px;position:relative;overflow:hidden}
+#doctor-admin .admin-side:after{content:'';position:absolute;width:260px;height:180px;left:-95px;bottom:25px;border-radius:50%;border:1px solid rgba(120,189,19,.25);box-shadow:0 0 0 12px rgba(38,150,190,.06),0 0 0 24px rgba(38,150,190,.05),0 0 0 36px rgba(38,150,190,.04);pointer-events:none}
+#doctor-admin .admin-nav{gap:12px}.admin-nav button{height:56px;border-radius:12px;padding:0 18px;font-size:15px;font-weight:700;color:#fff;opacity:.95;transition:.22s ease}
+#doctor-admin .admin-nav button:hover{background:rgba(255,255,255,.08);transform:translateX(3px)}
+#doctor-admin .admin-nav button.active{background:linear-gradient(90deg,#79bd12,#1379a8);box-shadow:0 10px 24px rgba(0,0,0,.16);color:#fff}
+#doctor-admin .admin-main{padding:38px 38px 52px;max-width:none}
+#doctor-admin .admin-title-row{margin-bottom:26px;position:relative}.admin-title-row h1{font-size:40px;line-height:1.05;letter-spacing:-1.5px;color:#082d5c}.admin-title-row h1::after{content:' médico';color:#5ca312}.admin-title-row h1{font-size:0}.admin-title-row h1::before{content:'Dashboard';font-size:40px;color:#082d5c}.admin-title-row h1::after{font-size:40px}
+#doctor-admin .admin-title-row p{font-size:14px;color:#58708d;margin-top:8px}
+#doctor-admin .admin-action{border-radius:12px;padding:13px 20px;background:linear-gradient(135deg,#0a376d,#063064);box-shadow:0 8px 20px rgba(6,43,91,.16);font-weight:700}
+#doctor-admin .admin-kpis{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-bottom:28px}
+#doctor-admin .admin-kpi{min-height:150px;border:1px solid #e2e9f1;border-radius:18px;padding:22px 22px 18px;background:#fff;box-shadow:0 10px 28px rgba(14,47,84,.07);position:relative;overflow:hidden}
+#doctor-admin .admin-kpi:before{height:4px;background:var(--lime)}#doctor-admin .admin-kpi:nth-child(2):before{background:var(--blue)}#doctor-admin .admin-kpi:nth-child(3):before{background:var(--teal)}
+#doctor-admin .admin-kpi:nth-child(1):after,#doctor-admin .admin-kpi:nth-child(2):after,#doctor-admin .admin-kpi:nth-child(3):after,#doctor-admin .admin-kpi:nth-child(4):after{position:absolute;right:20px;top:26px;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:25px;font-weight:700}
+#doctor-admin .admin-kpi:nth-child(1):after{content:'♟';background:#edf7dc;color:#65a90d}#doctor-admin .admin-kpi:nth-child(2):after{content:'▣';background:#e8f2ff;color:#1674d1}#doctor-admin .admin-kpi:nth-child(3):after{content:'○';background:#e2f8f5;color:#10988f}#doctor-admin .admin-kpi:nth-child(4):after{content:'◷';background:#eff7e6;color:#65a90d}
+#doctor-admin .admin-kpi small{font-size:11px;font-weight:800;color:#16375e;text-transform:uppercase;letter-spacing:.3px}.admin-kpi strong{font-size:34px;color:#123b70;margin-top:12px}.admin-kpi span{font-size:11px;color:#667d98}
+#doctor-admin .admin-table-card{border:1px solid #e1e8f0;border-radius:20px;background:#fff;box-shadow:0 12px 32px rgba(13,48,86,.07);overflow:hidden}
+#doctor-admin .admin-tools{padding:20px;gap:14px;border-bottom:1px solid #e7edf4;background:#fff}.admin-tools input,.admin-tools select{height:58px;border-radius:12px;border:1px solid #d8e2ec;background:#fff;font-size:14px;padding:0 18px}.admin-tools input:focus,.admin-tools select:focus{border-color:#75b91a;box-shadow:0 0 0 3px rgba(117,185,26,.10)}
+#doctor-admin .admin-table th{background:#f7f9fc;color:#16375e;font-size:10px;letter-spacing:.25px;padding:16px 14px}.admin-table td{padding:18px 14px;border-top:1px solid #edf1f5;color:#193b62}.admin-table tr:hover td{background:#fbfdf8}
+#doctor-admin .status-chip{border-radius:999px;padding:7px 11px;font-weight:700}
+#doctor-admin .admin-detail,#doctor-admin .detail-card{border-radius:18px;border-color:#e0e8f0;box-shadow:0 10px 26px rgba(14,47,84,.06)}
+#doctor-admin .detail-tabs button{border-radius:10px;font-weight:700}.detail-tabs button.active{background:#0b376d;color:#fff}
+#doctor-admin .admin-section{animation:v24fade .35s ease both}@keyframes v24fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:1100px){#doctor-admin .admin-kpis{grid-template-columns:repeat(2,1fr)}#doctor-admin .admin-layout{grid-template-columns:220px 1fr}}
+@media(max-width:760px){#doctor-admin .admin-layout{grid-template-columns:1fr}#doctor-admin .admin-main{padding:22px 14px}.admin-title-row h1::before,.admin-title-row h1::after{font-size:30px}#doctor-admin .admin-kpis{grid-template-columns:1fr 1fr}.admin-kpi{min-height:130px!important}}
+</style>
 </head>
 <body>
 <div id="access-portal">
