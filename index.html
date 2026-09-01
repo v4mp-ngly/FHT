@@ -3493,5 +3493,47 @@ document.addEventListener('DOMContentLoaded',()=>{const u=document.getElementByI
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',resumeNumedDoctor); else resumeNumedDoctor();
 })();
 </script>
+<script id="numed-v28-refresh-fix">
+(function(){
+  const SESSION_KEY='numedDoctorSession';
+  const TOKEN_KEY='numedSbAccessToken';
+
+  function forceDoctorView(){
+    if(localStorage.getItem(SESSION_KEY)!=='1') return false;
+    const hide=['access-portal','welcome-screen','integral-intake','patient-complete','clinical-page','doctor-panel','doctor-login'];
+    hide.forEach(id=>{const el=document.getElementById(id);if(el)el.style.setProperty('display','none','important');});
+    const admin=document.getElementById('doctor-admin');
+    if(admin) admin.style.setProperty('display','block','important');
+    try{
+      if(typeof renderAdminAll==='function') renderAdminAll();
+      if(typeof restoreAdminState==='function') restoreAdminState();
+      if(sessionStorage.getItem(TOKEN_KEY) && typeof loadPatientsFromSupabase==='function') loadPatientsFromSupabase();
+    }catch(e){console.error('NUMED v28 restore:',e)}
+    return true;
+  }
+
+  function boot(){
+    // El modo paciente siempre tiene prioridad cuando se abre el QR público.
+    const mode=new URLSearchParams(location.search).get('mode');
+    if(mode==='patient') return;
+    if(localStorage.getItem(SESSION_KEY)==='1'){
+      forceDoctorView();
+      setTimeout(forceDoctorView,0);
+      setTimeout(forceDoctorView,120);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  window.addEventListener('pageshow',boot);
+
+  // Corrige el retorno desde una evaluación clínica: la sesión real se guarda en localStorage.
+  window.showDoctorPanel=function(){
+    if(localStorage.getItem(SESSION_KEY)==='1'){
+      if(typeof openDoctorAdmin==='function') openDoctorAdmin();
+      setTimeout(forceDoctorView,0);
+    }else if(typeof openDoctorLogin==='function') openDoctorLogin();
+  };
+})();
+</script>
 </body>
 </html>
