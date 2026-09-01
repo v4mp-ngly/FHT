@@ -3180,9 +3180,6 @@ function showWelcomeScreen() {
 // ===== INTEGRACION PSS-10 + EDAD BIOLOGICA =====
 window.integralPatient = null;
 window.integralPSS = null;
-const STRESS_SB_URL=NUMED_SB_URL; // v16: PSS unificado en Supabase actual
-const STRESS_SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9'; // fallback disabled below
-const STRESS_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJzd29jZmJjdGlkZWVnZW1jcGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY1MjU3NDIsImV4cCI6MjEwMjEwMTc0Mn0.eh81_vT-Lci_ldK6v4wNxv60xOu_h2Z-tpHcduC_glc';
 function calcIntegralAge(v){
  if(!v)return '';
  const parts=String(v).split('-').map(Number);
