@@ -3395,8 +3395,11 @@ async function getLocalityId(name){const rows=await sbJSON('localidades?select=i
 async function saveFullPatientToSupabase(){
  const p=window.integralPatient,ps=window.integralPSS,q=window._questionnaireAnswers||{};if(!p||!ps)return;
  const localityId=await getLocalityId(p.locality);
- const patient={nombres:p.first,apellidos:p.last,cedula:p.id,fecha_nacimiento:p.birth,sexo:p.gender,telefono:p.phone||null,tiene_codigo_colaborador:!!p.hasCollaboratorCode,codigo_colaborador:p.hasCollaboratorCode?(p.collaboratorCode||null):null,localidad_id:localityId,pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false};
- const pr=await sbJSON('pacientes_evaluacion',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(patient)});const pid=pr?.[0]?.id;if(!pid)throw new Error('No se pudo obtener el ID del paciente.');p.supabaseId=pid;
+ const pid=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16)}));
+ const patient={id:pid,nombres:p.first,apellidos:p.last,cedula:p.id,fecha_nacimiento:p.birth,sexo:p.gender,telefono:p.phone||null,tiene_codigo_colaborador:!!p.hasCollaboratorCode,codigo_colaborador:p.hasCollaboratorCode?(p.collaboratorCode||null):null,localidad_id:localityId,pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false};
+ // No usamos return=representation: el cuestionario publico tiene INSERT, pero no SELECT de pacientes.
+ // El UUID se genera en el navegador y permite enlazar PSS-10 y Edad Biologica sin abrir lectura publica.
+ await sbJSON('pacientes_evaluacion',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(patient)});p.supabaseId=pid;
  const a=ps.answers||{};await sbJSON('evaluaciones_pss10',{method:'POST',body:JSON.stringify({paciente_id:pid,pregunta_1:a.pss_1,pregunta_2:a.pss_2,pregunta_3:a.pss_3,pregunta_4:a.pss_4,pregunta_5:a.pss_5,pregunta_6:a.pss_6,pregunta_7:a.pss_7,pregunta_8:a.pss_8,pregunta_9:a.pss_9,pregunta_10:a.pss_10,puntuacion_total:ps.score,clasificacion:ps.level})});
  await sbJSON('cuestionario_edad_biologica',{method:'POST',body:JSON.stringify({paciente_id:pid,fuma_actual:String(q.fuma_actual??''),ex_fumador:String(q.ex_fumador??''),alcohol:String(q.alcohol??''),actividad:String(q.actividad??''),fuerza:String(q.fuerza_q??''),sueno:String(q.sueno??''),dieta:String(q.dieta??''),enfermedades_cronicas:String(q.cronicas??''),antecedentes_familiares:String(q.familia??''),puntuacion_estilo_vida:window.lifestyleDisplay?.score??0,clasificacion_estilo_vida:window.lifestyleDisplay?.label||'No evaluado'})});
  return pid;
