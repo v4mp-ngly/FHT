@@ -3944,5 +3944,69 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;back
  });
 })();
 </script>
+
+<script id="numed-v45-qr-sync-fix">
+(function(){
+ 'use strict';
+ let syncing=false,lastSync=0;
+ async function syncPatients(reason){
+   if(syncing||localStorage.getItem('numedDoctorSession')!=='1') return;
+   if(typeof window.loadPatientsFromSupabase!=='function') return;
+   syncing=true;
+   try{
+     const rows=await window.loadPatientsFromSupabase();
+     lastSync=Date.now();
+     if(typeof window.renderAdminAll==='function') window.renderAdminAll();
+     console.info('NUMED v45: pacientes sincronizados', {reason,total:Array.isArray(rows)?rows.length:0});
+   }catch(e){console.error('NUMED v45 sync:',e)}finally{syncing=false}
+ }
+ window.refreshNumedPatients=function(){return syncPatients('manual')};
+ function addRefreshButton(){
+   const title=document.querySelector('#admin-patients .admin-title-row');
+   if(!title||document.getElementById('numed-refresh-patients'))return;
+   const b=document.createElement('button');b.id='numed-refresh-patients';b.className='admin-action';b.type='button';b.textContent='Actualizar pacientes';
+   b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='Actualizando...';await syncPatients('boton');b.textContent=old;b.disabled=false;if(window.numedStatus)window.numedStatus('Pacientes actualizados desde Supabase.');});
+   title.appendChild(b);
+ }
+ document.addEventListener('DOMContentLoaded',()=>{
+   addRefreshButton();
+   if(localStorage.getItem('numedDoctorSession')==='1')setTimeout(()=>syncPatients('inicio'),500);
+   setInterval(()=>{const admin=document.getElementById('doctor-admin');if(admin&&getComputedStyle(admin).display!=='none'&&document.visibilityState==='visible')syncPatients('automatico');},12000);
+ });
+ window.addEventListener('focus',()=>{if(Date.now()-lastSync>3000)syncPatients('focus')});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastSync>3000)syncPatients('visible')});
+ const oldAdminNav=window.adminNav;
+ if(typeof oldAdminNav==='function')window.adminNav=function(name,btn){const out=oldAdminNav.apply(this,arguments);if(name==='patients'||name==='dashboard'||name==='pending'||name==='completed')setTimeout(()=>syncPatients('navegacion'),50);return out};
+})();
+</script>
+
+<style id="numed-v46-photobooth-style">
+.pb46-btn{background:linear-gradient(135deg,#7eab25,#a9c93f)!important;color:#fff!important;border:none!important;box-shadow:0 10px 24px rgba(126,171,37,.24)!important}
+#pb46-modal{position:fixed;inset:0;z-index:999999;background:rgba(3,25,47,.82);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px}.pb46-shell{width:min(1080px,100%);max-height:94vh;overflow:auto;background:#f6f9fa;border-radius:28px;box-shadow:0 35px 100px rgba(0,0,0,.4);padding:22px}.pb46-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.pb46-top h2{margin:0;color:#062f57;font-size:24px}.pb46-close{border:0;background:#e9eff2;color:#062f57;width:42px;height:42px;border-radius:50%;font-size:22px;cursor:pointer}.pb46-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.pb46-camera,.pb46-preview{background:#fff;border:1px solid #dce7ec;border-radius:22px;padding:18px;box-shadow:0 12px 35px rgba(7,47,87,.08)}.pb46-stage{aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:#082e52;display:grid;place-items:center;position:relative}.pb46-stage video,.pb46-stage img{width:100%;height:100%;object-fit:cover}.pb46-stage .pb46-empty{color:#fff;text-align:center;padding:30px}.pb46-stage .pb46-empty b{display:block;font-size:50px;margin-bottom:10px}.pb46-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.pb46-actions button{flex:1;min-width:140px;border:0;border-radius:13px;padding:13px 16px;font-weight:800;cursor:pointer}.pb46-primary{background:#062f57;color:#fff}.pb46-green{background:#8bb62f;color:#fff}.pb46-soft{background:#eaf0f3;color:#163f62}.pb46-card{width:100%;aspect-ratio:4/5;border-radius:20px;overflow:hidden;position:relative;background:linear-gradient(155deg,#062f57 0%,#0c446d 62%,#25677a 100%);color:#fff}.pb46-card:before{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(169,201,63,.22)}.pb46-card-inner{position:absolute;inset:0;padding:7% 7% 6%;display:flex;flex-direction:column}.pb46-brand{display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:1}.pb46-brand img{width:30%;max-height:48px;object-fit:contain;object-position:left center;filter:brightness(0) invert(1)}.pb46-brand span{font-size:10px;font-weight:800;letter-spacing:.14em;color:#dce7ed}.pb46-title{font-size:clamp(19px,2.3vw,31px);font-weight:900;line-height:1.02;margin:5% 0 4%;z-index:1}.pb46-photo{height:48%;border-radius:18px;overflow:hidden;background:#dbe5e9;border:4px solid rgba(255,255,255,.92);z-index:1}.pb46-photo img{width:100%;height:100%;object-fit:cover}.pb46-person{margin-top:3%;z-index:1}.pb46-person strong{font-size:clamp(16px,1.8vw,24px);display:block}.pb46-person small{color:#c7d7e1}.pb46-ages{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;margin-top:auto;z-index:1}.pb46-age{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px;text-align:center}.pb46-age small{font-size:8px;letter-spacing:.08em;color:#d7e3e9;font-weight:800}.pb46-age strong{font-size:clamp(25px,3vw,42px);display:block}.pb46-age.bio strong{color:#d5ec78}.pb46-arrow{font-size:24px;color:#b8d85a;font-weight:900}.pb46-message{text-align:center;font-size:10px;margin-top:3%;font-weight:700;z-index:1}.pb46-foot{text-align:center;font-size:7px;color:#c9d7df;margin-top:2%;z-index:1}.pb46-status{font-size:12px;color:#607586;margin-top:10px;line-height:1.45}.pb46-file{display:none}
+@media(max-width:820px){.pb46-grid{grid-template-columns:1fr}.pb46-shell{padding:14px;border-radius:20px}.pb46-camera,.pb46-preview{padding:13px}.pb46-card{max-width:520px;margin:auto}}
+</style>
+<div id="pb46-modal" aria-hidden="true"><div class="pb46-shell"><div class="pb46-top"><div><h2>Photo Booth NUMED</h2><div style="color:#6b7f8e;font-size:12px">Toma la foto y genera la ficha visual del paciente.</div></div><button class="pb46-close" onclick="pb46Close()">×</button></div><div class="pb46-grid"><section class="pb46-camera"><div id="pb46-stage" class="pb46-stage"><div class="pb46-empty"><b>📸</b>Presiona “Abrir cámara” para comenzar.</div></div><div class="pb46-actions"><button class="pb46-primary" onclick="pb46Start()">Abrir cámara</button><button class="pb46-green" id="pb46-shot" onclick="pb46Shot()" disabled>Tomar foto</button><button class="pb46-soft" onclick="document.getElementById('pb46-file').click()">Subir foto</button></div><input id="pb46-file" class="pb46-file" type="file" accept="image/*" capture="user"><div id="pb46-status" class="pb46-status">La fotografía no modifica el cálculo de edad biológica; solo se utiliza para crear la ficha.</div></section><section class="pb46-preview"><div id="pb46-card" class="pb46-card"><div class="pb46-card-inner"><div class="pb46-brand"><img id="pb46-logo" alt="NUMED"><span>RESULTADO INDIVIDUAL</span></div><div class="pb46-title">TU EDAD<br>BIOLÓGICA</div><div class="pb46-photo"><img id="pb46-photo" alt="Foto del paciente"></div><div class="pb46-person"><strong id="pb46-name">Paciente NUMED</strong><small>Evaluación Funcional Integral</small></div><div class="pb46-ages"><div class="pb46-age"><small>EDAD CRONOLÓGICA</small><strong id="pb46-chrono">—</strong></div><div class="pb46-arrow">→</div><div class="pb46-age bio"><small>EDAD BIOLÓGICA</small><strong id="pb46-bio">—</strong></div></div><div id="pb46-message" class="pb46-message">Completa las mediciones para obtener el resultado.</div><div class="pb46-foot">NUMED · Nutrición & Medicina Preventiva</div></div></div><div class="pb46-actions"><button class="pb46-soft" onclick="pb46Retake()">Repetir foto</button><button class="pb46-green" id="pb46-download" onclick="pb46Download()" disabled>Descargar ficha PNG</button></div></section></div></div></div>
+<script id="numed-v46-photobooth">
+(function(){
+'use strict';let stream=null,photoData='';
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function patient(){return window.adminCurrentPatient||null}
+function logo(){const el=document.querySelector('.portal-logo,.admin-brand img,.wc-logo,#portal-logo');return el?.src||''}
+function fill(){const r=patient(),m=r?.measurements||{},age=Number(r?.age||0),bio=m.edadBiologica==null?null:Number(m.edadBiologica),diff=bio==null?null:bio-age,abs=Math.abs(diff||0);$('pb46-logo').src=logo();$('pb46-name').textContent=r?`${r.first||''} ${r.last||''}`.trim():'Paciente NUMED';$('pb46-chrono').textContent=age||'—';$('pb46-bio').textContent=bio??'—';$('pb46-message').textContent=diff==null?'Completa las mediciones para obtener el resultado.':diff<0?`Tu edad biológica refleja ${abs} año${abs===1?'':'s'} menos que tu edad cronológica.`:diff>0?`Tu edad biológica se encuentra ${abs} año${abs===1?'':'s'} por encima de tu edad cronológica.`:'Tu edad biológica está alineada con tu edad cronológica.';$('pb46-download').disabled=!(photoData&&bio!=null)}
+window.pb46Open=function(){const r=patient();if(!r)return alert('Selecciona un paciente primero.');if(!r.measured||r.measurements?.edadBiologica==null)return alert('Completa las mediciones y calcula la edad biológica antes de crear la ficha.');$('pb46-modal').style.display='flex';$('pb46-modal').setAttribute('aria-hidden','false');fill()};
+window.pb46Close=function(){stop();$('pb46-modal').style.display='none';$('pb46-modal').setAttribute('aria-hidden','true')};
+function stop(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+window.pb46Start=async function(){try{stop();stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280},height:{ideal:1600}},audio:false});const v=document.createElement('video');v.autoplay=true;v.playsInline=true;v.muted=true;v.srcObject=stream;$('pb46-stage').innerHTML='';$('pb46-stage').appendChild(v);$('pb46-shot').disabled=false;$('pb46-status').textContent='Cámara lista. Coloca al paciente dentro del encuadre y toma la foto.'}catch(e){$('pb46-status').textContent='No se pudo abrir la cámara. Verifica el permiso del navegador o utiliza “Subir foto”.';console.error(e)}};
+window.pb46Shot=function(){const v=$('pb46-stage').querySelector('video');if(!v||!v.videoWidth)return;const c=document.createElement('canvas'),ratio=4/5,sw=v.videoWidth,sh=v.videoHeight;let sx=0,sy=0,cw=sw,ch=sh;if(sw/sh>ratio){cw=sh*ratio;sx=(sw-cw)/2}else{ch=sw/ratio;sy=(sh-ch)/2}c.width=960;c.height=1200;c.getContext('2d').drawImage(v,sx,sy,cw,ch,0,0,c.width,c.height);photoData=c.toDataURL('image/jpeg',.9);$('pb46-photo').src=photoData;stop();$('pb46-stage').innerHTML=`<img src="${photoData}" alt="Foto tomada">`;$('pb46-shot').disabled=true;$('pb46-status').textContent='Foto lista. Revisa la ficha y descárgala cuando estés conforme.';fill()};
+window.pb46Retake=function(){photoData='';$('pb46-photo').removeAttribute('src');$('pb46-stage').innerHTML='<div class="pb46-empty"><b>📸</b>Presiona “Abrir cámara” para tomar otra foto.</div>';$('pb46-download').disabled=true;$('pb46-shot').disabled=true};
+$('pb46-file')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{photoData=rd.result;$('pb46-photo').src=photoData;$('pb46-stage').innerHTML=`<img src="${photoData}" alt="Foto seleccionada">`;$('pb46-status').textContent='Foto cargada. Revisa la ficha antes de descargar.';fill()};rd.readAsDataURL(f)});
+window.pb46Download=async function(){const r=patient(),m=r?.measurements||{};if(!photoData||m.edadBiologica==null)return alert('Toma una foto y completa la edad biológica primero.');if(typeof html2canvas!=='function'){return alert('No se pudo cargar el generador de imagen. Verifica tu conexión e inténtalo nuevamente.')}const card=$('pb46-card');try{const canvas=await html2canvas(card,{scale:3,useCORS:true,backgroundColor:null,logging:false});const a=document.createElement('a');a.download=`NUMED_PhotoBooth_${String(r.first||'Paciente').replace(/[^a-z0-9áéíóúñ]+/gi,'_')}_${String(r.last||'').replace(/[^a-z0-9áéíóúñ]+/gi,'_')}.png`;a.href=canvas.toDataURL('image/png');a.click()}catch(e){console.error(e);alert('No se pudo generar la ficha. Inténtalo nuevamente.')}};
+function injectButton(){document.querySelectorAll('.v43-actions,.v39-actions,.result-actions').forEach(box=>{if(box.querySelector('.pb46-btn'))return;const b=document.createElement('button');b.className='admin-action pb46-btn';b.type='button';b.textContent='📸 Crear ficha Photo Booth';b.onclick=window.pb46Open;box.appendChild(b)})}
+document.addEventListener('DOMContentLoaded',()=>{const lib=document.createElement('script');lib.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';lib.defer=true;document.head.appendChild(lib);setTimeout(injectButton,800)});
+const old=window.detailTab;if(typeof old==='function')window.detailTab=function(){const out=old.apply(this,arguments);setTimeout(injectButton,20);return out};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('pb46-modal')?.style.display==='flex')window.pb46Close()});
+})();
+</script>
+
 </body>
 </html>
