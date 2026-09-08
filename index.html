@@ -4209,5 +4209,96 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-\n<script>\n/* NUMED v59 - selected patient/action state normalization */\n(function(){\n  try{\n    Object.defineProperty(window,'adminCurrentPatient',{\n      configurable:true,\n      get:function(){return adminCurrentPatient;},\n      set:function(v){adminCurrentPatient=v;}\n    });\n  }catch(e){ console.warn('NUMED v59 patient bridge',e); }\n\n  function normalizeSelectedPatient(){\n    const r=adminCurrentPatient;\n    if(!r) return null;\n    const m=r.measurements||{};\n    const hasMeasurements=[m.edadBiologica,m.edad_biologica,m.peso,m.peso_kg,m.presionSistolica,m.presion_sistolica,m.imc,m.perimetroAbdominal,m.perimetro_abdominal_cm].some(v=>v!==null&&v!==undefined&&v!=='');\n    if(hasMeasurements) r.measured=true;\n    if(!r.pss){\n      const score=m.pss_score ?? r.pss_score;\n      const level=m.pss_nivel ?? r.pss_nivel;\n      if(score!==null&&score!==undefined&&score!=='') r.pss={score:Number(score),level:level||((Number(score)<=13)?'Bajo':(Number(score)<=26)?'Moderado':'Alto')};\n    }\n    return r;\n  }\n  window.numedNormalizeSelectedPatient=normalizeSelectedPatient;\n\n  const oldOpen=window.openAdminPatient;\n  if(typeof oldOpen==='function') window.openAdminPatient=function(){\n    const x=oldOpen.apply(this,arguments); normalizeSelectedPatient(); return x;\n  };\n\n  ['downloadPSSReport','downloadBioReport','pb46Open'].forEach(function(name){\n    const original=window[name]; if(typeof original!=='function') return;\n    window[name]=async function(){\n      normalizeSelectedPatient();\n      return original.apply(this,arguments);\n    };\n  });\n\n  document.addEventListener('click',function(e){\n    if(e.target.closest('[onclick*="downloadPSSReport"],[onclick*="downloadBioReport"],[onclick*="pb46Open"]')) normalizeSelectedPatient();\n  },true);\n  window.NUMED_RUNTIME_VERSION='59';\n})();\n</script>\n</body>
+<script>
+/* NUMED v59 - selected patient/action state normalization */
+(function(){
+  try{
+    Object.defineProperty(window,'adminCurrentPatient',{
+      configurable:true,
+      get:function(){return adminCurrentPatient;},
+      set:function(v){adminCurrentPatient=v;}
+    });
+  }catch(e){ console.warn('NUMED v59 patient bridge',e); }
+
+  function normalizeSelectedPatient(){
+    const r=adminCurrentPatient;
+    if(!r) return null;
+    const m=r.measurements||{};
+    const hasMeasurements=[m.edadBiologica,m.edad_biologica,m.peso,m.peso_kg,m.presionSistolica,m.presion_sistolica,m.imc,m.perimetroAbdominal,m.perimetro_abdominal_cm].some(v=>v!==null&&v!==undefined&&v!=='');
+    if(hasMeasurements) r.measured=true;
+    if(!r.pss){
+      const score=m.pss_score ?? r.pss_score;
+      const level=m.pss_nivel ?? r.pss_nivel;
+      if(score!==null&&score!==undefined&&score!=='') r.pss={score:Number(score),level:level||((Number(score)<=13)?'Bajo':(Number(score)<=26)?'Moderado':'Alto')};
+    }
+    return r;
+  }
+  window.numedNormalizeSelectedPatient=normalizeSelectedPatient;
+
+  const oldOpen=window.openAdminPatient;
+  if(typeof oldOpen==='function') window.openAdminPatient=function(){
+    const x=oldOpen.apply(this,arguments); normalizeSelectedPatient(); return x;
+  };
+
+  ['downloadPSSReport','downloadBioReport','pb46Open'].forEach(function(name){
+    const original=window[name]; if(typeof original!=='function') return;
+    window[name]=async function(){
+      normalizeSelectedPatient();
+      return original.apply(this,arguments);
+    };
+  });
+
+  document.addEventListener('click',function(e){
+    if(e.target.closest('[onclick*="downloadPSSReport"],[onclick*="downloadBioReport"],[onclick*="pb46Open"]')) normalizeSelectedPatient();
+  },true);
+  window.NUMED_RUNTIME_VERSION='59';
+})();
+</script>
+
+<script id="numed-v60-photobooth-cloud-fix">
+(function(){
+'use strict';
+const BUCKET='numed-photobooth';
+const $=id=>document.getElementById(id);
+function patient(){return window.adminCurrentPatient||null}
+async function authToken(){
+  if(typeof window.ensureSbSession==='function') await window.ensureSbSession();
+  return sessionStorage.getItem('numedSbAccessToken')||localStorage.getItem('numedSbAccessToken')||'';
+}
+async function cloudFetch(path,options={}){
+  const t=await authToken(); if(!t) throw new Error('La sesión médica venció. Inicia sesión nuevamente.');
+  const r=await fetch(NUMED_SB_URL+path,{...options,headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+t,...(options.headers||{})}});
+  const text=await r.text(); let data=null; try{data=text?JSON.parse(text):null}catch(_){data=text}
+  if(!r.ok) throw new Error((data&&data.message)||JSON.stringify(data)||('Error '+r.status)); return data;
+}
+async function row(pid){const d=await cloudFetch('/rest/v1/paciente_photobooth?select=*&paciente_id=eq.'+encodeURIComponent(pid)+'&limit=1');return d?.[0]||null}
+async function signed(path){const d=await cloudFetch('/storage/v1/object/sign/'+BUCKET+'/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expiresIn:3600})});return NUMED_SB_URL+'/storage/v1'+d.signedURL}
+async function upload(path,blob){await cloudFetch('/storage/v1/object/'+BUCKET+'/'+path,{method:'POST',headers:{'Content-Type':blob.type||'application/octet-stream','x-upsert':'true'},body:blob});return path}
+function dataBlob(data){const [h,b]=String(data).split(',');const mime=(h.match(/data:([^;]+)/)||[])[1]||'image/jpeg',raw=atob(b),a=new Uint8Array(raw.length);for(let i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return new Blob([a],{type:mime})}
+async function cardBlob(){if(typeof html2canvas!=='function')throw new Error('No se cargó el generador de imagen.');const c=await html2canvas($('pb46-card'),{scale:3,useCORS:true,backgroundColor:null,logging:false});return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('No se pudo generar la ficha')),'image/png',1))}
+async function saveRow(obj){return cloudFetch('/rest/v1/paciente_photobooth?on_conflict=paciente_id',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(obj)})}
+window.pb47Save=async function(){
+ const r=patient(),pid=r?.supabaseId,img=$('pb46-photo'),btn=$('pb47-save'),status=$('pb46-status');
+ if(!r||!pid)return alert('No se encontró el paciente de Supabase. Vuelve a abrir su ficha.');
+ if(!img?.src)return alert('Toma o sube una foto primero.');
+ try{
+  if(btn){btn.disabled=true;btn.textContent='Guardando en Supabase…'};
+  let photoBlob;if(img.src.startsWith('data:'))photoBlob=dataBlob(img.src);else{const rr=await fetch(img.src);photoBlob=await rr.blob()}
+  const ficha=await cardBlob(),stamp=Date.now(),base=pid+'/'+stamp;
+  const foto=await upload(base+'_foto.jpg',photoBlob),card=await upload(base+'_ficha.png',ficha);
+  const saved=await saveRow({paciente_id:pid,foto_path:foto,ficha_path:card,edad_cronologica:Number(r.age)||null,edad_biologica:r.measurements?.edadBiologica==null?null:Number(r.measurements.edadBiologica),updated_at:new Date().toISOString()});
+  r.photoBooth=saved?.[0]||await row(pid); if(status)status.textContent='Guardado en Supabase ✓';
+  if(btn){btn.disabled=false;btn.textContent='Guardado en Supabase ✓'}; if($('pb46-download'))$('pb46-download').disabled=false;if($('pb47-share'))$('pb47-share').disabled=false;
+  await window.loadPatientsFromSupabase?.(); alert('Photo Booth guardado correctamente en Supabase.');
+ }catch(e){console.error('v60 Photo Booth',e);if(btn){btn.disabled=false;btn.textContent='Guardar en paciente'};if(status)status.textContent='Error: '+e.message;alert('No se pudo guardar Photo Booth.\n\n'+e.message)}
+};
+window.numedDownloadCloudPhotoBooth=async function(){try{const r=patient();if(!r?.supabaseId)throw new Error('Selecciona un paciente.');const x=await row(r.supabaseId);if(!x?.ficha_path)throw new Error('Este paciente todavía no tiene una ficha guardada.');const u=await signed(x.ficha_path),res=await fetch(u),blob=await res.blob(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NUMED_PhotoBooth_'+String(r.first||'Paciente').replace(/[^a-z0-9]+/gi,'_')+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}catch(e){alert(e.message)}};
+const oldTab=window.numedRenderCloudPhotoBooth;
+window.numedRenderCloudPhotoBooth=async function(){await oldTab?.();setTimeout(()=>{const box=$('detail-content');if(!box||box.querySelector('.pb60-download-cloud'))return;const r=patient();if(r?.photoBooth){const b=document.createElement('button');b.className='admin-action alt pb60-download-cloud';b.textContent='Descargar ficha PNG';b.onclick=window.numedDownloadCloudPhotoBooth;const a=box.querySelector('.pb54-actions');a?.appendChild(b)}},100)};
+const dt=window.detailTab;window.detailTab=function(tab,btn){if(tab==='photobooth'){document.querySelectorAll('.detail-tabs button').forEach(x=>x.classList.remove('active'));btn?.classList.add('active');window.numedRenderCloudPhotoBooth();return}return dt?.apply(this,arguments)};
+window.NUMED_RUNTIME_VERSION='60';
+})();
+</script>
+
+</body>
 </html>
