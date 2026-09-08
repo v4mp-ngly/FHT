@@ -3537,7 +3537,10 @@ window.markCurrentPatientMeasured=async function(evaluationData){
    delta_perimetro:Number(d.abdomen||0),
    delta_presion_arterial:Number(d.presion||0),
    delta_estilo_vida:Number(d.estilo||0),
-   diferencia_edad:Number(evaluationData.edadBiologica)-Number(p.age)
+   diferencia_edad:Number(evaluationData.edadBiologica)-Number(p.age),
+   pss_score:(p.pss && Number.isFinite(Number(p.pss.score))) ? Number(p.pss.score) : null,
+   pss_nivel:p.pss?.level||null,
+   pss_fecha:p.pss?.createdAt||p.completedAt||new Date().toISOString()
  };
  try{
    // Una sola medicion vigente por paciente: si ya existe, se ACTUALIZA; si no, se crea.
@@ -3552,10 +3555,14 @@ window.markCurrentPatientMeasured=async function(evaluationData){
        return await sbJSON(request[0],request[1],true);
      }catch(saveErr){
        const msg=String(saveErr?.message||saveErr);
-       if(/PGRST204|frecuencia_cardiaca|schema cache/i.test(msg)){
-         console.warn('NUMED: frecuencia_cardiaca no existe en el esquema; reintentando sin esa columna.');
-         const compatible={...payload}; delete compatible.frecuencia_cardiaca;
-         return await sbJSON(request[0],{...request[1],body:JSON.stringify(compatible)},true);
+       if(/PGRST204|schema cache/i.test(msg)){
+         const missing=(msg.match(/'([^']+)' column/)||[])[1];
+         const optional=['frecuencia_cardiaca','pss_score','pss_nivel','pss_fecha'];
+         if(missing && optional.includes(missing)){
+           console.warn('NUMED: columna opcional no disponible:',missing,'; reintentando sin ella.');
+           const compatible={...payload}; delete compatible[missing];
+           return await saveMeasurement(compatible);
+         }
        }
        throw saveErr;
      }
