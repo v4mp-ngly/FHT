@@ -3542,11 +3542,25 @@ window.markCurrentPatientMeasured=async function(evaluationData){
  try{
    // Una sola medicion vigente por paciente: si ya existe, se ACTUALIZA; si no, se crea.
    const existing=await sbJSON('mediciones_edad_biologica?select=id&paciente_id=eq.'+encodeURIComponent(p.supabaseId)+'&order=created_at.desc&limit=1',{},true);
-   if(existing?.length){
-     await sbJSON('mediciones_edad_biologica?id=eq.'+encodeURIComponent(existing[0].id),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)},true);
-   }else{
-     await sbJSON('mediciones_edad_biologica',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(body)},true);
+   // Compatibilidad con el esquema actual: algunas instalaciones aun no tienen frecuencia_cardiaca.
+   // Intentamos guardar todo y, si PostgREST reporta PGRST204 para esa columna, reintentamos sin perder el resto de la evaluacion.
+   async function saveMeasurement(payload){
+     const request = existing?.length
+       ? ['mediciones_edad_biologica?id=eq.'+encodeURIComponent(existing[0].id), {method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)}]
+       : ['mediciones_edad_biologica', {method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(payload)}];
+     try{
+       return await sbJSON(request[0],request[1],true);
+     }catch(saveErr){
+       const msg=String(saveErr?.message||saveErr);
+       if(/PGRST204|frecuencia_cardiaca|schema cache/i.test(msg)){
+         console.warn('NUMED: frecuencia_cardiaca no existe en el esquema; reintentando sin esa columna.');
+         const compatible={...payload}; delete compatible.frecuencia_cardiaca;
+         return await sbJSON(request[0],{...request[1],body:JSON.stringify(compatible)},true);
+       }
+       throw saveErr;
+     }
    }
+   await saveMeasurement(body);
    await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(p.supabaseId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({mediciones_completadas:true})},true);
    _markMeasuredLocal.call(this,evaluationData);
    await loadPatientsFromSupabase();
@@ -4048,5 +4062,6 @@ document.addEventListener('DOMContentLoaded',ensureUI);
 })();
 </script>
 
+\n<script id="numed-v49-stability-fix">\n(function(){\n'use strict';\nconst $=id=>document.getElementById(id);\n// Evita dobles envios y respuestas incompletas en el cuestionario QR.\nconst oldSaveQ=window.saveQuestionnaire;\nif(typeof oldSaveQ==='function') window.saveQuestionnaire=async function(){\n const form=$('questionnaire-form');\n const fields=['fuma_actual','ex_fumador','alcohol','actividad','fuerza_q','sueno','dieta','cronicas','familia'];\n const missing=fields.filter(n=>!form?.querySelector(`input[name="${n}"]:checked`));\n if(missing.length){ alert('Completa todas las preguntas del cuestionario antes de finalizar.'); return; }\n const btn=form?.querySelector('button[onclick*="saveQuestionnaire"],button[type="button"].btn-primary');\n if(btn?.dataset.saving==='1') return;\n if(btn){btn.dataset.saving='1';btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='Guardando...'}\n try{return await oldSaveQ.apply(this,arguments)}finally{if(btn){btn.dataset.saving='0';btn.disabled=false;btn.textContent=btn.dataset.oldText||'Guardar'}}\n};\n// Mensajes de Supabase mas claros, especialmente cedula duplicada/RLS.\nconst oldSb=window.sbJSON;\nif(typeof oldSb==='function') window.sbJSON=async function(path,options,auth){\n try{return await oldSb(path,options,auth)}catch(e){\n   const m=String(e?.message||e);\n   if(/duplicate key|23505|unique/i.test(m)) throw new Error('Ya existe una evaluación registrada con esta cédula. Usa una cédula diferente para una prueba nueva o abre el paciente existente desde el panel médico.');\n   if(/row-level security|42501|permission denied/i.test(m)) throw new Error('Supabase bloqueó esta operación por permisos (RLS). Revisa las políticas de la tabla correspondiente.');\n   throw e;\n }\n};\n// Fallback: si la columna frecuencia_cardiaca aun no existe, guardar el resto de la medicion.\nconst oldMeasured=window.markCurrentPatientMeasured;\nif(typeof oldMeasured==='function') window.markCurrentPatientMeasured=async function(data){\n try{return await oldMeasured.apply(this,arguments)}catch(e){console.error('NUMED v49 medicion',e);throw e}\n};\n// Camara: requiere HTTPS/localhost. Da una explicacion util en vez de fallar silenciosamente.\nconst oldCamera=window.pb46Start;\nif(typeof oldCamera==='function') window.pb46Start=async function(){\n if(!window.isSecureContext && location.hostname!=='localhost'){alert('Para usar la cámara, abre NUMED desde una dirección HTTPS. Mientras tanto puedes usar “Subir foto”.');return}\n if(!navigator.mediaDevices?.getUserMedia){alert('Este navegador no permite acceso directo a la cámara. Usa “Subir foto”.');return}\n return oldCamera.apply(this,arguments);\n};\n// Estado de conectividad visible.\nfunction net(){if(typeof window.numedStatus==='function')window.numedStatus(navigator.onLine?'Conexión restablecida.':'Sin conexión. Los datos remotos no podrán sincronizarse.',!navigator.onLine)}\nwindow.addEventListener('online',()=>{net();window.refreshNumedPatients?.()});\nwindow.addEventListener('offline',net);\n// Elimina ID duplicado introducido por Photo Booth: conserva un único botón de descarga.\ndocument.addEventListener('DOMContentLoaded',()=>{\n const d=[...document.querySelectorAll('#pb46-download')]; d.slice(1).forEach(x=>x.remove());\n // Diagnóstico rápido de componentes críticos en consola.\n const checks={form:!!$('integral-form'),questionnaire:!!$('questionnaire-form'),doctor:!!$('doctor-admin'),photobooth:!!$('pb46-modal'),supabase:typeof window.sbJSON==='function'};\n console.info('NUMED v49 · comprobación de módulos',checks);\n});\n})();\n</script>\n
 </body>
 </html>
