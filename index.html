@@ -980,6 +980,12 @@
 #doctor-admin .pss-patient-answers .answer-row>span:first-child{flex:1;line-height:1.45;color:#274c71}
 #doctor-admin .pss-patient-answers .answer-row>span:last-child{min-width:150px;text-align:right;color:#5d8f12}
 </style>
+<style id="numed-v48-hero-fix">
+/* v48 · Hero: evita que "integral" desaparezca por background-clip */
+.portal-intro h1{max-width:760px;overflow:visible;text-wrap:balance}
+.portal-intro h1 .hero-accent{display:inline-block;color:#86B817 !important;background:none !important;-webkit-background-clip:border-box !important;background-clip:border-box !important;-webkit-text-fill-color:#86B817 !important;text-shadow:none !important;white-space:nowrap}
+@media(max-width:600px){.portal-intro h1{font-size:clamp(36px,10vw,43px);line-height:1.04;letter-spacing:-.04em}.portal-intro h1 .hero-accent{white-space:normal}}
+</style>
 </head>
 <body>
 <div id="access-portal">
@@ -994,7 +1000,7 @@
   <main class="portal-main">
    <section class="portal-intro">
     <div class="portal-kicker">Tecnología aplicada a la salud</div>
-    <h1>Conoce tu salud<br>desde una visión <span>integral.</span></h1>
+    <h1>Conoce tu salud<br>desde una visión <span class="hero-accent">integral.</span></h1>
     <p>Una experiencia digital diseñada para recopilar información, evaluar indicadores y acompañar el proceso de valoración de cada paciente de forma organizada y eficiente.</p>
     <div class="portal-trust">
      <div><span class="trust-icon">✓</span> Evaluación estructurada</div>
@@ -4005,6 +4011,40 @@ function injectButton(){document.querySelectorAll('.v43-actions,.v39-actions,.re
 document.addEventListener('DOMContentLoaded',()=>{const lib=document.createElement('script');lib.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';lib.defer=true;document.head.appendChild(lib);setTimeout(injectButton,800)});
 const old=window.detailTab;if(typeof old==='function')window.detailTab=function(){const out=old.apply(this,arguments);setTimeout(injectButton,20);return out};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('pb46-modal')?.style.display==='flex')window.pb46Close()});
+})();
+</script>
+
+
+<style id="numed-v47-photobooth-persist-style">
+.pb47-saved{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#f1f7e7;color:#53731d;font-size:12px;font-weight:800}.pb47-saved.off{background:#f2f5f7;color:#71808c}.pb47-share{background:#062f57!important;color:#fff!important}.pb47-save{background:#8bb62f!important;color:#fff!important}.pb47-gallery{margin-top:12px;padding:12px;border:1px solid #dce7ec;border-radius:14px;background:#f8fafb}.pb47-gallery strong{display:block;color:#062f57;font-size:12px;margin-bottom:5px}.pb47-gallery small{color:#6b7f8e;font-size:11px;line-height:1.4}
+</style>
+<script id="numed-v47-photobooth-persist">
+(function(){
+'use strict';
+const DB='numedPatientMedia',STORE='photobooth'; let lastCardBlob=null;
+const $=id=>document.getElementById(id);
+function current(){return window.adminCurrentPatient||null}
+function key(r=current()){return String(r?.supabaseId||r?.id||'')}
+function db(){return new Promise((ok,no)=>{const q=indexedDB.open(DB,1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains(STORE))q.result.createObjectStore(STORE,{keyPath:'patientId'})};q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}
+async function getSaved(){const d=await db();return new Promise((ok,no)=>{const q=d.transaction(STORE,'readonly').objectStore(STORE).get(key());q.onsuccess=()=>ok(q.result||null);q.onerror=()=>no(q.error)})}
+async function putSaved(v){const d=await db();return new Promise((ok,no)=>{const q=d.transaction(STORE,'readwrite').objectStore(STORE).put(v);q.onsuccess=()=>ok(v);q.onerror=()=>no(q.error)})}
+function ensureUI(){
+ const actions=document.querySelector('#pb46-modal .pb46-preview .pb46-actions'); if(actions&&!$('pb47-save')){
+  actions.innerHTML='<button class="pb46-soft" onclick="pb46Retake()">Repetir foto</button><button class="pb47-save" id="pb47-save" onclick="pb47Save()" disabled>Guardar en paciente</button><button class="pb47-share" id="pb47-share" onclick="pb47Share()" disabled>Compartir</button><button class="pb46-green" id="pb46-download" onclick="pb46Download()" disabled>Descargar PNG</button>';
+  const box=document.createElement('div');box.id='pb47-state';box.className='pb47-saved off';box.textContent='○ Esta ficha todavía no está guardada en el paciente.';actions.parentNode.appendChild(box);
+  const info=document.createElement('div');info.className='pb47-gallery';info.innerHTML='<strong>Ficha Photo Booth del paciente</strong><small>Al guardarla, la foto y la ficha quedan asociadas a este paciente en este dispositivo. En iPhone/iPad/Android, “Compartir” abre el menú del sistema para enviarla a Instagram, WhatsApp, AirDrop y otras apps compatibles.</small>';actions.parentNode.appendChild(info);
+ }
+}
+async function cardBlob(){if(typeof html2canvas!=='function')throw new Error('Generador de imagen no disponible');const canvas=await html2canvas($('pb46-card'),{scale:3,useCORS:true,backgroundColor:null,logging:false});return await new Promise(ok=>canvas.toBlob(ok,'image/png',1))}
+async function restore(){ensureUI();const r=current();if(!r)return;try{const v=await getSaved();if(!v)return setState(false);if(v.photoData){window.__pb47Photo=v.photoData;const ph=$('pb46-photo');if(ph)ph.src=v.photoData;const stage=$('pb46-stage');if(stage)stage.innerHTML=`<img src="${v.photoData}" alt="Foto guardada">`;try{const res=await fetch(v.cardData);lastCardBlob=await res.blob()}catch(_){ }setState(true,v.savedAt);const dl=$('pb46-download'),sv=$('pb47-save'),sh=$('pb47-share');if(dl)dl.disabled=false;if(sv)sv.disabled=false;if(sh)sh.disabled=false}}catch(e){console.warn('Photo Booth restore',e)}}
+function setState(saved,date){const e=$('pb47-state');if(!e)return;e.className='pb47-saved'+(saved?'':' off');e.textContent=saved?'✓ Ficha guardada en este paciente'+(date?' · '+new Date(date).toLocaleString('es-DO'):''): '○ Esta ficha todavía no está guardada en el paciente.'}
+window.pb47Save=async function(){const r=current();if(!r)return alert('Selecciona un paciente.');const img=$('pb46-photo');if(!img?.src)return alert('Toma o sube una foto primero.');try{const b=await cardBlob();lastCardBlob=b;const cardData=await new Promise(ok=>{const rd=new FileReader();rd.onload=()=>ok(rd.result);rd.readAsDataURL(b)});await putSaved({patientId:key(r),supabaseId:r.supabaseId||null,cedula:r.id||'',name:`${r.first||''} ${r.last||''}`.trim(),photoData:img.src,cardData,savedAt:new Date().toISOString(),chronologicalAge:r.age,biologicalAge:r.measurements?.edadBiologica});setState(true,new Date().toISOString());$('pb47-share').disabled=false;alert('Ficha Photo Booth guardada en el paciente.');}catch(e){console.error(e);alert('No se pudo guardar la ficha. Inténtalo nuevamente.') }};
+window.pb47Share=async function(){const r=current();if(!r)return;try{let b=lastCardBlob;if(!b){const v=await getSaved();if(v?.cardData){const res=await fetch(v.cardData);b=await res.blob()}else b=await cardBlob()}const name=`NUMED_PhotoBooth_${String(r.first||'Paciente').replace(/[^a-z0-9]+/gi,'_')}.png`;const f=new File([b],name,{type:'image/png'});if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[f]}))){await navigator.share({files:[f],title:'Mi Edad Biológica · NUMED',text:'Mi resultado de Edad Biológica en NUMED.'});}else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);alert('Tu navegador no permite compartir directamente. Se descargó la ficha para que puedas subirla a Instagram.')}}catch(e){if(e?.name!=='AbortError'){console.error(e);alert('No se pudo abrir el menú para compartir.')}}};
+const oldOpen=window.pb46Open;window.pb46Open=function(){ensureUI();const out=oldOpen?.apply(this,arguments);setTimeout(restore,50);return out};
+const oldShot=window.pb46Shot;window.pb46Shot=function(){const out=oldShot?.apply(this,arguments);setTimeout(()=>{ensureUI();if($('pb47-save'))$('pb47-save').disabled=!$('pb46-photo')?.src;if($('pb47-share'))$('pb47-share').disabled=true;setState(false)},30);return out};
+const oldRetake=window.pb46Retake;window.pb46Retake=function(){const out=oldRetake?.apply(this,arguments);lastCardBlob=null;setTimeout(()=>{if($('pb47-save'))$('pb47-save').disabled=true;if($('pb47-share'))$('pb47-share').disabled=true;setState(false)},10);return out};
+document.addEventListener('change',e=>{if(e.target?.id==='pb46-file')setTimeout(()=>{ensureUI();if($('pb47-save'))$('pb47-save').disabled=!$('pb46-photo')?.src;if($('pb47-share'))$('pb47-share').disabled=true;setState(false)},100)});
+document.addEventListener('DOMContentLoaded',ensureUI);
 })();
 </script>
 
