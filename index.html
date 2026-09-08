@@ -999,6 +999,17 @@
 .admin-nav button.active .nav-icon{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
 @media(max-width:900px){.admin-nav button{min-height:50px}.admin-nav button .nav-icon{width:34px;height:34px;min-width:34px}.admin-nav button .nav-icon svg{width:19px;height:19px}}
 </style>
+
+<style id="numed-v58-qr-premium">
+.qr-card-premium{position:relative;width:min(470px,94vw);padding:30px 34px 28px;border-radius:30px;overflow:hidden;background:linear-gradient(180deg,#fff 0%,#fbfdf9 100%);border:1px solid rgba(39,76,113,.08);box-shadow:0 32px 90px rgba(6,43,91,.30)}
+.qr-card-premium:before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#82c516,#35b86b,#1ca8cf)}
+.qr-close-x{position:absolute;right:18px;top:16px;width:34px;height:34px;border:0;border-radius:50%;background:#f1f5f8;color:#274C71;font-size:23px;line-height:1;cursor:pointer}.qr-close-x:hover{background:#e6edf2}
+.qr-numed-logo{display:block;width:118px;max-height:52px;object-fit:contain;margin:0 auto 10px}.qr-kicker{font-size:9px;font-weight:900;letter-spacing:2px;color:#82b923;margin-bottom:5px}.qr-card-premium h2{font-size:27px;margin:0;color:#274C71;letter-spacing:-.5px}.qr-card-premium .qr-lead{max-width:340px;margin:8px auto 15px;font-size:11px;color:#718096;line-height:1.55}
+.qr-frame{width:258px;height:258px;margin:0 auto 14px;border-radius:26px;padding:10px;background:linear-gradient(135deg,rgba(171,201,66,.28),rgba(31,166,204,.18));box-shadow:0 14px 34px rgba(39,76,113,.12)}.qr-card-premium .qr-box{width:238px;height:238px;margin:0;padding:14px;border:0;border-radius:19px;background:#fff}.qr-card-premium .qr-box img,.qr-card-premium .qr-box canvas{width:210px!important;height:210px!important}
+.qr-scan-hint{display:flex;align-items:center;text-align:left;gap:11px;width:fit-content;max-width:100%;margin:0 auto 10px;color:#274C71}.qr-phone-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#eef7df;color:#78b817;font-size:22px;font-weight:900}.qr-scan-hint strong{display:block;font-size:11px}.qr-scan-hint small{display:block;margin-top:2px;color:#8492a1;font-size:9px}.qr-secure{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;background:#f3f8eb;color:#5f7e25;font-size:9px;font-weight:800}.qr-url-hidden{display:none!important}.qr-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}.qr-btn{margin:0!important;min-height:42px!important;border-radius:12px!important;font-size:10px!important;font-weight:900!important}.qr-full{grid-column:1/-1;background:#f3f6f8!important;color:#274C71!important;border:1px solid #e1e9ef!important}
+.qr-modal:fullscreen,.qr-modal.qr-is-fullscreen{background:#062b5b;padding:30px}.qr-modal:fullscreen .qr-card-premium,.qr-modal.qr-is-fullscreen .qr-card-premium{transform:scale(1.12)}
+@media(max-width:600px){.qr-card-premium{padding:25px 20px 22px;border-radius:25px}.qr-card-premium h2{font-size:23px}.qr-frame{width:238px;height:238px}.qr-card-premium .qr-box{width:218px;height:218px}.qr-card-premium .qr-box img,.qr-card-premium .qr-box canvas{width:190px!important;height:190px!important}.qr-actions{grid-template-columns:1fr}.qr-full{grid-column:auto}}
+</style>
 </head>
 <body>
 <div id="access-portal">
@@ -1040,7 +1051,7 @@
   <footer class="portal-footer"><div><strong>NUMED</strong> · Evaluación Integral de Salud</div><div class="portal-footer-right"><span>Paciente</span><span>Profesional de salud</span></div></footer>
  </div>
 </div>
-<div id="patient-qr-modal" class="qr-modal" onclick="if(event.target===this)closePatientQR()"><div class="qr-card"><h2>QR · Evaluación del paciente</h2><p>Escanea este código para abrir directamente los cuestionarios del paciente.</p><div id="patient-qr" class="qr-box"></div><div id="patient-qr-url" class="qr-url"></div><button class="portal-primary" onclick="copyPatientLink()">Copiar enlace</button> <button class="portal-secondary" onclick="closePatientQR()">Cerrar</button></div></div>
+<div id="patient-qr-modal" class="qr-modal" onclick="if(event.target===this)closePatientQR()"><div class="qr-card qr-card-premium"><button class="qr-close-x" onclick="closePatientQR()" aria-label="Cerrar">×</button><img class="qr-numed-logo" src="" alt="NUMED"><div class="qr-kicker">EVALUACIÓN INTEGRAL</div><h2>Escanea y comienza</h2><p class="qr-lead">Abre la cámara de tu celular y escanea el código para iniciar tu evaluación de salud.</p><div class="qr-frame"><div id="patient-qr" class="qr-box"></div></div><div class="qr-scan-hint"><span class="qr-phone-icon">⌁</span><div><strong>Escanea con la cámara de tu celular</strong><small>Datos → PSS-10 → Edad Biológica</small></div></div><div class="qr-secure">✓ Enlace seguro · No requiere iniciar sesión</div><div id="patient-qr-url" class="qr-url qr-url-hidden"></div><div class="qr-actions"><button class="portal-primary qr-btn" onclick="copyPatientLink()">Copiar enlace</button><button class="portal-secondary qr-btn" onclick="sharePatientEvaluation()">Compartir</button><button class="portal-secondary qr-btn qr-full" onclick="togglePatientQRFullscreen()">Pantalla completa</button></div></div></div>
     <!-- ══════════════════════════════════════════════
          PANTALLA DE BIENVENIDA
     ══════════════════════════════════════════════ -->
@@ -3403,8 +3414,11 @@ function openPatientQuestionnaires(){
   window.scrollTo({top:0,behavior:'auto'});
 }
 function buildQR(target,size=190){const el=typeof target==='string'?document.getElementById(target):target;if(!el)return;el.innerHTML='';if(window.QRCode){new QRCode(el,{text:patientDirectURL(),width:size,height:size,correctLevel:QRCode.CorrectLevel.M})}else{el.innerHTML='<small style="color:#718096">QR disponible al publicar con conexión a internet.</small>'}}
-function openPatientQR(){document.getElementById('patient-qr-modal').style.display='flex';document.getElementById('patient-qr-url').textContent=patientDirectURL();buildQR('patient-qr',190)}
+function openPatientQR(){const m=document.getElementById('patient-qr-modal');m.style.display='flex';document.getElementById('patient-qr-url').textContent=patientDirectURL();const logo=m.querySelector('.qr-numed-logo');const src=document.querySelector('.wc-logo')?.src;if(logo&&src)logo.src=src;buildQR('patient-qr',210)}
 function closePatientQR(){document.getElementById('patient-qr-modal').style.display='none'}
+async function sharePatientEvaluation(){const url=patientDirectURL();const data={title:'Evaluación Integral NUMED',text:'Completa tu Evaluación Integral NUMED.',url};try{if(navigator.share){await navigator.share(data)}else{await copyPatientLink()}}catch(e){if(e&&e.name!=='AbortError')await copyPatientLink()}}
+async function togglePatientQRFullscreen(){const m=document.getElementById('patient-qr-modal');try{if(!document.fullscreenElement&&m.requestFullscreen){await m.requestFullscreen()}else if(document.fullscreenElement&&document.exitFullscreen){await document.exitFullscreen()}}catch(e){m.classList.toggle('qr-is-fullscreen')}}
+
 async function copyPatientLink(){const url=patientDirectURL();try{await navigator.clipboard.writeText(url);alert('Enlace del paciente copiado.')}catch(e){prompt('Copia este enlace:',url)}}
 function renderShareQR(){const u=document.getElementById('admin-patient-url');if(u)u.textContent=patientDirectURL();buildQR('admin-mini-qr',80)}
 const NUMED_DOCTOR_AUTH={name:'Doctor NUMED'};
