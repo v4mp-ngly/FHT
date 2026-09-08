@@ -4031,7 +4031,7 @@ window.pb46Retake=function(){photoData='';$('pb46-photo').removeAttribute('src')
 $('pb46-file')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{photoData=rd.result;$('pb46-photo').src=photoData;$('pb46-stage').innerHTML=`<img src="${photoData}" alt="Foto seleccionada">`;$('pb46-status').textContent='Foto cargada. Revisa la ficha antes de descargar.';fill()};rd.readAsDataURL(f)});
 window.pb46Download=async function(){const r=patient(),m=r?.measurements||{};if(!photoData||m.edadBiologica==null)return alert('Toma una foto y completa la edad biológica primero.');if(typeof html2canvas!=='function'){return alert('No se pudo cargar el generador de imagen. Verifica tu conexión e inténtalo nuevamente.')}const card=$('pb46-card');try{const canvas=await html2canvas(card,{scale:3,useCORS:true,backgroundColor:null,logging:false});const a=document.createElement('a');a.download=`NUMED_PhotoBooth_${String(r.first||'Paciente').replace(/[^a-z0-9áéíóúñ]+/gi,'_')}_${String(r.last||'').replace(/[^a-z0-9áéíóúñ]+/gi,'_')}.png`;a.href=canvas.toDataURL('image/png');a.click()}catch(e){console.error(e);alert('No se pudo generar la ficha. Inténtalo nuevamente.')}};
 function injectButton(){document.querySelectorAll('.v43-actions,.v39-actions,.result-actions').forEach(box=>{if(box.querySelector('.pb46-btn'))return;const b=document.createElement('button');b.className='admin-action pb46-btn';b.type='button';b.textContent='📸 Crear ficha Photo Booth';b.onclick=window.pb46Open;box.appendChild(b)})}
-document.addEventListener('DOMContentLoaded',()=>{const lib=document.createElement('script');lib.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';lib.defer=true;document.head.appendChild(lib);setTimeout(injectButton,800)});
+document.addEventListener('DOMContentLoaded',()=>setTimeout(injectButton,800));
 const old=window.detailTab;if(typeof old==='function')window.detailTab=function(){const out=old.apply(this,arguments);setTimeout(injectButton,20);return out};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('pb46-modal')?.style.display==='flex')window.pb46Close()});
 })();
@@ -4104,6 +4104,81 @@ document.addEventListener('DOMContentLoaded',ensureUI);
  const oldDetail=window.detailTab;window.detailTab=function(tab,btn){if(tab==='photobooth'){document.querySelectorAll('.detail-tabs button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');renderCloudTab();return}return oldDetail.apply(this,arguments)};
  // Extend patient header with clear completion states.
  const oldOpenAdmin=window.openAdminPatient;window.openAdminPatient=function(id){const out=oldOpenAdmin.apply(this,arguments);setTimeout(()=>{const r=window.adminCurrentPatient,head=$('detail-head');if(r&&head&&!head.querySelector('.patient-progress54'))head.insertAdjacentHTML('beforeend',window.numedPatientProgress54(r))},0);return out};
+})();
+</script>
+
+
+<script id="numed-v55-qr-session-core">
+(function(){
+'use strict';
+const AUTH_KEY='numedDoctorAuthV55';
+const LEGACY_SESSION='numedDoctorSession', TOKEN='numedSbAccessToken', REFRESH='numedSbRefreshToken', EXPIRES='numedSbExpiresAt';
+function authRead(){try{return JSON.parse(localStorage.getItem(AUTH_KEY)||'null')}catch(_){return null}}
+function authWrite(d){const a={access_token:d.access_token,refresh_token:d.refresh_token||'',expires_at:Date.now()+Number(d.expires_in||3600)*1000};localStorage.setItem(AUTH_KEY,JSON.stringify(a));localStorage.setItem(LEGACY_SESSION,'1');localStorage.setItem(TOKEN,a.access_token);sessionStorage.setItem(TOKEN,a.access_token);if(a.refresh_token)localStorage.setItem(REFRESH,a.refresh_token);localStorage.setItem(EXPIRES,String(a.expires_at));return a}
+function authClear(){[AUTH_KEY,LEGACY_SESSION,TOKEN,REFRESH,EXPIRES].forEach(k=>localStorage.removeItem(k));sessionStorage.removeItem(TOKEN)}
+async function refreshAuth(a){if(!a?.refresh_token)return false;try{const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:a.refresh_token})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Sesión vencida');authWrite(d);return true}catch(e){console.warn('NUMED v55: sesión vencida',e);authClear();return false}}
+window.ensureSbSession=async function(){let a=authRead();if(!a){const old=localStorage.getItem(TOKEN),ref=localStorage.getItem(REFRESH),exp=Number(localStorage.getItem(EXPIRES)||0);if(old)a={access_token:old,refresh_token:ref||'',expires_at:exp};}
+ if(a?.access_token&&Number(a.expires_at)>Date.now()+60000){authWrite({access_token:a.access_token,refresh_token:a.refresh_token,expires_in:Math.max(60,Math.floor((a.expires_at-Date.now())/1000))});return true}return refreshAuth(a)};
+window.doctorLogin=async function(){const email=document.getElementById('doc-user')?.value.trim(),password=document.getElementById('doc-pass')?.value||'',err=document.getElementById('doc-login-error'),button=document.querySelector('.doc-login-primary');try{if(button){button.disabled=true;button.textContent='Verificando...'}const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');authWrite(d);if(err)err.style.display='none';document.getElementById('doctor-login')?.style.setProperty('display','none');openDoctorAdmin();await window.loadPatientsFromSupabase?.()}catch(e){console.error(e);if(err){err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block'}}finally{if(button){button.disabled=false;button.textContent='Ingresar al panel'}}};
+window.doctorLogout=function(){authClear();localStorage.removeItem('numedAdminSection');localStorage.removeItem('numedAdminPatientId');document.getElementById('doctor-admin')?.style.setProperty('display','none');const pass=document.getElementById('doc-pass');if(pass)pass.value='';showAccessPortal()};
+
+// QR: una sola identidad por cédula. La RPC devuelve el paciente existente o crea uno nuevo.
+window.saveFullPatientToSupabase=async function(){
+ const p=window.integralPatient,ps=window.integralPSS,q=window._questionnaireAnswers||{};if(!p||!ps)throw new Error('Faltan datos del paciente o PSS-10.');
+ const localityId=await getLocalityId(p.locality);const cedula=String(p.id||'').replace(/\D/g,'');if(!cedula)throw new Error('La cédula es obligatoria.');
+ const rows=await sbJSON('rpc/numed_get_or_create_patient',{method:'POST',body:JSON.stringify({p_cedula:cedula,p_nombres:p.first,p_apellidos:p.last,p_fecha_nacimiento:p.birth,p_sexo:String(p.gender).toLowerCase()==='femenino'?'Femenino':'Masculino',p_telefono:p.phone||null,p_localidad_id:localityId,p_tiene_codigo_colaborador:!!p.hasCollaboratorCode,p_codigo_colaborador:p.hasCollaboratorCode?(p.collaboratorCode||null):null})});
+ const pid=Array.isArray(rows)?(rows[0]?.patient_id||rows[0]?.id):rows?.patient_id||rows?.id||rows;if(!pid)throw new Error('Supabase no devolvió el ID del paciente.');p.supabaseId=pid;
+ const a=ps.answers||{};
+ await sbJSON('evaluaciones_pss10',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({paciente_id:pid,pregunta_1:a.pss_1,pregunta_2:a.pss_2,pregunta_3:a.pss_3,pregunta_4:a.pss_4,pregunta_5:a.pss_5,pregunta_6:a.pss_6,pregunta_7:a.pss_7,pregunta_8:a.pss_8,pregunta_9:a.pss_9,pregunta_10:a.pss_10,puntuacion_total:ps.score,clasificacion:ps.level})});
+ await sbJSON('rpc/numed_sync_pss_medicion',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({p_patient_id:pid,p_score:Number(ps.score),p_nivel:ps.level||null,p_fecha:new Date().toISOString()})});
+ await sbJSON('cuestionario_edad_biologica',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({paciente_id:pid,fuma_actual:String(q.fuma_actual??''),ex_fumador:String(q.ex_fumador??''),alcohol:String(q.alcohol??''),actividad:String(q.actividad??''),fuerza:String(q.fuerza_q??''),sueno:String(q.sueno??''),dieta:String(q.dieta??''),enfermedades_cronicas:String(q.cronicas??''),antecedentes_familiares:String(q.familia??''),puntuacion_estilo_vida:window.lifestyleDisplay?.score??0,clasificacion_estilo_vida:window.lifestyleDisplay?.label||'No evaluado'})});
+ // La nueva evaluación queda pendiente de nuevas mediciones, sin duplicar al paciente.
+ try{await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(pid),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false})})}catch(e){console.warn('NUMED v55: no se pudo actualizar estado público; los formularios sí quedaron guardados.',e)}
+ return pid;
+};
+
+// Arranque único: QR siempre gana; el panel médico solo se restaura con una sesión Supabase válida.
+async function bootV55(){if(new URLSearchParams(location.search).get('mode')==='patient')return;const a=authRead();if(!a&&!localStorage.getItem(TOKEN))return;const ok=await window.ensureSbSession();if(ok){localStorage.setItem(LEGACY_SESSION,'1');try{openDoctorAdmin();setTimeout(()=>window.loadPatientsFromSupabase?.(),80)}catch(e){console.error('NUMED v55 boot',e)}}else{authClear();try{openDoctorLogin()}catch(_){}}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootV55,{once:true});else bootV55();
+})();
+</script>
+
+<style id="numed-v56-definitive-style">
+.pb56-export{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.pb56-export button{min-height:46px;border:0;border-radius:13px;font-weight:800;cursor:pointer}.pb56-story{background:#062f57;color:#fff}.pb56-square{background:#a9c93f;color:#173650}.pb56-badge{font-size:11px;color:#6e8294;margin-top:8px;text-align:center}
+@media(max-width:600px){.pb56-export{grid-template-columns:1fr}}
+</style>
+<script id="numed-v56-definitive-runtime">
+(()=>{'use strict';
+ const $=id=>document.getElementById(id);
+ const clean=v=>String(v||'Paciente').replace(/[^a-z0-9áéíóúñ]+/gi,'_');
+ async function canvasForCard(width,height){
+   if(typeof html2canvas!=='function')throw new Error('Generador de imagen no disponible');
+   const card=$('pb46-card'); if(!card)throw new Error('No se encontró la ficha Photo Booth');
+   const source=await html2canvas(card,{scale:3,useCORS:true,backgroundColor:null,logging:false});
+   const out=document.createElement('canvas');out.width=width;out.height=height;const ctx=out.getContext('2d');
+   ctx.fillStyle='#f3f7fa';ctx.fillRect(0,0,width,height);
+   const pad=Math.round(width*.055), maxW=width-pad*2, maxH=height-pad*2;
+   const scale=Math.min(maxW/source.width,maxH/source.height);const w=source.width*scale,h=source.height*scale;
+   ctx.drawImage(source,(width-w)/2,(height-h)/2,w,h);return out;
+ }
+ function downloadCanvas(c,suffix){const r=window.adminCurrentPatient||{};const a=document.createElement('a');a.download=`NUMED_PhotoBooth_${clean(r.first)}_${clean(r.last)}_${suffix}.png`;a.href=c.toDataURL('image/png',1);a.click()}
+ window.pb56Story=async()=>{try{downloadCanvas(await canvasForCard(1080,1920),'Story_1080x1920')}catch(e){alert(e.message)}};
+ window.pb56Square=async()=>{try{downloadCanvas(await canvasForCard(1080,1080),'Instagram_1080x1080')}catch(e){alert(e.message)}};
+ function injectExports(){const actions=document.querySelector('.pb46-actions');if(!actions||$('pb56-export'))return;const d=document.createElement('div');d.id='pb56-export';d.className='pb56-export';d.innerHTML='<button class="pb56-story" type="button" onclick="pb56Story()">Story 9:16 · 1080×1920</button><button class="pb56-square" type="button" onclick="pb56Square()">Cuadrada · 1080×1080</button><div class="pb56-badge" style="grid-column:1/-1">Formatos listos para Instagram</div>';actions.insertAdjacentElement('afterend',d)}
+ const oldOpen=window.pb46Open; if(typeof oldOpen==='function')window.pb46Open=async function(){const x=await oldOpen.apply(this,arguments);setTimeout(injectExports,30);return x};
+ // Supabase is the source of truth before every PDF.
+ async function freshPatient(){
+   const cur=window.adminCurrentPatient;if(!cur)return null;
+   if(typeof window.loadPatientsFromSupabase==='function')await window.loadPatientsFromSupabase();
+   const rows=JSON.parse(localStorage.getItem('numedIntegralRecords')||'[]');
+   const fresh=rows.find(x=>(cur.supabaseId&&x.supabaseId===cur.supabaseId)||(!cur.supabaseId&&x.id===cur.id));
+   if(fresh)window.adminCurrentPatient=fresh;return window.adminCurrentPatient;
+ }
+ ['downloadPSSReport','downloadBioReport'].forEach(name=>{const original=window[name];if(typeof original!=='function')return;window[name]=async function(){try{await freshPatient()}catch(e){console.error('NUMED v56 PDF refresh',e);return alert('No se pudo actualizar el paciente desde Supabase. El PDF no se generó para evitar usar datos antiguos.')}return original.apply(this,arguments)}});
+ // History PDF also refreshes the selected patient before rendering.
+ const oldHist=window.downloadPDFFromHistory;if(typeof oldHist==='function')window.downloadPDFFromHistory=async function(index){try{await window.loadPatientsFromSupabase?.()}catch(e){return alert('No se pudo actualizar Supabase. Inténtalo nuevamente.')}return oldHist.call(this,index)};
+ window.NUMED_RUNTIME_VERSION='56';
+ document.addEventListener('DOMContentLoaded',()=>{setTimeout(injectExports,500);console.info('NUMED v56 · runtime definitivo activo')},{once:true});
 })();
 </script>
 
