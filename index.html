@@ -1857,6 +1857,10 @@ document.getElementById('lifestyle-results').style.display = 'none';
         alert('Por favor, ingrese una presión diastólica válida.');
         return;
     }
+    if (systolicPressure <= diastolicPressure) {
+        alert('Revisa la presión arterial: la sistólica debe ser mayor que la diastólica. Ejemplo: 119/65 mmHg.');
+        return;
+    }
     const heartRate = parseFloat(document.getElementById('heart-rate')?.value);
     if (isNaN(heartRate) || heartRate < 30 || heartRate > 220) {
         alert('Por favor, ingrese una frecuencia cardíaca válida (30-220 lpm).');
@@ -3608,7 +3612,7 @@ async function saveFullPatientToSupabase(){
  await sbJSON('cuestionario_edad_biologica',{method:'POST',body:JSON.stringify({paciente_id:pid,fuma_actual:String(q.fuma_actual??''),ex_fumador:String(q.ex_fumador??''),alcohol:String(q.alcohol??''),actividad:String(q.actividad??''),fuerza:String(q.fuerza_q??''),sueno:String(q.sueno??''),dieta:String(q.dieta??''),enfermedades_cronicas:String(q.cronicas??''),antecedentes_familiares:String(q.familia??''),puntuacion_estilo_vida:window.lifestyleDisplay?.score??0,clasificacion_estilo_vida:window.lifestyleDisplay?.label||'No evaluado'})});
  return pid;
 }
-function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:m.presion_sistolica,presionDiastolica:m.presion_diastolica,frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
+function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_diastolica:m.presion_sistolica),presionDiastolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_sistolica:m.presion_diastolica),frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
 async function loadPatientsFromSupabase(){try{const rows=await sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();return rows||[]}catch(e){console.error('Carga Supabase:',e);alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
 window.doctorLogin=async function(){const email=document.getElementById('doc-user').value.trim(),password=document.getElementById('doc-pass').value;const err=document.getElementById('doc-login-error');const button=document.querySelector('.doc-login-primary');try{if(button){button.disabled=true;button.textContent='Verificando...'}const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');sessionStorage.setItem('numedSbAccessToken',d.access_token);localStorage.setItem('numedSbAccessToken',d.access_token);if(d.refresh_token)localStorage.setItem('numedSbRefreshToken',d.refresh_token);localStorage.setItem('numedSbExpiresAt',String(Date.now()+(Number(d.expires_in||3600)*1000)));localStorage.setItem('numedDoctorSession','1');err.style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin();await loadPatientsFromSupabase();}catch(e){console.error(e);err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block';}finally{if(button){button.disabled=false;button.textContent='Ingresar al panel'}}};
 const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){const x=_openDoctorAdminV14.apply(this,arguments);if(sessionStorage.getItem('numedSbAccessToken'))setTimeout(loadPatientsFromSupabase,50);return x};
@@ -4566,7 +4570,31 @@ html.numed-photobooth-route #pb64-patient{display:block!important;position:relat
  new MutationObserver(addPB).observe(document.documentElement,{childList:true,subtree:true});addPB();
  window.NUMED_RUNTIME_VERSION='67';
 })();
-</script>\n</body>
+</script>\n
+<script id="v68-bp-normalization">
+(function(){
+  function normalizeBP(m){
+    if(!m) return m;
+    const s=Number(m.presionSistolica), d=Number(m.presionDiastolica);
+    if(Number.isFinite(s)&&Number.isFinite(d)&&s<d){
+      m.presionSistolica=d; m.presionDiastolica=s;
+    }
+    return m;
+  }
+  window.NUMED_normalizeBP=normalizeBP;
+  const oldDetail=window.detailTab;
+  if(typeof oldDetail==='function') window.detailTab=function(tab,btn){
+    if(window.adminCurrentPatient?.measurements) normalizeBP(window.adminCurrentPatient.measurements);
+    return oldDetail.call(this,tab,btn);
+  };
+  const oldBio=window.downloadBioReport;
+  if(typeof oldBio==='function') window.downloadBioReport=function(){
+    if(window.adminCurrentPatient?.measurements) normalizeBP(window.adminCurrentPatient.measurements);
+    return oldBio.apply(this,arguments);
+  };
+})();
+</script>
+</body>
 </html>
 
 <!-- NUMED v64: QR seguro Photo Booth del paciente -->
