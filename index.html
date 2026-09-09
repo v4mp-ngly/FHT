@@ -1086,6 +1086,48 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 }
 @media print{body{overflow:visible!important;padding:0!important}.admin-sidebar,.admin-topbar{position:static!important}}
 </style>
+
+<style id="numed-v75-detail-tabs-responsive">
+/* v75 - mejora visual de pestañas del expediente, sin alterar la logica */
+#doctor-admin .detail-tabs{
+ display:flex!important;align-items:center!important;gap:7px!important;
+ padding:8px!important;margin:0!important;background:rgba(255,255,255,.97)!important;
+ border:1px solid #e1e9f0!important;border-top:0!important;
+ border-radius:0 0 18px 18px!important;box-shadow:0 12px 30px rgba(17,55,91,.07)!important;
+ overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;
+ scrollbar-width:none!important;scroll-snap-type:x proximity;
+}
+#doctor-admin .detail-tabs::-webkit-scrollbar{display:none!important}
+#doctor-admin .detail-tabs button{
+ flex:1 0 auto!important;min-height:44px!important;padding:10px 15px!important;
+ border:1px solid transparent!important;border-radius:12px!important;
+ background:transparent!important;color:#456787!important;
+ font-size:12px!important;font-weight:750!important;line-height:1.15!important;
+ white-space:nowrap!important;cursor:pointer!important;transition:.2s ease!important;
+ scroll-snap-align:start;position:relative!important;
+}
+#doctor-admin .detail-tabs button:hover{background:#f5f8fa!important;color:#173f67!important}
+#doctor-admin .detail-tabs button.active{
+ color:#4f7f14!important;background:#f0f7df!important;border-color:#dcebb9!important;
+ box-shadow:inset 0 0 0 1px rgba(171,201,66,.08)!important;
+}
+#doctor-admin .detail-tabs button.active:after{
+ content:'';position:absolute;left:22%;right:22%;bottom:4px;height:3px;border-radius:999px;background:#78bd13;
+}
+@media (max-width:900px){
+ #doctor-admin .detail-tabs{gap:6px!important;padding:7px!important;border-radius:0 0 15px 15px!important}
+ #doctor-admin .detail-tabs button{flex:0 0 auto!important;min-height:42px!important;padding:9px 14px!important;font-size:11.5px!important}
+}
+@media (max-width:600px){
+ #doctor-admin .detail-tabs{
+  position:sticky!important;top:68px!important;z-index:45!important;width:100%!important;
+  gap:6px!important;padding:7px 8px!important;border-radius:0 0 14px 14px!important;
+  box-shadow:0 9px 22px rgba(17,55,91,.10)!important;overscroll-behavior-x:contain!important;
+ }
+ #doctor-admin .detail-tabs button{min-height:40px!important;padding:9px 13px!important;font-size:11px!important;border-radius:10px!important}
+ #doctor-admin .detail-tabs button.active:after{left:25%;right:25%;bottom:3px;height:2px}
+}
+</style>
 </head>
 <body>
 <div id="access-portal">
@@ -4717,6 +4759,8 @@ window.NUMED_FHT_CARDIO_V74 = {
   }
 };
 </script>
+</body>
+</html>
 
 <!-- NUMED v64: QR seguro Photo Booth del paciente -->
 <style id="numed-v64-patient-photobooth-style">
@@ -4748,59 +4792,3 @@ window.pb64Download=async kind=>{try{$('pb64-status').textContent='Creando tu fi
 function addDoctorButton(){const tabs=document.querySelector('.detail-tabs');if(!tabs||document.getElementById('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=window.pb64OpenQR;tabs.appendChild(b)}new MutationObserver(addDoctorButton).observe(document.documentElement,{childList:true,subtree:true});addDoctorButton();
 window.addEventListener('DOMContentLoaded',initPatient);if(document.readyState!=='loading')initPatient();window.NUMED_RUNTIME_VERSION='64';})();
 </script>
-<style id="v75-tabs-clean">
-#doctor-admin .detail-tabs{gap:10px!important;padding:8px 12px!important;border-radius:18px!important;border:1px solid #e2eaf2!important;overflow-x:auto!important;scrollbar-width:thin;scroll-snap-type:x proximity}
-#doctor-admin .detail-tabs button{flex:0 0 auto;padding:14px 15px!important;border-radius:11px!important;border-bottom:0!important;scroll-snap-align:start}
-#doctor-admin .detail-tabs button.active{background:#f1f8e6!important;color:#34750f!important;box-shadow:inset 0 -3px 0 #78bd13!important}
-#pb64-doctor-btn{display:none!important}
-@media(max-width:700px){#doctor-admin .detail-tabs{padding:6px 8px!important;gap:6px!important}#doctor-admin .detail-tabs button{padding:12px 13px!important;font-size:14px!important}}
-</style>
-<script id="v75-tabs-clean-js">
-(function(){
- function cleanTabs(){
-  const tabs=document.querySelector('#doctor-admin .detail-tabs'); if(!tabs)return;
-  // El boton tecnico pb64 se conserva oculto para evitar que el observer legado lo recree en bucle.
-  const legacyQR=document.getElementById('pb64-doctor-btn'); if(legacyQR){legacyQR.style.display='none';legacyQR.setAttribute('aria-hidden','true');legacyQR.tabIndex=-1;}
-  const pb=[...tabs.querySelectorAll('button')].find(b=>/^Photo Booth$/i.test((b.textContent||'').trim()));
-  if(pb){pb.textContent='Photo Booth'; pb.onclick=function(){window.detailTab?.('photobooth',this)}}
-  const consent=document.getElementById('cons65-tab'); if(consent&&pb&&consent.nextElementSibling!==pb)tabs.insertBefore(consent,pb);
- }
- const oldPB=window.numedRenderCloudPhotoBooth||window.renderCloudTab;
- function addQRInside(){
-  const c=document.getElementById('detail-content'); if(!c||document.getElementById('v75-pb-qr-actions'))return;
-  const d=document.createElement('div'); d.id='v75-pb-qr-actions'; d.className='detail-card'; d.style.cssText='margin-top:18px;padding:20px;border-radius:16px';
-  d.innerHTML='<small style="display:block;margin-bottom:6px">ACCESO DEL PACIENTE</small><strong style="display:block;margin-bottom:8px">QR Photo Booth</strong><p style="margin:0 0 14px;color:#688098">Genera el acceso individual del paciente después de completar su evaluación.</p><button class="admin-action" type="button">Generar / mostrar QR Photo Booth</button>';
-  d.querySelector('button').onclick=()=>window.pb64OpenQR?.(); c.appendChild(d);
- }
- const prior=window.detailTab; window.detailTab=function(tab,btn){const r=prior?.apply(this,arguments); setTimeout(()=>{cleanTabs();if(tab==='photobooth')addQRInside()},0);return r};
- const mo=new MutationObserver(cleanTabs); mo.observe(document.documentElement,{childList:true,subtree:true}); cleanTabs();
-})();
-</script>
-
-<style id="v76-tabs-final">
-#doctor-admin .detail-tabs #pb64-doctor-btn{display:none!important}
-#doctor-admin .detail-tabs{display:flex!important;align-items:center!important}
-#v75-pb-qr-actions{border:1px solid #dfe9ef;background:linear-gradient(145deg,#fff,#f7fbfd);box-shadow:0 10px 28px rgba(6,47,87,.06)}
-</style>
-<script id="v76-tabs-final-js">
-(function(){
- function finalizeTabs(){
-  const tabs=document.querySelector('#doctor-admin .detail-tabs'); if(!tabs)return;
-  const legacy=document.getElementById('pb64-doctor-btn');
-  if(legacy){legacy.style.setProperty('display','none','important');legacy.setAttribute('aria-hidden','true');legacy.tabIndex=-1;}
-  const wanted=['Datos','PSS-10','Cuestionario','Mediciones','Resultado','Consentimiento','Photo Booth'];
-  [...tabs.querySelectorAll('button')].forEach(b=>{
-   const t=(b.textContent||'').trim();
-   if(/^QR\s*Photo Booth$/i.test(t)){b.style.setProperty('display','none','important');b.setAttribute('aria-hidden','true');b.tabIndex=-1;}
-  });
-  wanted.forEach(name=>{const b=[...tabs.querySelectorAll('button')].find(x=>(x.textContent||'').trim()===name);if(b&&b.id!=='pb64-doctor-btn')tabs.appendChild(b)});
- }
- const prior=window.detailTab;
- window.detailTab=function(tab,btn){const out=prior?.apply(this,arguments);setTimeout(()=>{finalizeTabs();if(tab==='photobooth'){const c=document.getElementById('detail-content');if(c&&!document.getElementById('v75-pb-qr-actions')){const d=document.createElement('div');d.id='v75-pb-qr-actions';d.className='detail-card';d.style.cssText='margin-top:18px;padding:20px;border-radius:16px';d.innerHTML='<small style="display:block;margin-bottom:6px">ACCESO DEL PACIENTE</small><strong style="display:block;margin-bottom:8px">QR Photo Booth</strong><p style="margin:0 0 14px;color:#688098">Genera el acceso individual del paciente después de completar su evaluación.</p><button class="admin-action" type="button">Generar / mostrar QR Photo Booth</button>';d.querySelector('button').onclick=()=>window.pb64OpenQR?.();c.appendChild(d)}}},20);return out};
- new MutationObserver(finalizeTabs).observe(document.documentElement,{childList:true,subtree:true});
- finalizeTabs();
-})();
-</script>
-
-\n<style id="v77-boot-fix-css">\n/* v77: la portada antigua nunca debe bloquear el portal ni los modos QR */\nbody:not(.numed-consent-mode):not(.numed-photobooth-mode) #welcome-screen{display:none!important;pointer-events:none!important}\n</style>\n<script id="v77-boot-fix-js">\n(function(){\n  function showOnly(id,display){const e=document.getElementById(id);if(e)e.style.setProperty('display',display||'block','important')}\n  function hide(id){const e=document.getElementById(id);if(e)e.style.setProperty('display','none','important')}\n  function boot(){\n    const mode=(new URLSearchParams(location.search).get('mode')||'').toLowerCase();\n    // Estos modos tienen su propio arranque y no deben ser intervenidos aquí.\n    if(mode==='consent'||mode==='photobooth') return;\n    hide('welcome-screen');\n    window.startEvaluation=function(){ if(typeof window.openPatientQuestionnaires==='function') window.openPatientQuestionnaires(); };\n    if(mode==='patient'){\n      hide('access-portal');\n      if(typeof window.openPatientQuestionnaires==='function') window.openPatientQuestionnaires();\n      else showOnly('integral-intake');\n      return;\n    }\n    // Entrada normal /FHT/: mostrar portal de acceso inmediatamente.\n    // Si existe una sesión médica válida, bootV55 puede sustituirlo luego por el dashboard.\n    const admin=document.getElementById('doctor-admin');\n    const login=document.getElementById('doctor-login');\n    const adminVisible=admin&&getComputedStyle(admin).display!=='none';\n    const loginVisible=login&&getComputedStyle(login).display!=='none';\n    if(!adminVisible&&!loginVisible){\n      ['integral-intake','clinical-page','patient-complete'].forEach(hide);\n      showOnly('access-portal','block');\n    }\n  }\n  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();\n  // Failsafe: evita quedarse atrapado en la portada por errores de scripts anteriores.\n  setTimeout(()=>{const w=document.getElementById('welcome-screen');if(w)w.style.setProperty('display','none','important')},700);\n  window.NUMED_RUNTIME_VERSION='77';\n})();\n</script>\n</body>
-</html>
