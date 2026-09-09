@@ -4622,6 +4622,42 @@ html.numed-photobooth-route #pb64-patient{display:block!important;position:relat
  const old=window.saveQuestionnaire;window.saveQuestionnaire=async function(){const form=document.getElementById('questionnaire-form');if(form){sleepCalc();const bed=form.querySelector('[name="hora_acostarse"]')?.value,wake=form.querySelector('[name="hora_levantarse"]')?.value,rest=form.querySelector('input[name="sueno_descanso"]:checked');if(!bed||!wake||!rest){alert('Completa el horario de sueño y selecciona si te sientes descansado(a).');return}const alc=form.querySelector('input[name="alcohol"]:checked');window._v70QuestionnaireExtra={alcohol_frecuencia:alc?.dataset.label||'',hora_acostarse:bed,hora_levantarse:wake,horas_sueno:Number(form.querySelector('[name="horas_sueno"]')?.value||0),sueno_descanso:rest.value};}return old.apply(this,arguments)};
 })();
 </script>\n
+
+<script id="numed-v71-fht-references">
+(function(){
+'use strict';
+const n=v=>{const x=Number(v);return Number.isFinite(x)?x:null};
+function sex(v){v=String(v||'').toLowerCase();return v.includes('fem')||v.includes('muj')?'femenino':'masculino'}
+window.numedFHT={
+  bloodPressure(sys,dia){sys=n(sys);dia=n(dia);if(sys==null||dia==null)return{key:'sin_dato',label:'SIN DATO'};
+    if(sys>=180||dia>=110)return{key:'atencion',label:'HIPERTENSIÓN GRADO 3'};
+    if(sys>=160||dia>=100)return{key:'atencion',label:'HIPERTENSIÓN GRADO 2'};
+    if(sys>=140||dia>=90)return{key:'atencion',label:(sys>=140&&dia<90)?'HIPERTENSIÓN SISTÓLICA AISLADA':'HIPERTENSIÓN GRADO 1'};
+    if(sys>=130||dia>=85)return{key:'observacion',label:'NORMAL ALTA'};
+    if(sys>=120||dia>=80)return{key:'favorable',label:'NORMAL'};
+    return{key:'favorable',label:'ÓPTIMA'};
+  },
+  heartRate(age,gender,hr){age=n(age);hr=n(hr);if(age==null||hr==null)return{key:'sin_dato',label:'SIN DATO'};const g=sex(gender);let lim;
+    if(g==='femenino') lim=age<30?96:age<40?98:age<50?100:age<60?104:108;
+    else lim=age<40?86:age<50?90:age<60?90:94;
+    return hr>=lim?{key:'atencion',label:'DEFICIENTE',limit:lim}:{key:'favorable',label:'NO DEFICIENTE',limit:lim};
+  },
+  bmi(v){v=n(v);if(v==null)return{key:'sin_dato',label:'SIN DATO'};if(v<=18.5)return{key:'observacion',label:'INFRAPESO'};if(v<=24.9)return{key:'favorable',label:'NORMAL'};if(v<=29.9)return{key:'observacion',label:'SOBREPESO'};if(v<=34.9)return{key:'atencion',label:'OBESIDAD'};if(v<=39.9)return{key:'atencion',label:'OBESIDAD TIPO II'};return{key:'atencion',label:'OBESIDAD TIPO III'}},
+  abdomen(gender,v){v=n(v);if(v==null)return{key:'sin_dato',label:'SIN DATO'};const g=sex(gender);if(g==='femenino'){if(v<=80.9)return{key:'favorable',label:'NORMAL'};if(v<88)return{key:'observacion',label:'RIESGO ELEVADO'};return{key:'atencion',label:'RIESGO MUY ELEVADO'}}if(v<=94.9)return{key:'favorable',label:'NORMAL'};if(v<102)return{key:'observacion',label:'RIESGO ELEVADO'};return{key:'atencion',label:'RIESGO MUY ELEVADO'}},
+  handgrip(age,gender,v){age=n(age);v=n(v);if(age==null||v==null)return{key:'sin_dato',label:'SIN DATO'};const g=sex(gender);const men=[[11,12,23],[13,19,32],[15,28,45],[17,32,53],[19,35,56],[24,36,57],[29,37,58],[34,36,56],[39,35,56],[44,35,56],[49,34,55],[54,32,51],[59,30,49],[64,30,49],[69,28,44],[999,21,36]];const women=[[11,11,22],[13,14,25],[15,15,28],[17,17,30],[19,19,32],[24,21,36],[29,25,42],[34,21,36],[39,20,35],[44,18,33],[49,18,33],[54,18,33],[59,17,32],[64,17,32],[69,15,28],[999,14,25]];const row=(g==='femenino'?women:men).find(r=>age<=r[0]);const weak=row[1],strong=row[2];if(v<=weak)return{key:'atencion',label:'DÉBIL',weak,strong};if(v>=strong)return{key:'favorable',label:'FUERTE',weak,strong};return{key:'favorable',label:'NORMAL',weak,strong}}
+};
+function worst(a,b){const rank={sin_dato:0,favorable:1,observacion:2,atencion:3};return rank[a.key]>=rank[b.key]?a:b}
+window.numedAreasFHT=function(r,m){const F=window.numedFHT,g=r.gender,age=r.age,pa=F.bloodPressure(m.presionSistolica,m.presionDiastolica),fc=F.heartRate(age,g,m.frecuenciaCardiaca),cv=worst(pa,fc),imc=F.bmi(m.imc),abd=F.abdomen(g,m.abdomen),met=worst(imc,abd),hg=F.handgrip(age,g,m.fuerza),ps=Number(r.pss?.score)||0;
+ const cardio={key:cv.key==='sin_dato'?'favorable':cv.key,level:cv.key==='atencion'?'ATENCIÓN':cv.key==='observacion'?'OBSERVACIÓN':'FAVORABLE',detail:`${m.presionSistolica??'—'}/${m.presionDiastolica??'—'} mmHg · ${m.frecuenciaCardiaca??'—'} lpm · ${pa.label}${fc.key==='atencion'?' · FC DEFICIENTE':''}`};
+ const metabolic={key:met.key==='sin_dato'?'favorable':met.key,level:met.key==='atencion'?'ATENCIÓN':met.key==='observacion'?'OBSERVACIÓN':'FAVORABLE',detail:`IMC ${m.imc??'—'} · Perímetro ${m.abdomen??'—'} cm · ${imc.label} / ${abd.label}`};
+ const functional={key:hg.key==='atencion'?'atencion':'favorable',level:hg.key==='atencion'?'ATENCIÓN':'FAVORABLE',detail:`Fuerza ${m.fuerza??'—'} kg · ${hg.label} · Flexibilidad ${m.flexibilidad??'—'} cm`};
+ const psycho=ps<=13?{key:'favorable',level:'FAVORABLE',detail:`PSS-10 ${ps}/40`}:ps<=26?{key:'observacion',level:'OBSERVACIÓN',detail:`PSS-10 ${ps}/40`}:{key:'atencion',level:'ATENCIÓN',detail:`PSS-10 ${ps}/40`};return{cardio,metabolic,functional,psycho};
+};
+// Sustituye la función global de áreas usada por Resultado/PDF cuando sea reasignable.
+try{areas=window.numedAreasFHT}catch(e){window.areas=window.numedAreasFHT}
+window.NUMED_RUNTIME_VERSION='71-FHT';
+})();
+</script>
 </body>
 </html>
 
