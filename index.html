@@ -4717,6 +4717,34 @@ window.NUMED_FHT_CARDIO_V74 = {
   }
 };
 </script>
+
+<style id="v75-tabs-clean">
+#doctor-admin .detail-tabs{gap:10px!important;padding:8px 12px!important;border-radius:18px!important;border:1px solid #e2eaf2!important;overflow-x:auto!important;scrollbar-width:thin;scroll-snap-type:x proximity}
+#doctor-admin .detail-tabs button{flex:0 0 auto;padding:14px 15px!important;border-radius:11px!important;border-bottom:0!important;scroll-snap-align:start}
+#doctor-admin .detail-tabs button.active{background:#f1f8e6!important;color:#34750f!important;box-shadow:inset 0 -3px 0 #78bd13!important}
+#pb64-doctor-btn{display:none!important}
+@media(max-width:700px){#doctor-admin .detail-tabs{padding:6px 8px!important;gap:6px!important}#doctor-admin .detail-tabs button{padding:12px 13px!important;font-size:14px!important}}
+</style>
+<script id="v75-tabs-clean-js">
+(function(){
+ function cleanTabs(){
+  const tabs=document.querySelector('#doctor-admin .detail-tabs'); if(!tabs)return;
+  const qr=[...tabs.querySelectorAll('button')].filter(b=>/^QR\s*Photo Booth$/i.test((b.textContent||'').trim())); qr.forEach(b=>b.remove());
+  const pb=[...tabs.querySelectorAll('button')].find(b=>/^Photo Booth$/i.test((b.textContent||'').trim()));
+  if(pb){pb.textContent='Photo Booth'; pb.onclick=function(){window.detailTab?.('photobooth',this)}}
+  const consent=document.getElementById('cons65-tab'); if(consent&&pb&&consent.nextElementSibling!==pb)tabs.insertBefore(consent,pb);
+ }
+ const oldPB=window.numedRenderCloudPhotoBooth||window.renderCloudTab;
+ function addQRInside(){
+  const c=document.getElementById('detail-content'); if(!c||document.getElementById('v75-pb-qr-actions'))return;
+  const d=document.createElement('div'); d.id='v75-pb-qr-actions'; d.className='detail-card'; d.style.cssText='margin-top:18px;padding:20px;border-radius:16px';
+  d.innerHTML='<small style="display:block;margin-bottom:6px">ACCESO DEL PACIENTE</small><strong style="display:block;margin-bottom:8px">QR Photo Booth</strong><p style="margin:0 0 14px;color:#688098">Genera el acceso individual del paciente después de completar su evaluación.</p><button class="admin-action" type="button">Generar / mostrar QR Photo Booth</button>';
+  d.querySelector('button').onclick=()=>window.pb64OpenQR?.(); c.appendChild(d);
+ }
+ const prior=window.detailTab; window.detailTab=function(tab,btn){const r=prior?.apply(this,arguments); setTimeout(()=>{cleanTabs();if(tab==='photobooth')addQRInside()},0);return r};
+ const mo=new MutationObserver(cleanTabs); mo.observe(document.documentElement,{childList:true,subtree:true}); cleanTabs();
+})();
+</script>
 </body>
 </html>
 
