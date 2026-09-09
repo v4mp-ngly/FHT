@@ -4021,7 +4021,7 @@ button:disabled{cursor:not-allowed!important;opacity:.55!important;transform:non
   const abdHigh=abd!=null&&(gender==='femenino'?abd>88:abd>102),abdWatch=abd!=null&&(gender==='femenino'?abd>=82:abd>=95);
   if((imc!=null&&(imc>=30||imc<16))||abdHigh)metabolic={key:'atencion',level:'REQUIERE ATENCIÓN',tag:'RIESGO METABÓLICO',detail:`IMC ${imc??'—'} · Perímetro ${abd??'—'} cm`};else if((imc!=null&&(imc>=25||imc<18.5))||abdWatch)metabolic={key:'observacion',level:'EN OBSERVACIÓN',tag:'VIGILAR INDICADORES',detail:`IMC ${imc??'—'} · Perímetro ${abd??'—'} cm`};
   let cardio={key:'favorable',level:'FAVORABLE',tag:'SIGNOS VITALES FAVORABLES',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};
-  if((sys!=null&&sys>=140)||(dia!=null&&dia>=90))cardio={key:'atencion',level:'REQUIERE ATENCIÓN',tag:'PRESIÓN ELEVADA',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};else if((sys!=null&&sys>=120)||(dia!=null&&dia>=80)||(hr!=null&&(hr<50||hr>100)))cardio={key:'observacion',level:'EN OBSERVACIÓN',tag:'DAR SEGUIMIENTO',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};
+  if((sys!=null&&sys>=140)||(dia!=null&&dia>=90))cardio={key:'atencion',level:'REQUIERE ATENCIÓN',tag:'PRESIÓN ELEVADA',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};else if((sys!=null&&sys>=130)||(dia!=null&&dia>=85)||(hr!=null&&(hr<50||hr>100)))cardio={key:'observacion',level:'EN OBSERVACIÓN',tag:'DAR SEGUIMIENTO',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};
   let functional={key:'favorable',level:'FAVORABLE',tag:'CAPACIDAD ADECUADA',detail:`Fuerza ${m.fuerza??'—'} kg · Flexibilidad ${flex??'—'} cm`};
   if(strength.includes('bajo')||strength.includes('malo'))functional={key:'atencion',level:'REQUIERE ATENCIÓN',tag:'FUERZA REDUCIDA',detail:`Fuerza ${m.fuerza??'—'} kg · Flexibilidad ${flex??'—'} cm`};else if(Number(r.questionnaire?.actividad)===0||strength.includes('debajo'))functional={key:'observacion',level:'EN OBSERVACIÓN',tag:'REFORZAR CAPACIDAD',detail:`Fuerza ${m.fuerza??'—'} kg · Flexibilidad ${flex??'—'} cm`};
   const psycho=ps<=13?{key:'favorable',level:'FAVORABLE',tag:'ESTRÉS BAJO',detail:`PSS-10 ${ps}/40`}:ps<=26?{key:'observacion',level:'EN OBSERVACIÓN',tag:'ESTRÉS MODERADO',detail:`PSS-10 ${ps}/40`}:{key:'atencion',level:'REQUIERE ATENCIÓN',tag:'ESTRÉS ALTO',detail:`PSS-10 ${ps}/40`};
@@ -4701,6 +4701,21 @@ window.detailTab=function(tab,btn){const out=old&&old.apply(this,arguments);if(t
   // La tarjeta de Resultado y el PDF usan la misma funcion areas(), que ahora delega a numedAreasFHT.
   // 120-129 sistolica = NORMAL/FAVORABLE; observacion comienza en 130 o diastolica 85.
 })();
+</script>
+
+<script>
+/* NUMED v74 - Regla cardiovascular FHT unificada
+   PA: <130/<85 favorable; 130-139 o 85-89 observacion; >=140 o >=90 atencion.
+   Esta capa corrige cualquier regla heredada 120/80 del resumen visual. */
+window.NUMED_FHT_CARDIO_V74 = {
+  classifyBP: function(sys,dia){
+    sys=Number(sys); dia=Number(dia);
+    if(!Number.isFinite(sys)&&!Number.isFinite(dia)) return 'favorable';
+    if((Number.isFinite(sys)&&sys>=140)||(Number.isFinite(dia)&&dia>=90)) return 'atencion';
+    if((Number.isFinite(sys)&&sys>=130)||(Number.isFinite(dia)&&dia>=85)) return 'observacion';
+    return 'favorable';
+  }
+};
 </script>
 </body>
 </html>
