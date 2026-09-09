@@ -4718,36 +4718,6 @@ window.NUMED_FHT_CARDIO_V74 = {
 };
 </script>
 
-<style id="v75-tabs-clean">
-#doctor-admin .detail-tabs{gap:10px!important;padding:8px 12px!important;border-radius:18px!important;border:1px solid #e2eaf2!important;overflow-x:auto!important;scrollbar-width:thin;scroll-snap-type:x proximity}
-#doctor-admin .detail-tabs button{flex:0 0 auto;padding:14px 15px!important;border-radius:11px!important;border-bottom:0!important;scroll-snap-align:start}
-#doctor-admin .detail-tabs button.active{background:#f1f8e6!important;color:#34750f!important;box-shadow:inset 0 -3px 0 #78bd13!important}
-#pb64-doctor-btn{display:none!important}
-@media(max-width:700px){#doctor-admin .detail-tabs{padding:6px 8px!important;gap:6px!important}#doctor-admin .detail-tabs button{padding:12px 13px!important;font-size:14px!important}}
-</style>
-<script id="v75-tabs-clean-js">
-(function(){
- function cleanTabs(){
-  const tabs=document.querySelector('#doctor-admin .detail-tabs'); if(!tabs)return;
-  const qr=[...tabs.querySelectorAll('button')].filter(b=>/^QR\s*Photo Booth$/i.test((b.textContent||'').trim())); qr.forEach(b=>b.remove());
-  const pb=[...tabs.querySelectorAll('button')].find(b=>/^Photo Booth$/i.test((b.textContent||'').trim()));
-  if(pb){pb.textContent='Photo Booth'; pb.onclick=function(){window.detailTab?.('photobooth',this)}}
-  const consent=document.getElementById('cons65-tab'); if(consent&&pb&&consent.nextElementSibling!==pb)tabs.insertBefore(consent,pb);
- }
- const oldPB=window.numedRenderCloudPhotoBooth||window.renderCloudTab;
- function addQRInside(){
-  const c=document.getElementById('detail-content'); if(!c||document.getElementById('v75-pb-qr-actions'))return;
-  const d=document.createElement('div'); d.id='v75-pb-qr-actions'; d.className='detail-card'; d.style.cssText='margin-top:18px;padding:20px;border-radius:16px';
-  d.innerHTML='<small style="display:block;margin-bottom:6px">ACCESO DEL PACIENTE</small><strong style="display:block;margin-bottom:8px">QR Photo Booth</strong><p style="margin:0 0 14px;color:#688098">Genera el acceso individual del paciente después de completar su evaluación.</p><button class="admin-action" type="button">Generar / mostrar QR Photo Booth</button>';
-  d.querySelector('button').onclick=()=>window.pb64OpenQR?.(); c.appendChild(d);
- }
- const prior=window.detailTab; window.detailTab=function(tab,btn){const r=prior?.apply(this,arguments); setTimeout(()=>{cleanTabs();if(tab==='photobooth')addQRInside()},0);return r};
- const mo=new MutationObserver(cleanTabs); mo.observe(document.documentElement,{childList:true,subtree:true}); cleanTabs();
-})();
-</script>
-</body>
-</html>
-
 <!-- NUMED v64: QR seguro Photo Booth del paciente -->
 <style id="numed-v64-patient-photobooth-style">
 #pb64-qr-modal{position:fixed;inset:0;z-index:1000002;background:rgba(3,25,47,.82);backdrop-filter:blur(12px);display:none;align-items:center;justify-content:center;padding:18px}.pb64-shell{width:min(480px,100%);max-height:94dvh;overflow:auto;background:#fff;border-radius:28px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.35);text-align:center}.pb64-logo{max-width:150px;max-height:54px;object-fit:contain;margin:0 auto 12px}.pb64-shell h2{margin:4px 0 6px;color:#062f57}.pb64-shell p{color:#6b7f8e;margin:0 0 16px}.pb64-qr{width:250px;height:250px;margin:14px auto;padding:12px;border:1px solid #dce7ec;border-radius:22px;background:#fff;display:grid;place-items:center}.pb64-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.pb64-actions button{border:0;border-radius:14px;padding:13px 16px;font-weight:800;cursor:pointer;background:#062f57;color:#fff}.pb64-actions .green{background:#8bb62f}.pb64-actions .soft{background:#eaf0f3;color:#163f62}
@@ -4778,3 +4748,59 @@ window.pb64Download=async kind=>{try{$('pb64-status').textContent='Creando tu fi
 function addDoctorButton(){const tabs=document.querySelector('.detail-tabs');if(!tabs||document.getElementById('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=window.pb64OpenQR;tabs.appendChild(b)}new MutationObserver(addDoctorButton).observe(document.documentElement,{childList:true,subtree:true});addDoctorButton();
 window.addEventListener('DOMContentLoaded',initPatient);if(document.readyState!=='loading')initPatient();window.NUMED_RUNTIME_VERSION='64';})();
 </script>
+<style id="v75-tabs-clean">
+#doctor-admin .detail-tabs{gap:10px!important;padding:8px 12px!important;border-radius:18px!important;border:1px solid #e2eaf2!important;overflow-x:auto!important;scrollbar-width:thin;scroll-snap-type:x proximity}
+#doctor-admin .detail-tabs button{flex:0 0 auto;padding:14px 15px!important;border-radius:11px!important;border-bottom:0!important;scroll-snap-align:start}
+#doctor-admin .detail-tabs button.active{background:#f1f8e6!important;color:#34750f!important;box-shadow:inset 0 -3px 0 #78bd13!important}
+#pb64-doctor-btn{display:none!important}
+@media(max-width:700px){#doctor-admin .detail-tabs{padding:6px 8px!important;gap:6px!important}#doctor-admin .detail-tabs button{padding:12px 13px!important;font-size:14px!important}}
+</style>
+<script id="v75-tabs-clean-js">
+(function(){
+ function cleanTabs(){
+  const tabs=document.querySelector('#doctor-admin .detail-tabs'); if(!tabs)return;
+  // El boton tecnico pb64 se conserva oculto para evitar que el observer legado lo recree en bucle.
+  const legacyQR=document.getElementById('pb64-doctor-btn'); if(legacyQR){legacyQR.style.display='none';legacyQR.setAttribute('aria-hidden','true');legacyQR.tabIndex=-1;}
+  const pb=[...tabs.querySelectorAll('button')].find(b=>/^Photo Booth$/i.test((b.textContent||'').trim()));
+  if(pb){pb.textContent='Photo Booth'; pb.onclick=function(){window.detailTab?.('photobooth',this)}}
+  const consent=document.getElementById('cons65-tab'); if(consent&&pb&&consent.nextElementSibling!==pb)tabs.insertBefore(consent,pb);
+ }
+ const oldPB=window.numedRenderCloudPhotoBooth||window.renderCloudTab;
+ function addQRInside(){
+  const c=document.getElementById('detail-content'); if(!c||document.getElementById('v75-pb-qr-actions'))return;
+  const d=document.createElement('div'); d.id='v75-pb-qr-actions'; d.className='detail-card'; d.style.cssText='margin-top:18px;padding:20px;border-radius:16px';
+  d.innerHTML='<small style="display:block;margin-bottom:6px">ACCESO DEL PACIENTE</small><strong style="display:block;margin-bottom:8px">QR Photo Booth</strong><p style="margin:0 0 14px;color:#688098">Genera el acceso individual del paciente después de completar su evaluación.</p><button class="admin-action" type="button">Generar / mostrar QR Photo Booth</button>';
+  d.querySelector('button').onclick=()=>window.pb64OpenQR?.(); c.appendChild(d);
+ }
+ const prior=window.detailTab; window.detailTab=function(tab,btn){const r=prior?.apply(this,arguments); setTimeout(()=>{cleanTabs();if(tab==='photobooth')addQRInside()},0);return r};
+ const mo=new MutationObserver(cleanTabs); mo.observe(document.documentElement,{childList:true,subtree:true}); cleanTabs();
+})();
+</script>
+
+<style id="v76-tabs-final">
+#doctor-admin .detail-tabs #pb64-doctor-btn{display:none!important}
+#doctor-admin .detail-tabs{display:flex!important;align-items:center!important}
+#v75-pb-qr-actions{border:1px solid #dfe9ef;background:linear-gradient(145deg,#fff,#f7fbfd);box-shadow:0 10px 28px rgba(6,47,87,.06)}
+</style>
+<script id="v76-tabs-final-js">
+(function(){
+ function finalizeTabs(){
+  const tabs=document.querySelector('#doctor-admin .detail-tabs'); if(!tabs)return;
+  const legacy=document.getElementById('pb64-doctor-btn');
+  if(legacy){legacy.style.setProperty('display','none','important');legacy.setAttribute('aria-hidden','true');legacy.tabIndex=-1;}
+  const wanted=['Datos','PSS-10','Cuestionario','Mediciones','Resultado','Consentimiento','Photo Booth'];
+  [...tabs.querySelectorAll('button')].forEach(b=>{
+   const t=(b.textContent||'').trim();
+   if(/^QR\s*Photo Booth$/i.test(t)){b.style.setProperty('display','none','important');b.setAttribute('aria-hidden','true');b.tabIndex=-1;}
+  });
+  wanted.forEach(name=>{const b=[...tabs.querySelectorAll('button')].find(x=>(x.textContent||'').trim()===name);if(b&&b.id!=='pb64-doctor-btn')tabs.appendChild(b)});
+ }
+ const prior=window.detailTab;
+ window.detailTab=function(tab,btn){const out=prior?.apply(this,arguments);setTimeout(()=>{finalizeTabs();if(tab==='photobooth'){const c=document.getElementById('detail-content');if(c&&!document.getElementById('v75-pb-qr-actions')){const d=document.createElement('div');d.id='v75-pb-qr-actions';d.className='detail-card';d.style.cssText='margin-top:18px;padding:20px;border-radius:16px';d.innerHTML='<small style="display:block;margin-bottom:6px">ACCESO DEL PACIENTE</small><strong style="display:block;margin-bottom:8px">QR Photo Booth</strong><p style="margin:0 0 14px;color:#688098">Genera el acceso individual del paciente después de completar su evaluación.</p><button class="admin-action" type="button">Generar / mostrar QR Photo Booth</button>';d.querySelector('button').onclick=()=>window.pb64OpenQR?.();c.appendChild(d)}}},20);return out};
+ new MutationObserver(finalizeTabs).observe(document.documentElement,{childList:true,subtree:true});
+ finalizeTabs();
+})();
+</script>
+
+</body>
+</html>
