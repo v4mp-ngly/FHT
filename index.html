@@ -4549,7 +4549,24 @@ window.addEventListener('pageshow',()=>{consentModeClean();polishShare()});
 window.NUMED_RUNTIME_VERSION='66';
 })();
 </script>
-</body>
+\n<style id="numed-v67-hard-mode-fix">
+html.numed-consent-route,html.numed-consent-route body{background:#f3f7fa!important;min-height:100%!important}
+html.numed-consent-route body> *:not(#cons65-page):not(script):not(style){display:none!important}
+html.numed-consent-route #cons65-page{display:block!important;position:relative!important;z-index:2147483000!important;min-height:100dvh!important}
+html.numed-photobooth-route body> *:not(#pb64-patient):not(#pb64-qr-modal):not(script):not(style){display:none!important}
+html.numed-photobooth-route #pb64-patient{display:block!important;position:relative!important;z-index:2147483000!important;min-height:100dvh!important}
+#v67-pb-share-card{display:flex!important}
+</style>
+<script id="numed-v67-hard-mode-fix">
+(function(){'use strict';
+ const mode=new URLSearchParams(location.search).get('mode');
+ if(mode==='consent'){document.documentElement.classList.add('numed-consent-route');document.body?.classList.add('numed-consent-mode');setTimeout(()=>{document.querySelectorAll('body > *').forEach(el=>{if(el.id!=='cons65-page'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.setProperty('display','none','important')});const p=document.getElementById('cons65-page');if(p)p.style.setProperty('display','block','important')},0)}
+ if(mode==='photobooth'){document.documentElement.classList.add('numed-photobooth-route');setTimeout(()=>{document.querySelectorAll('body > *').forEach(el=>{if(el.id!=='pb64-patient'&&el.id!=='pb64-qr-modal'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.setProperty('display','none','important')});const p=document.getElementById('pb64-patient');if(p)p.style.setProperty('display','block','important')},0)}
+ function addPB(){const share=document.getElementById('admin-share');if(share&&!document.getElementById('v67-pb-share-card')){const d=document.createElement('div');d.id='v67-pb-share-card';d.className='share-card';d.innerHTML='<div><h3>QR 2 · Photo Booth</h3><p>Disponible después de calcular la Edad Biológica del paciente.</p><div class="share-actions"><button class="admin-action" type="button">Mostrar QR Photo Booth</button></div></div><div style="font-size:42px">📸</div>';d.querySelector('button').onclick=()=>window.pb64OpenQR?.();const c=document.getElementById('cons65-share-card');share.insertBefore(d,c||null)} }
+ new MutationObserver(addPB).observe(document.documentElement,{childList:true,subtree:true});addPB();
+ window.NUMED_RUNTIME_VERSION='67';
+})();
+</script>\n</body>
 </html>
 
 <!-- NUMED v64: QR seguro Photo Booth del paciente -->
@@ -4578,7 +4595,7 @@ window.pb64Retake=()=>{stream?.getTracks().forEach(t=>t.stop());stream=null;phot
 async function renderCard(kind){if(!photoData||!patientData)throw new Error('Primero toma o sube una foto.');const story=kind==='story',c=document.createElement('canvas');c.width=1080;c.height=story?1920:1080;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,c.width,c.height);g.addColorStop(0,'#062f57');g.addColorStop(.65,'#0c446d');g.addColorStop(1,'#25677a');x.fillStyle=g;x.fillRect(0,0,c.width,c.height);const im=await new Promise((ok,no)=>{const z=new Image();z.onload=()=>ok(z);z.onerror=no;z.src=photoData});const pad=story?90:65,top=story?280:160,pw=c.width-pad*2,ph=story?900:540,scale=Math.max(pw/im.width,ph/im.height),sw=pw/scale,sh=ph/scale,sx=(im.width-sw)/2,sy=(im.height-sh)/2;x.save();x.beginPath();x.roundRect(pad,top,pw,ph,38);x.clip();x.drawImage(im,sx,sy,sw,sh,pad,top,pw,ph);x.restore();x.fillStyle='#fff';x.font='800 52px Arial';x.fillText('NUMED',pad,story?120:85);x.font='800 '+(story?62:48)+'px Arial';x.fillText('Mi resultado de Edad Biológica',pad,story?205:135);const by=top+ph+(story?120:75);x.font='700 '+(story?34:27)+'px Arial';x.fillStyle='#dce7ed';x.fillText(patientData.nombre||'Paciente NUMED',pad,by);x.font='800 '+(story?42:34)+'px Arial';x.fillStyle='#fff';x.fillText('Edad cronológica',pad,by+(story?100:70));x.fillStyle='#d5ec78';x.fillText('Edad biológica',c.width/2+20,by+(story?100:70));x.font='900 '+(story?108:78)+'px Arial';x.fillStyle='#fff';x.fillText(String(patientData.edad_cronologica),pad,by+(story?215:160));x.fillStyle='#d5ec78';x.fillText(String(patientData.edad_biologica),c.width/2+20,by+(story?215:160));x.font='600 '+(story?26:20)+'px Arial';x.fillStyle='#c9d7df';x.fillText('Resultado orientativo · Evaluación Integral NUMED',pad,c.height-(story?105:55));return c}
 async function blobOf(c){return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('No se pudo crear la imagen')),'image/png',1))}
 async function savePatientCard(blob,kind){const arr=new Uint8Array(await blob.arrayBuffer()),binary=Array.from(arr,b=>String.fromCharCode(b)).join(''),b64=btoa(binary);await publicRPC('numed_save_photobooth_card',{p_token:new URLSearchParams(location.search).get('token')||'',p_kind:kind,p_photo_data:photoData,p_card_data:'data:image/png;base64,'+b64})}
-window.pb64Download=async kind=>{try{$('pb64-status').textContent='Creando tu ficha…';const c=await renderCard(kind),blob=await blobOf(c);$('pb64-status').textContent='Ficha lista para descargar. Si deseas guardarla en el expediente, muéstrala al personal de NUMED.'const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NUMED_PhotoBooth_'+kind+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}catch(e){alert(e.message)}};
+window.pb64Download=async kind=>{try{$('pb64-status').textContent='Creando tu ficha…';const c=await renderCard(kind),blob=await blobOf(c);$('pb64-status').textContent='Ficha lista para descargar.';const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NUMED_PhotoBooth_'+kind+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}catch(e){alert(e.message)}};
 function addDoctorButton(){const tabs=document.querySelector('.detail-tabs');if(!tabs||document.getElementById('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=window.pb64OpenQR;tabs.appendChild(b)}new MutationObserver(addDoctorButton).observe(document.documentElement,{childList:true,subtree:true});addDoctorButton();
 window.addEventListener('DOMContentLoaded',initPatient);if(document.readyState!=='loading')initPatient();window.NUMED_RUNTIME_VERSION='64';})();
 </script>
