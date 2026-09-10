@@ -4736,27 +4736,8 @@ window.NUMED_RUNTIME_VERSION='71-FHT';
 })();
 </script>
 
-<style id="numed-v72-training-zones-style">
-.v72-zones{margin-top:22px;background:#fff;border:1px solid #e1e9ef;border-radius:22px;padding:24px}.v72-zones-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}.v72-zones-head h3{margin:0;color:#062b5b;font-size:24px}.v72-zones-head p{margin:5px 0 0;color:#6d8295}.v72-fcmax{font-size:34px;font-weight:900;color:#4d89eb;white-space:nowrap}.v72-fcmax small{font-size:16px;color:#657895}.v72-zone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.v72-zone{border-radius:18px;overflow:hidden;box-shadow:0 10px 20px rgba(6,43,91,.09);background:#eef6fc}.v72-zone-main{padding:20px;color:#fff;min-height:190px}.v72-zone-main h4{margin:0 0 7px;font-size:17px}.v72-zone-main>small{font-weight:800}.v72-zone-values{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid rgba(255,255,255,.7);margin-top:18px;padding-top:18px}.v72-zone-value{background:#fff;color:#607392;border-radius:13px;padding:14px}.v72-zone-value strong{display:block;font-size:24px;line-height:1;color:#607392}.v72-zone-value span{display:block;margin-top:9px;font-weight:700;font-size:12px}.v72-zone-info{padding:14px 16px;color:#173e60;font-size:13px;line-height:1.45;min-height:76px}.v72-z1{background:#19b75a}.v72-z2{background:#407cf0}.v72-z3{background:#ee9d00}.v72-z4{background:#ef7600}.v72-z5{background:#e63b37}@media(max-width:1050px){.v72-zone-grid{grid-template-columns:1fr 1fr}}@media(max-width:650px){.v72-zones{padding:16px}.v72-zones-head{display:block}.v72-fcmax{margin-top:10px}.v72-zone-grid{grid-template-columns:1fr}.v72-zone-main{min-height:auto}}
-</style>
-<script id="numed-v72-training-zones-core">
-(function(){
-'use strict';
-function n(v){const x=Number(v);return Number.isFinite(x)?x:null}
-function female(g){g=String(g||'').toLowerCase();return g.includes('fem')||g.includes('muj')}
-function zones(r){const age=n(r?.age);if(age==null)return null;const max=female(r.gender)?226-age:220-age;return{max,z:[
- {c:'v72-z1',title:'Zona de Recuperación y Calentamiento',sub:'Zona 1 - Muy suave',min:Math.round(max*.50),max:Math.round(max*.605),time:'45-120',info:'Ideal para calentamiento, enfriamiento y recuperación activa. Mejora la circulación y prepara el cuerpo para ejercicios más intensos.'},
- {c:'v72-z2',title:'Zona Aeróbica Base',sub:'Zona 2 - Suave',min:Math.round(max*.61),max:Math.round(max*.705),time:'30-90',info:'Desarrolla la resistencia aeróbica básica. Quema principalmente grasa como combustible y mejora la eficiencia cardiovascular.'},
- {c:'v72-z3',title:'Zona Aeróbica',sub:'Zona 3 - Moderada',min:Math.round(max*.71),max:Math.round(max*.805),time:'20-60',info:'Mejora la capacidad aeróbica y la eficiencia cardiovascular. Equilibrio entre quema de grasa y carbohidratos.'},
- {c:'v72-z4',title:'Zona Umbral Anaeróbico',sub:'Zona 4 - Intensa',min:Math.round(max*.81),max:Math.round(max*.905),time:'10-30',info:'Mejora la potencia y velocidad. Entrena el umbral de lactato. Ideal para mejorar el rendimiento en competencias.'},
- {c:'v72-z5',title:'Zona Neuromuscular',sub:'Zona 5 - Máxima',min:Math.round(max*.91),max:Math.round(max),time:'1-15',info:'Desarrolla la potencia máxima y capacidad neuromuscular. Para entrenamientos de alta intensidad e intervalos cortos.'}
- ]}}
-function html(r){const x=zones(r);if(!x)return'';return `<section class="v72-zones"><div class="v72-zones-head"><div><h3>♡ Zonas de Entrenamiento Cardíaco</h3><p>Estas zonas indican el nivel de frecuencia cardíaca óptimo para diferentes tipos de ejercicios según tus objetivos específicos.</p></div><div class="v72-fcmax">${x.max} <small>FC Max</small></div></div><div class="v72-zone-grid">${x.z.map(z=>`<article class="v72-zone"><div class="v72-zone-main ${z.c}"><h4>${z.title}</h4><small>${z.sub}</small><div class="v72-zone-values"><div class="v72-zone-value"><strong>${z.min}-${z.max}</strong><span>Rango FC</span></div><div class="v72-zone-value"><strong>${z.time}</strong><span>Minutos</span></div></div></div><div class="v72-zone-info">ⓘ &nbsp;${z.info}</div></article>`).join('')}</div></section>`}
-window.numedTrainingZones=zones;window.numedTrainingZonesHTML=html;
-const old=window.detailTab;
-window.detailTab=function(tab,btn){const out=old&&old.apply(this,arguments);if(tab==='result'&&window.adminCurrentPatient){setTimeout(()=>{const root=document.querySelector('#detail-content .v43-result');if(root&&!root.querySelector('.v72-zones')){const age=root.querySelector('.v43-age');age?.insertAdjacentHTML('beforebegin',html(window.adminCurrentPatient));}},0)}return out};
-})();
-</script>
+<!-- v78: Zonas de Entrenamiento Cardiaco eliminadas del resultado y reporte/PDF -->
+
 
 <script id="numed-v73-fht-authoritative-fix">
 (function(){
@@ -4779,6 +4760,21 @@ window.NUMED_FHT_CARDIO_V74 = {
     return 'favorable';
   }
 };
+</script>
+
+<style id="numed-v78-no-training-zones">
+.v72-zones{display:none!important;}
+@media print{.v72-zones{display:none!important;}}
+</style>
+<script id="numed-v78-no-training-zones-guard">
+(function(){
+  'use strict';
+  window.numedTrainingZonesHTML=function(){return '';};
+  function removeZones(){document.querySelectorAll('.v72-zones').forEach(function(el){el.remove();});}
+  removeZones();
+  document.addEventListener('DOMContentLoaded',removeZones);
+  window.addEventListener('beforeprint',removeZones);
+})();
 </script>
 </body>
 </html>
