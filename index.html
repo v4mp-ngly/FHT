@@ -4776,6 +4776,49 @@ window.NUMED_FHT_CARDIO_V74 = {
   window.addEventListener('beforeprint',removeZones);
 })();
 </script>
+
+<style id="numed-v79-resultados-recomendaciones">
+.v43-result .v43-areas{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important}
+.v43-result .v43-area{padding:0!important;overflow:hidden;border-radius:22px!important;background:#fff!important;border:1px solid #dce6ec!important;box-shadow:0 12px 32px rgba(6,47,87,.07)!important}
+.v79-area-head{padding:20px 22px 15px;border-top:5px solid #a9c93f}.v43-area.observacion .v79-area-head{border-top-color:#e6a42f}.v43-area.atencion .v79-area-head{border-top-color:#cd4c48}
+.v79-area-head h3{margin:0 0 11px!important;font-size:20px!important;color:#123c65!important}.v79-tags{display:flex;gap:8px;flex-wrap:wrap}.v79-tags span{display:inline-flex;align-items:center;min-height:27px;padding:5px 11px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.35px}.v79-tag{background:#eef3f6;color:#355a78}.v79-level{background:#edf7d9;color:#567d17}.observacion .v79-level{background:#fff2d9;color:#9b6819}.atencion .v79-level{background:#fde9e7;color:#a33d3a}
+.v79-indicators{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 22px 16px}.v79-indicator{border:1px solid #e1e9ee;background:#f8fafb;border-radius:14px;padding:13px 14px}.v79-indicator small{display:block;color:#71869a;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}.v79-indicator strong{display:block;color:#173f67;font-size:15px;line-height:1.25}
+.v79-interpret{margin:0 22px 20px;padding:14px 15px;background:#f5f8fa;border-radius:13px;border-left:3px solid #9fb4c4}.v79-interpret small{display:block;font-size:9px;font-weight:900;color:#5d7488;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}.v79-interpret p{margin:0!important;font-size:12px!important;line-height:1.55!important;color:#587187!important}
+.v79-recs{margin-top:22px;background:#fff;border:1px solid #dce6ec;border-radius:22px;padding:24px;box-shadow:0 12px 32px rgba(6,47,87,.06)}.v79-recs-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;margin-bottom:16px}.v79-recs h3{margin:0;color:#0b3766;font-size:22px}.v79-recs-head p{margin:5px 0 0;color:#71869a;font-size:11px}.v79-rec-list{display:grid;gap:10px}.v79-rec{display:grid;grid-template-columns:36px 150px 1fr;gap:12px;align-items:center;padding:13px 15px;border-radius:14px;background:#f8fafb;border:1px solid #e4ebef}.v79-rec-num{width:30px;height:30px;border-radius:10px;background:#edf6dc;color:#64891d;display:grid;place-items:center;font-size:11px;font-weight:900}.v79-rec-area{font-size:10px;font-weight:900;color:#21496f;text-transform:uppercase}.v79-rec-text{font-size:12px;line-height:1.5;color:#587187}
+@media(max-width:800px){.v43-result .v43-areas{grid-template-columns:1fr!important}.v79-recs{padding:18px}.v79-rec{grid-template-columns:34px 1fr}.v79-rec-area{grid-column:2}.v79-rec-text{grid-column:2}.v79-recs-head{display:block}}
+@media(max-width:480px){.v79-area-head{padding:17px 16px 13px}.v79-indicators{padding:0 16px 14px;grid-template-columns:1fr 1fr}.v79-interpret{margin:0 16px 17px}.v79-area-head h3{font-size:18px}.v79-indicator strong{font-size:14px}}
+</style>
+<script id="numed-v79-resultados-recomendaciones">
+(function(){
+ const prev=window.detailTab;
+ function e(v){return String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+ function indicators(title,r,m){
+  if(title.includes('cardiovascular')) return [['Presión arterial',`${e(m.presionSistolica)}/${e(m.presionDiastolica)} mmHg`],['Frecuencia cardíaca',`${e(m.frecuenciaCardiaca)} lpm`]];
+  if(title.includes('metabólica')) return [['IMC',`${e(m.imc)} kg/m²`],['Perímetro abdominal',`${e(m.abdomen)} cm`],['Peso',`${e(m.peso)} kg`],['Talla',`${e(m.talla)} cm`]];
+  if(title.includes('funcional')) return [['Fuerza prensil',`${e(m.fuerza)} kg`],['Flexibilidad',`${e(m.flexibilidad)} cm`]];
+  return [['PSS-10',`${e(r.pss?.score)}/40`],['Nivel de estrés',e(r.pss?.level||'—')]];
+ }
+ window.detailTab=function(tab,btn){
+  if(typeof prev==='function') prev.apply(this,arguments);
+  if(tab!=='result'||!window.adminCurrentPatient)return;
+  const root=document.querySelector('#detail-content .v43-result'); if(!root)return;
+  const r=window.adminCurrentPatient,m=r.measurements||{}, recs=[];
+  root.querySelectorAll('.v43-area').forEach((card,idx)=>{
+   const title=card.querySelector('h3')?.textContent?.trim()||'';
+   const tags=[...card.querySelectorAll('.v43-tags span')].map(x=>x.textContent.trim());
+   const ps=[...card.querySelectorAll(':scope > p')];
+   const interpretation=ps.length>1?ps[1].textContent.trim():'';
+   const recommendation=card.querySelector('.v43-rec')?.textContent.trim()||'';
+   if(recommendation)recs.push([title,recommendation]);
+   const inds=indicators(title.toLowerCase(),r,m);
+   card.innerHTML=`<div class="v79-area-head"><h3>${e(title)}</h3><div class="v79-tags"><span class="v79-tag">${e(tags[0]||'INDICADORES EVALUADOS')}</span><span class="v79-level">${e(tags[1]||'—')}</span></div></div><div class="v79-indicators">${inds.map(x=>`<div class="v79-indicator"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('')}</div><div class="v79-interpret"><small>Interpretación</small><p>${e(interpretation)}</p></div>`;
+  });
+  const age=root.querySelector('.v43-age');
+  const sec=document.createElement('section');sec.className='v79-recs';sec.innerHTML=`<div class="v79-recs-head"><div><h3>Recomendaciones personalizadas</h3><p>Acciones organizadas según los hallazgos de esta evaluación.</p></div></div><div class="v79-rec-list">${recs.map((x,i)=>`<div class="v79-rec"><span class="v79-rec-num">${i+1}</span><span class="v79-rec-area">${e(x[0].replace('Condición ',''))}</span><span class="v79-rec-text">${e(x[1])}</span></div>`).join('')}</div>`;
+  if(age)root.insertBefore(sec,age);else root.appendChild(sec);
+ };
+})();
+</script>
 </body>
 </html>
 
