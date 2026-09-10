@@ -1128,6 +1128,27 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
  #doctor-admin .detail-tabs button.active:after{left:25%;right:25%;bottom:3px;height:2px}
 }
 </style>
+
+<style id="numed-v76-dashboard-title-fix">
+/* v76: corrige títulos duplicados heredados del rediseño v24 */
+#doctor-admin .admin-title-row h1{
+  font-size:clamp(27px,3vw,38px)!important;
+  line-height:1.12!important;
+  letter-spacing:-.035em!important;
+  color:#082d5c!important;
+  margin:0 0 7px!important;
+  overflow-wrap:anywhere;
+}
+#doctor-admin .admin-title-row h1::before,
+#doctor-admin .admin-title-row h1::after{content:none!important;display:none!important;}
+#doctor-admin .admin-title-row{align-items:flex-end!important;gap:18px!important;margin-bottom:24px!important;}
+#doctor-admin .admin-title-row p{margin:0!important;font-size:13px!important;line-height:1.55!important;color:#617b99!important;}
+@media(max-width:760px){
+ #doctor-admin .admin-title-row{align-items:flex-start!important;gap:12px!important;margin-bottom:18px!important;}
+ #doctor-admin .admin-title-row h1{font-size:clamp(25px,8vw,31px)!important;line-height:1.1!important;}
+ #doctor-admin .admin-title-row p{font-size:12px!important;}
+}
+</style>
 </head>
 <body>
 <div id="access-portal">
