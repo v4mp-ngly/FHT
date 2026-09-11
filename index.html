@@ -4502,7 +4502,7 @@ function dynamicRecommendations(r,m,A){
  // Cardiovascular: cada recomendacion responde al indicador que realmente se altero.
  if(sys!=null||dia!=null){
    if((sys!=null&&sys>=140)||(dia!=null&&dia>=90)) add('cardio','Confirmar la presión arterial con nuevas mediciones en reposo y solicitar valoración profesional si los valores se mantienen elevados.');
-   else if((sys!=null&&sys>=120)||(dia!=null&&dia>=80)) add('cardio','Repetir la presión arterial en reposo y mantener seguimiento preventivo de su evolución.');
+   else if((sys!=null&&sys>=130)||(dia!=null&&dia>=85)) add('cardio','Repetir la presión arterial en reposo y mantener seguimiento preventivo de su evolución.');
  }
  if(hr!=null){
    if(hr<50||hr>100) add('cardio','Repetir la frecuencia cardíaca en reposo y comentarla con un profesional si persiste fuera del rango esperado o aparecen síntomas.');
@@ -4562,7 +4562,7 @@ function header(d,f,title,sub){d.setFillColor(...C.navy);d.rect(0,0,210,5,'F');a
 function footer(d,f,page,total){d.setDrawColor(...C.line);d.line(14,282,196,282);txt(d,f,'NUMED · Administración Médica',14,289,{bold:true,size:4.7,color:C.blue});txt(d,f,'Documento individual y confidencial',105,289,{size:4.3,color:C.muted,opts:{align:'center'}});txt(d,f,`Página ${page} de ${total}`,196,289,{size:4.3,color:C.muted,opts:{align:'right'}})}
 function patientBand(d,f,r,y=34){d.setFillColor(...C.soft);d.roundedRect(14,y,182,26,4,4,'F');txt(d,f,'PACIENTE',20,y+6,{bold:true,size:4.1,color:C.muted});txt(d,f,`${r.first||''} ${r.last||''}`.trim(),20,y+13,{bold:true,size:8.2});txt(d,f,`Cédula: ${r.id||'—'}  ·  Edad: ${r.age||'—'} años  ·  ${r.locality||'Sin localidad'}`,20,y+20,{size:4.7,color:C.muted});txt(d,f,`Evaluación: ${fmtDate(r.updatedAt||r.createdAt)}  ·  ID ${evalId(r)}`,190,y+12,{size:4.4,color:C.muted,opts:{align:'right'}})}
 function pssCfg(score){return score<=13?{label:'ESTRÉS BAJO',key:'favorable',color:C.green,desc:'Nivel bajo de estrés percibido.'}:score<=26?{label:'ESTRÉS MODERADO',key:'observacion',color:C.orange,desc:'Nivel moderado de estrés percibido.'}:{label:'ESTRÉS ALTO',key:'atencion',color:C.red,desc:'Nivel alto de estrés percibido.'}}
-function areas(r,m){const gender=String(r.gender||'').toLowerCase(),imc=num(m.imc),abd=num(m.abdomen),sys=num(m.presionSistolica),dia=num(m.presionDiastolica),hr=num(m.frecuenciaCardiaca),strength=String(m.nivelFuerza||'').toLowerCase(),ps=num(r.pss?.score)||0;let metabolic={key:'favorable',level:'FAVORABLE',detail:`IMC ${imc??'—'} · ${abd??'—'} cm`};const high=abd!=null&&(gender==='femenino'?abd>88:abd>102),watch=abd!=null&&(gender==='femenino'?abd>=82:abd>=95);if((imc!=null&&(imc>=30||imc<16))||high)metabolic={key:'atencion',level:'ATENCIÓN',detail:`IMC ${imc??'—'} · ${abd??'—'} cm`};else if((imc!=null&&(imc>=25||imc<18.5))||watch)metabolic={key:'observacion',level:'OBSERVACIÓN',detail:`IMC ${imc??'—'} · ${abd??'—'} cm`};let cardio={key:'favorable',level:'FAVORABLE',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};if((sys!=null&&sys>=140)||(dia!=null&&dia>=90))cardio={key:'atencion',level:'ATENCIÓN',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};else if((sys!=null&&sys>=120)||(dia!=null&&dia>=80)||(hr!=null&&(hr<50||hr>100)))cardio={key:'observacion',level:'OBSERVACIÓN',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};let functional={key:'favorable',level:'FAVORABLE',detail:`${m.fuerza??'—'} kg · ${m.flexibilidad??'—'} cm`};if(strength.includes('bajo')||strength.includes('malo'))functional={key:'atencion',level:'ATENCIÓN',detail:`${m.fuerza??'—'} kg · ${m.flexibilidad??'—'} cm`};else if(Number(r.questionnaire?.actividad)===0||strength.includes('debajo'))functional={key:'observacion',level:'OBSERVACIÓN',detail:`${m.fuerza??'—'} kg · ${m.flexibilidad??'—'} cm`};const psycho=ps<=13?{key:'favorable',level:'FAVORABLE',detail:`PSS-10 ${ps}/40`}:ps<=26?{key:'observacion',level:'OBSERVACIÓN',detail:`PSS-10 ${ps}/40`}:{key:'atencion',level:'ATENCIÓN',detail:`PSS-10 ${ps}/40`};return{cardio,metabolic,functional,psycho}}
+function areas(r,m){const gender=String(r.gender||'').toLowerCase(),imc=num(m.imc),abd=num(m.abdomen),sys=num(m.presionSistolica),dia=num(m.presionDiastolica),hr=num(m.frecuenciaCardiaca),strength=String(m.nivelFuerza||'').toLowerCase(),ps=num(r.pss?.score)||0;let metabolic={key:'favorable',level:'FAVORABLE',detail:`IMC ${imc??'—'} · ${abd??'—'} cm`};const high=abd!=null&&(gender==='femenino'?abd>88:abd>102),watch=abd!=null&&(gender==='femenino'?abd>=82:abd>=95);if((imc!=null&&(imc>=30||imc<16))||high)metabolic={key:'atencion',level:'ATENCIÓN',detail:`IMC ${imc??'—'} · ${abd??'—'} cm`};else if((imc!=null&&(imc>=25||imc<18.5))||watch)metabolic={key:'observacion',level:'OBSERVACIÓN',detail:`IMC ${imc??'—'} · ${abd??'—'} cm`};let cardio={key:'favorable',level:'FAVORABLE',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};if((sys!=null&&sys>=140)||(dia!=null&&dia>=90))cardio={key:'atencion',level:'ATENCIÓN',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};else if((sys!=null&&sys>=130)||(dia!=null&&dia>=85)||(hr!=null&&(hr<50||hr>100)))cardio={key:'observacion',level:'OBSERVACIÓN',detail:`${sys??'—'}/${dia??'—'} mmHg · ${hr??'—'} lpm`};let functional={key:'favorable',level:'FAVORABLE',detail:`${m.fuerza??'—'} kg · ${m.flexibilidad??'—'} cm`};if(strength.includes('bajo')||strength.includes('malo'))functional={key:'atencion',level:'ATENCIÓN',detail:`${m.fuerza??'—'} kg · ${m.flexibilidad??'—'} cm`};else if(Number(r.questionnaire?.actividad)===0||strength.includes('debajo'))functional={key:'observacion',level:'OBSERVACIÓN',detail:`${m.fuerza??'—'} kg · ${m.flexibilidad??'—'} cm`};const psycho=ps<=13?{key:'favorable',level:'FAVORABLE',detail:`PSS-10 ${ps}/40`}:ps<=26?{key:'observacion',level:'OBSERVACIÓN',detail:`PSS-10 ${ps}/40`}:{key:'atencion',level:'ATENCIÓN',detail:`PSS-10 ${ps}/40`};return{cardio,metabolic,functional,psycho}}
 function color(a){return a.key==='favorable'?C.green:a.key==='observacion'?C.orange:C.red}
 const REC={cardio:{favorable:'Mantener actividad física, descanso y seguimiento preventivo.',observacion:'Repetir presión y pulso en reposo y vigilar evolución.',atencion:'Confirmar valores y solicitar valoración profesional.'},metabolic:{favorable:'Mantener alimentación equilibrada, actividad física y controles periódicos.',observacion:'Reforzar hábitos y dar seguimiento a IMC y perímetro abdominal.',atencion:'Solicitar valoración médica o nutricional individualizada.'},functional:{favorable:'Conservar ejercicios de fuerza, movilidad y flexibilidad.',observacion:'Incorporar fuerza progresiva y movilidad de forma regular.',atencion:'Realizar valoración funcional antes de iniciar un plan de ejercicio.'},psycho:{favorable:'Mantener sueño, pausas de recuperación, actividad física y apoyo social.',observacion:'Practicar manejo del estrés y repetir PSS-10 en 2 a 3 meses.',atencion:'Buscar apoyo profesional y repetir PSS-10 según indicación.'}};
 async function fresh(){const cur=window.adminCurrentPatient;if(!cur)return null;try{if(typeof window.loadPatientsFromSupabase==='function'){const rows=await window.loadPatientsFromSupabase();if(Array.isArray(rows)){const x=rows.find(v=>(cur.supabaseId&&v.supabaseId===cur.supabaseId)||(!cur.supabaseId&&v.id===cur.id));if(x)window.adminCurrentPatient=x}}}catch(e){console.warn('PDF v62 refresh',e)}return window.adminCurrentPatient}
@@ -4570,11 +4570,45 @@ function statusCard(d,f,x,y,w,title,a){const c=color(a);d.setFillColor(...C.whit
 function bioScale(d,f,age,bio,x,y,w){const min=Math.max(0,Math.min(age,bio)-10),max=Math.max(age,bio)+10,px=v=>x+((v-min)/(max-min))*w;d.setDrawColor(...C.line);d.setLineWidth(2);d.line(x,y,x+w,y);d.setFillColor(...C.blue);d.circle(px(age),y,3.1,'F');d.setFillColor(...C.green);d.circle(px(bio),y,3.1,'F');txt(d,f,'Cronológica',px(age),y+8,{size:4.2,color:C.blue,opts:{align:'center'}});txt(d,f,'Biológica',px(bio),y-5,{bold:true,size:4.2,color:C.green,opts:{align:'center'}})}
 function pssBar(d,f,score,x,y,w){const seg=w/3;d.setFillColor(...C.green);d.roundedRect(x,y,seg,5,2.5,2.5,'F');d.setFillColor(...C.orange);d.rect(x+seg,y,seg,5,'F');d.setFillColor(...C.red);d.roundedRect(x+seg*2,y,seg,5,2.5,2.5,'F');const px=x+(Math.max(0,Math.min(40,score))/40)*w;d.setFillColor(...C.navy);d.triangle(px,y-3,px-2,y-6,px+2,y-6,'F');txt(d,f,'0',x,y+11,{size:4,color:C.muted});txt(d,f,'13',x+seg,y+11,{size:4,color:C.muted,opts:{align:'center'}});txt(d,f,'26',x+seg*2,y+11,{size:4,color:C.muted,opts:{align:'center'}});txt(d,f,'40',x+w,y+11,{size:4,color:C.muted,opts:{align:'right'}})}
 window.downloadPSSReport=async function(){const r=await fresh();if(!r?.pss)return alert('Este paciente no tiene resultado PSS-10.');if(!window.jspdf)return alert('No se pudo cargar el generador PDF.');const {jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),f=fontPack(d),score=num(r.pss.score)||0,P=pssCfg(score);header(d,f,'PSS-10','EVALUACIÓN INDIVIDUAL');patientBand(d,f,r);txt(d,f,'Estrés percibido',14,72,{bold:true,size:14});txt(d,f,'Resultado actual y orientación de seguimiento',14,79,{size:5.4,color:C.muted});d.setFillColor(...C.navy);d.roundedRect(14,87,182,48,5,5,'F');txt(d,f,String(score),38,111,{bold:true,size:23,color:C.white,opts:{align:'center'}});txt(d,f,'DE 40',38,119,{size:4.4,color:[196,210,221],opts:{align:'center'}});d.setFillColor(...P.color);d.roundedRect(61,98,52,9,4.5,4.5,'F');txt(d,f,P.label,87,104,{bold:true,size:4.6,color:C.white,opts:{align:'center'}});txt(d,f,P.desc,61,116,{size:5.7,color:C.white});txt(d,f,'Escala PSS-10',14,149,{bold:true,size:8});pssBar(d,f,score,20,159,170);txt(d,f,'Recomendaciones',14,181,{bold:true,size:10});const recs=P.key==='favorable'?['Mantener horarios regulares de sueño y descanso.','Conservar actividad física y espacios de recuperación.','Mantener apoyo social y hábitos de autocuidado.']:P.key==='observacion'?['Regularizar horarios de sueño y descanso.','Practicar respiración o relajación diariamente.','Organizar actividades por prioridades.','Mantener actividad física y limitar estimulantes.']:['Solicitar valoración profesional.','Priorizar sueño, descanso y red de apoyo.','Aplicar técnicas diarias de relajación.','Dar seguimiento según indicación profesional.'];let y=191;recs.forEach((rec,i)=>{d.setFillColor(...C.soft);d.roundedRect(14,y,182,15,3,3,'F');d.setFillColor(...P.color);d.circle(22,y+7.5,3.2,'F');txt(d,f,String(i+1),22,y+9,{bold:true,size:4.5,color:C.white,opts:{align:'center'}});txt(d,f,rec,30,y+9,{size:5.4});y+=18});d.setFillColor(...C.mint);d.roundedRect(14,263,182,14,3,3,'F');txt(d,f,'Seguimiento sugerido',20,269,{bold:true,size:5.5,color:C.blue});txt(d,f,P.key==='favorable'?'Repetir periódicamente o ante cambios relevantes.':P.key==='observacion'?'Repetir en 2 a 3 meses; valorar apoyo profesional si persisten síntomas.':'Se recomienda valoración profesional y seguimiento cercano.',20,274,{size:4.6,color:C.muted});footer(d,f,1,1);d.save(`NUMED_PSS10_${clean(r.first)}_${clean(r.last)}.pdf`)};
+function dynamicRecommendations(r,m,A){
+ const rec={cardio:[],metabolic:[],functional:[],psycho:[]};
+ const add=(k,t)=>{if(t&&!rec[k].includes(t))rec[k].push(t)};
+ const sys=num(m.presionSistolica),dia=num(m.presionDiastolica),hr=num(m.frecuenciaCardiaca),imc=num(m.imc),abd=num(m.abdomen),ps=num(r.pss?.score),gender=String(r.gender||'').toLowerCase();
+ if(sys!=null||dia!=null){
+   if((sys!=null&&sys>=140)||(dia!=null&&dia>=90)) add('cardio','Confirmar la presión arterial con nuevas mediciones en reposo y solicitar valoración profesional si los valores se mantienen elevados.');
+   else if((sys!=null&&sys>=130)||(dia!=null&&dia>=85)) add('cardio','Repetir la presión arterial en reposo y mantener seguimiento preventivo de su evolución.');
+ }
+ if(hr!=null&&(hr<50||hr>100)) add('cardio','Repetir la frecuencia cardíaca en reposo y comentarla con un profesional si persiste fuera del rango esperado o aparecen síntomas.');
+ if(!rec.cardio.length) add('cardio','Mantener actividad física regular, descanso adecuado y controles cardiovasculares preventivos.');
+ if(imc!=null){
+   if(imc>=30) add('metabolic','Dar seguimiento al IMC con valoración nutricional individualizada y objetivos sostenibles de composición corporal.');
+   else if(imc>=25) add('metabolic','Reforzar alimentación equilibrada y actividad física, y controlar periódicamente la evolución del IMC.');
+   else if(imc<18.5) add('metabolic','Valorar el estado nutricional de forma individual para orientar una recuperación o mantenimiento de peso saludable.');
+ }
+ if(abd!=null){
+   const female=gender.includes('fem'),veryHigh=female?abd>88:abd>102,watch=female?abd>=82:abd>=95;
+   if(veryHigh) add('metabolic','Priorizar seguimiento del perímetro abdominal junto con hábitos de alimentación, actividad física y valoración profesional.');
+   else if(watch) add('metabolic','Vigilar el perímetro abdominal y reforzar hábitos que favorezcan la salud metabólica.');
+ }
+ if(!rec.metabolic.length) add('metabolic','Mantener alimentación equilibrada, actividad física regular y controles metabólicos periódicos.');
+ const strength=String(m.nivelFuerza||'').toLowerCase();
+ if(strength.includes('bajo')||strength.includes('malo')) add('functional','Iniciar o ajustar un trabajo progresivo de fuerza y considerar valoración funcional antes de aumentar la intensidad.');
+ else if(strength.includes('debajo')) add('functional','Incorporar ejercicios de fuerza progresiva y volver a medir la fuerza prensil para comparar la evolución.');
+ if(Number(r.questionnaire?.actividad)===0) add('functional','Aumentar progresivamente el movimiento diario y la actividad física según tolerancia y orientación profesional.');
+ if(!rec.functional.length) add('functional','Conservar ejercicios regulares de fuerza y movilidad y comparar los resultados en próximos controles.');
+ if(ps!=null){
+   if(ps>=27){add('psycho','Priorizar valoración profesional para el manejo del estrés percibido.');add('psycho','Reforzar sueño, pausas de recuperación, actividad física y red de apoyo, y repetir el PSS-10 según indicación.');}
+   else if(ps>=14){add('psycho','Incorporar estrategias diarias de manejo del estrés y revisar factores de sueño, carga y recuperación.');add('psycho','Repetir el PSS-10 en 2 a 3 meses o antes si existen cambios importantes.');}
+   else add('psycho','Mantener hábitos de sueño, recuperación, actividad física y apoyo social que favorezcan el bienestar emocional.');
+ } else add('psycho','Completar el PSS-10 para generar una recomendación psicosocial individualizada.');
+ return rec;
+}
+function recText(list){return (list||[]).join(' ')}
 window.downloadBioReport=function(){
  const r=window.adminCurrentPatient;
  if(!r?.measured&&!r?.measurements?.edadBiologica)return alert('Completa las mediciones antes de generar el informe.');
  if(!window.jspdf)return alert('No se pudo cargar el generador PDF.');
- const m=r.measurements||{},A=areas(r,m),DYN=dynamicRecommendations(r,m,A),{jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),f=fontPack(d),age=num(r.age)||0,bio=num(m.edadBiologica)??age,diff=bio-age,abs=Math.abs(diff);
+ const m=r.measurements||{},A=areas(r,m),DYN=window.NUMED_dynamicRecommendations(r,m,A),{jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),f=fontPack(d),age=num(r.age)||0,bio=num(m.edadBiologica)??age,diff=bio-age,abs=Math.abs(diff);
  const statusColor=a=>a.key==='favorable'?C.green:a.key==='observacion'?C.orange:C.red;
  const grayLabel={cardio:{favorable:'SIGNOS VITALES FAVORABLES',observacion:'SIGNOS VITALES A VIGILAR',atencion:'SIGNOS VITALES A ATENDER'},metabolic:{favorable:'INDICADORES FAVORABLES',observacion:'INDICADORES A VIGILAR',atencion:'INDICADORES A ATENDER'},functional:{favorable:'CAPACIDAD FAVORABLE',observacion:'REFORZAR CAPACIDAD',atencion:'CAPACIDAD A ATENDER'},psycho:{favorable:'ESTRÉS BAJO',observacion:'ESTRÉS MODERADO',atencion:'ESTRÉS ALTO'}};
  const how={cardio:{favorable:'Tus valores de presión arterial y frecuencia cardíaca se encuentran en un perfil cardiovascular favorable.',observacion:'Tus signos vitales muestran valores que conviene vigilar y confirmar en reposo.',atencion:'Tus signos vitales muestran valores que requieren atención y valoración profesional.'},metabolic:{favorable:'Tu IMC y perímetro abdominal se encuentran en un perfil metabólico favorable.',observacion:'Algunos de tus indicadores metabólicos conviene vigilarlos y darles seguimiento.',atencion:'Tus indicadores metabólicos muestran hallazgos que requieren valoración y seguimiento.'},functional:{favorable:'Tu fuerza y flexibilidad reflejan una capacidad funcional favorable.',observacion:'Tu evaluación funcional muestra aspectos de fuerza o flexibilidad que pueden reforzarse.',atencion:'Tu evaluación funcional muestra aspectos que requieren valoración y un plan progresivo.'},psycho:{favorable:'Tu resultado PSS-10 refleja un nivel bajo de estrés percibido.',observacion:'Tu resultado PSS-10 refleja un nivel moderado de estrés percibido.',atencion:'Tu resultado PSS-10 refleja un nivel alto de estrés percibido que merece atención y seguimiento.'}};
@@ -4879,7 +4913,39 @@ window.NUMED_FHT_CARDIO_V74 = {
  root.querySelectorAll('.v79-recs,.v80-summary').forEach(x=>x.remove());const age=root.querySelector('.v43-age');const sec=document.createElement('section');sec.className='v80-summary';sec.innerHTML=`<h3>Tu plan de seguimiento</h3><p>Una guía rápida para mantener lo que está bien y trabajar los aspectos que pueden mejorar.</p><div class="v80-summary-grid">${summary.map(x=>`<div class="v80-summary-item"><small>${esc(x[0])}</small><strong>${esc(x[1])}</strong></div>`).join('')}</div>`;if(age)root.insertBefore(sec,age);else root.appendChild(sec)};
 })();
 </script>
-</body>
+\n<script id="numed-v93-recommendations-global-fix">
+(function(){
+'use strict';
+const num=v=>{const x=Number(v);return Number.isFinite(x)?x:null};
+window.NUMED_dynamicRecommendations=function(r,m,A){
+  r=r||{};m=m||{};A=A||{};
+  const rec={cardio:[],metabolic:[],functional:[],psycho:[]};
+  const add=(k,t)=>{if(t&&!rec[k].includes(t))rec[k].push(t)};
+  const sys=num(m.presionSistolica),dia=num(m.presionDiastolica),hr=num(m.frecuenciaCardiaca),imc=num(m.imc),abd=num(m.abdomen),ps=num(r.pss?.score);
+  const gender=String(r.gender||'').toLowerCase();
+  const ck=A.cardio?.key||'favorable';
+  if(ck==='atencion') add('cardio','Confirmar la presión arterial y la frecuencia cardíaca en reposo y solicitar valoración profesional según los valores registrados.');
+  else if(ck==='observacion') add('cardio','Repetir los signos vitales en reposo y mantener seguimiento preventivo de su evolución.');
+  else add('cardio','Mantener actividad física regular, descanso adecuado y controles cardiovasculares preventivos.');
+  const mk=A.metabolic?.key||'favorable';
+  if(mk==='atencion') add('metabolic','Solicitar valoración médica o nutricional individualizada y dar seguimiento a los indicadores metabólicos alterados.');
+  else if(mk==='observacion') add('metabolic','Reforzar alimentación equilibrada, actividad física y seguimiento periódico de IMC y perímetro abdominal.');
+  else add('metabolic','Mantener alimentación equilibrada, actividad física regular y controles metabólicos periódicos.');
+  const fk=A.functional?.key||'favorable';
+  if(fk==='atencion') add('functional','Realizar valoración funcional antes de aumentar la intensidad del ejercicio y establecer un plan progresivo.');
+  else if(fk==='observacion') add('functional','Incorporar ejercicios de fuerza progresiva y movilidad de forma regular y comparar la evolución en próximos controles.');
+  else add('functional','Conservar ejercicios regulares de fuerza y movilidad y mantener seguimiento funcional preventivo.');
+  const pk=A.psycho?.key||((ps!=null&&ps>=27)?'atencion':(ps!=null&&ps>=14)?'observacion':'favorable');
+  if(pk==='atencion'){add('psycho','Priorizar valoración profesional para el manejo del estrés percibido.');add('psycho','Reforzar sueño, recuperación, actividad física y red de apoyo, y repetir el PSS-10 según indicación.');}
+  else if(pk==='observacion'){add('psycho','Incorporar estrategias diarias de manejo del estrés y repetir el PSS-10 en 2 a 3 meses o según indicación.');}
+  else add('psycho','Mantener hábitos de sueño, recuperación, actividad física y apoyo social que favorezcan el bienestar emocional.');
+  return rec;
+};
+// Alias for any legacy code that still calls the old name directly.
+window.dynamicRecommendations=window.NUMED_dynamicRecommendations;
+window.NUMED_RUNTIME_VERSION='93-PDF-RECOMENDACIONES-COHERENTES';
+})();
+</script>\n</body>
 </html>
 
 <!-- NUMED v64: QR seguro Photo Booth del paciente -->
@@ -5073,7 +5139,7 @@ video{object-fit:cover}
  function recs(r,m){
   const out={cardio:[],metabolic:[],functional:[],psycho:[]},add=(k,t)=>{if(t&&!out[k].includes(t))out[k].push(t)};
   const sys=num(m.presionSistolica),dia=num(m.presionDiastolica),hr=num(m.frecuenciaCardiaca),imc=num(m.imc),abd=num(m.abdomen),ps=num(r.pss?.score),gender=String(r.gender||'').toLowerCase();
-  if(sys!=null||dia!=null){if((sys!=null&&sys>=140)||(dia!=null&&dia>=90))add('cardio','Confirmar la presión arterial con nuevas mediciones en reposo y solicitar valoración profesional si los valores se mantienen elevados.');else if((sys!=null&&sys>=120)||(dia!=null&&dia>=80))add('cardio','Repetir la presión arterial en reposo y mantener seguimiento preventivo de su evolución.');}
+  if(sys!=null||dia!=null){if((sys!=null&&sys>=140)||(dia!=null&&dia>=90))add('cardio','Confirmar la presión arterial con nuevas mediciones en reposo y solicitar valoración profesional si los valores se mantienen elevados.');else if((sys!=null&&sys>=130)||(dia!=null&&dia>=85))add('cardio','Repetir la presión arterial en reposo y mantener seguimiento preventivo de su evolución.');}
   if(hr!=null&&(hr<50||hr>100))add('cardio','Repetir la frecuencia cardíaca en reposo y comentarla con un profesional si persiste fuera del rango esperado o aparecen síntomas.');
   if(!out.cardio.length)add('cardio','Mantener actividad física regular, descanso adecuado y controles cardiovasculares preventivos.');
   if(imc!=null){if(imc>=30)add('metabolic','Dar seguimiento al IMC con valoración nutricional individualizada y objetivos sostenibles de composición corporal.');else if(imc>=25)add('metabolic','Reforzar alimentación equilibrada y actividad física, y controlar periódicamente la evolución del IMC.');else if(imc<18.5)add('metabolic','Valorar el estado nutricional de forma individual para orientar un peso saludable.');}
