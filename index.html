@@ -3692,7 +3692,7 @@ async function saveFullPatientToSupabase(){
  return pid;
 }
 function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),alcohol_frecuencia:cq.alcohol_frecuencia||'',actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),hora_acostarse:cq.hora_acostarse||'',hora_levantarse:cq.hora_levantarse||'',horas_sueno:Number(cq.horas_sueno||0),sueno_descanso:cq.sueno_descanso||'',dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_diastolica:m.presion_sistolica),presionDiastolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_sistolica:m.presion_diastolica),frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
-async function loadPatientsFromSupabase(){try{const rows=await sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();return rows||[]}catch(e){console.error('Carga Supabase:',e);alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
+async function loadPatientsFromSupabase(){try{if(window.__numedPatientsLoadPromise)return window.__numedPatientsLoadPromise;window.__numedPatientsLoadPromise=sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);const rows=await window.__numedPatientsLoadPromise;localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();window.__numedPatientsLoadPromise=null;return rows||[]}catch(e){window.__numedPatientsLoadPromise=null;console.error('Carga Supabase:',e);if(!['consent','photobooth'].includes(new URLSearchParams(location.search).get('mode')||''))alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
 window.doctorLogin=async function(){const email=document.getElementById('doc-user').value.trim(),password=document.getElementById('doc-pass').value;const err=document.getElementById('doc-login-error');const button=document.querySelector('.doc-login-primary');try{if(button){button.disabled=true;button.textContent='Verificando...'}const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');sessionStorage.setItem('numedSbAccessToken',d.access_token);localStorage.setItem('numedSbAccessToken',d.access_token);if(d.refresh_token)localStorage.setItem('numedSbRefreshToken',d.refresh_token);localStorage.setItem('numedSbExpiresAt',String(Date.now()+(Number(d.expires_in||3600)*1000)));localStorage.setItem('numedDoctorSession','1');err.style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin();await loadPatientsFromSupabase();}catch(e){console.error(e);err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block';}finally{if(button){button.disabled=false;button.textContent='Ingresar al panel'}}};
 const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){const x=_openDoctorAdminV14.apply(this,arguments);if(sessionStorage.getItem('numedSbAccessToken'))setTimeout(loadPatientsFromSupabase,50);return x};
 const _markMeasuredLocal=window.markCurrentPatientMeasured;
@@ -4160,38 +4160,46 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;back
 })();
 </script>
 
-<script id="numed-v45-qr-sync-fix">
+<script id="numed-v102-sync-stability">
 (function(){
  'use strict';
- let syncing=false,lastSync=0;
- async function syncPatients(reason){
-   if(syncing||localStorage.getItem('numedDoctorSession')!=='1') return;
-   if(typeof window.loadPatientsFromSupabase!=='function') return;
+ let syncing=false,lastSync=0,pending=null;
+ const publicMode=()=>['consent','photobooth'].includes(new URLSearchParams(location.search).get('mode')||'');
+ const adminVisible=()=>{const el=document.getElementById('doctor-admin');return !!(el&&getComputedStyle(el).display!=='none');};
+ async function syncPatients(reason,force=false){
+   if(publicMode()||localStorage.getItem('numedDoctorSession')!=='1'||typeof window.loadPatientsFromSupabase!=='function') return [];
+   const now=Date.now();
+   if(!force && now-lastSync<30000) return pending||[];
+   if(syncing) return pending||[];
    syncing=true;
-   try{
-     const rows=await window.loadPatientsFromSupabase();
-     lastSync=Date.now();
-     if(typeof window.renderAdminAll==='function') window.renderAdminAll();
-     console.info('NUMED v45: pacientes sincronizados', {reason,total:Array.isArray(rows)?rows.length:0});
-   }catch(e){console.error('NUMED v45 sync:',e)}finally{syncing=false}
+   pending=(async()=>{
+     try{
+       const rows=await window.loadPatientsFromSupabase();
+       lastSync=Date.now();
+       console.info('NUMED v102: pacientes sincronizados',{reason,total:Array.isArray(rows)?rows.length:0});
+       return rows||[];
+     }catch(e){console.error('NUMED v102 sync:',e);return []}
+     finally{syncing=false;pending=null}
+   })();
+   return pending;
  }
- window.refreshNumedPatients=function(){return syncPatients('manual')};
+ window.refreshNumedPatients=()=>syncPatients('manual',true);
  function addRefreshButton(){
    const title=document.querySelector('#admin-patients .admin-title-row');
    if(!title||document.getElementById('numed-refresh-patients'))return;
    const b=document.createElement('button');b.id='numed-refresh-patients';b.className='admin-action';b.type='button';b.textContent='Actualizar pacientes';
-   b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='Actualizando...';await syncPatients('boton');b.textContent=old;b.disabled=false;if(window.numedStatus)window.numedStatus('Pacientes actualizados desde Supabase.');});
+   b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='Actualizando...';await syncPatients('boton',true);b.textContent=old;b.disabled=false;if(window.numedStatus)window.numedStatus('Pacientes actualizados desde Supabase.');});
    title.appendChild(b);
  }
  document.addEventListener('DOMContentLoaded',()=>{
    addRefreshButton();
-   if(localStorage.getItem('numedDoctorSession')==='1')setTimeout(()=>syncPatients('inicio'),500);
-   setInterval(()=>{const admin=document.getElementById('doctor-admin');if(admin&&getComputedStyle(admin).display!=='none'&&document.visibilityState==='visible')syncPatients('automatico');},12000);
+   if(!publicMode()&&localStorage.getItem('numedDoctorSession')==='1'&&adminVisible())setTimeout(()=>syncPatients('inicio'),700);
+   setInterval(()=>{if(!publicMode()&&adminVisible()&&document.visibilityState==='visible')syncPatients('automatico');},60000);
  });
- window.addEventListener('focus',()=>{if(Date.now()-lastSync>3000)syncPatients('focus')});
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastSync>3000)syncPatients('visible')});
+ window.addEventListener('focus',()=>{if(!publicMode()&&adminVisible()&&Date.now()-lastSync>30000)syncPatients('focus')});
+ document.addEventListener('visibilitychange',()=>{if(!publicMode()&&adminVisible()&&document.visibilityState==='visible'&&Date.now()-lastSync>30000)syncPatients('visible')});
  const oldAdminNav=window.adminNav;
- if(typeof oldAdminNav==='function')window.adminNav=function(name,btn){const out=oldAdminNav.apply(this,arguments);if(name==='patients'||name==='dashboard'||name==='pending'||name==='completed')setTimeout(()=>syncPatients('navegacion'),50);return out};
+ if(typeof oldAdminNav==='function')window.adminNav=function(name,btn){const out=oldAdminNav.apply(this,arguments);if(['patients','dashboard','pending','completed'].includes(name))setTimeout(()=>syncPatients('navegacion'),100);return out};
 })();
 </script>
 
@@ -4701,7 +4709,7 @@ function point(e){const r=canvas.getBoundingClientRect(),t=e.touches?.[0]||e;ret
 function start(e){e.preventDefault();drawing=true;last=point(e)}function move(e){if(!drawing)return;e.preventDefault();const p=point(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;signed=true}function end(){drawing=false;last=null}
 window.cons65ClearSign=()=>{if(ctx&&canvas){ctx.clearRect(0,0,canvas.width,canvas.height);signed=false}};
 async function rpc(name,args){const r=await fetch(NUMED_SB_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify(args)}),txt=await r.text();let d;try{d=txt?JSON.parse(txt):null}catch(_){d=txt}if(!r.ok)throw new Error(d?.message||d?.hint||JSON.stringify(d)||'No se pudo guardar');return d}
-async function loadLocalities(){try{const r=await fetch(NUMED_SB_URL+'/rest/v1/localidades?select=id,nombre&activo=eq.true&order=nombre',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON}}),a=await r.json(),s=$('cons65-sucursal');(Array.isArray(a)?a:[]).forEach(x=>{const o=document.createElement('option');o.value=x.nombre;o.textContent=x.nombre;s.appendChild(o)});if(s.options.length===1){['Club Banreservas - Santo Domingo','Otra'].forEach(x=>s.add(new Option(x,x)))}}catch(_){const s=$('cons65-sucursal');['Club Banreservas - Santo Domingo','Otra'].forEach(x=>s.add(new Option(x,x)))}}
+async function loadLocalities(){const s=$('cons65-sucursal');if(!s)return;const fallback=()=>{if(s.options.length===1)['Club Banreservas - Santo Domingo','Otra'].forEach(x=>s.add(new Option(x,x)))};try{const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),8000);const r=await fetch(NUMED_SB_URL+'/rest/v1/localidades?select=id,nombre&activa=eq.true&order=nombre',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON},signal:ctrl.signal});clearTimeout(timer);const a=await r.json();if(!r.ok)throw new Error(a?.message||('Supabase '+r.status));const seen=new Set([...s.options].map(o=>o.value));(Array.isArray(a)?a:[]).forEach(x=>{if(!x?.nombre||seen.has(x.nombre))return;seen.add(x.nombre);s.add(new Option(x.nombre,x.nombre))});fallback()}catch(e){console.warn('NUMED: localidades no disponibles; usando opciones locales.',e);fallback()}}
 async function initConsent(){const p=new URLSearchParams(location.search);if(p.get('mode')!=='consent')return false;document.querySelectorAll('body > *').forEach(el=>{if(el.id!=='cons65-page'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.display='none'});$('cons65-page').style.display='block';$('cons65-logo').src=logo();$('cons65-fecha').value=new Date().toISOString().slice(0,10);await loadLocalities();requestAnimationFrame(()=>{fitCanvas();canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end)});return true}
 $('cons65-form')?.addEventListener('submit',async e=>{e.preventDefault();if(!signed)return alert('Dibuja tu firma antes de enviar el consentimiento.');if(!$('cons65-acepta').checked)return alert('Debes aceptar el consentimiento antes de enviarlo.');const b=$('cons65-submit');try{b.disabled=true;b.textContent='Guardando consentimiento…';const firma=canvas.toDataURL('image/png');const result=await rpc('numed_submit_consentimiento',{p_nombres:$('cons65-nombre').value.trim(),p_apellidos:$('cons65-apellido').value.trim(),p_cedula:$('cons65-cedula').value.trim(),p_telefono:$('cons65-telefono').value.trim(),p_email:$('cons65-email').value.trim(),p_sucursal:$('cons65-sucursal').value,p_fecha:$('cons65-fecha').value,p_firma_data:firma,p_aceptado:true,p_version:'NUMED Care / ARS Reservas v1'});$('cons65-form').innerHTML='<section class="cons65-card cons65-success"><div class="ok">✓</div><h2>Consentimiento enviado</h2><p>Tu firma y aceptación fueron guardadas correctamente en NUMED.</p><p style="color:#789;font-size:13px">Puedes cerrar esta página.</p></section>'}catch(err){console.error('Consentimiento NUMED',err);alert('No se pudo guardar el consentimiento.\n\n'+err.message);b.disabled=false;b.textContent='Enviar consentimiento'}});
 window.cons65OpenQR=()=>{const m=$('cons65-qr-modal'),q=$('cons65-qr');m.style.display='flex';$('cons65-qr-logo').src=logo();q.innerHTML='';const u=consentURL();if(window.QRCode)new QRCode(q,{text:u,width:230,height:230,correctLevel:QRCode.CorrectLevel.M});else q.textContent=u};
