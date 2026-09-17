@@ -3692,7 +3692,7 @@ async function saveFullPatientToSupabase(){
  return pid;
 }
 function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),alcohol_frecuencia:cq.alcohol_frecuencia||'',actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),hora_acostarse:cq.hora_acostarse||'',hora_levantarse:cq.hora_levantarse||'',horas_sueno:Number(cq.horas_sueno||0),sueno_descanso:cq.sueno_descanso||'',dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_diastolica:m.presion_sistolica),presionDiastolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_sistolica:m.presion_diastolica),frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
-async function loadPatientsFromSupabase(){try{const rows=await sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();return rows||[]}catch(e){console.error('Carga Supabase:',e);alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
+async function loadPatientsFromSupabase(){try{if(window.__numedPatientsLoadPromise)return window.__numedPatientsLoadPromise;window.__numedPatientsLoadPromise=sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);const rows=await window.__numedPatientsLoadPromise;localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();window.__numedPatientsLoadPromise=null;return rows||[]}catch(e){window.__numedPatientsLoadPromise=null;console.error('Carga Supabase:',e);if(!['consent','photobooth'].includes(new URLSearchParams(location.search).get('mode')||''))alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
 window.doctorLogin=async function(){const email=document.getElementById('doc-user').value.trim(),password=document.getElementById('doc-pass').value;const err=document.getElementById('doc-login-error');const button=document.querySelector('.doc-login-primary');try{if(button){button.disabled=true;button.textContent='Verificando...'}const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');sessionStorage.setItem('numedSbAccessToken',d.access_token);localStorage.setItem('numedSbAccessToken',d.access_token);if(d.refresh_token)localStorage.setItem('numedSbRefreshToken',d.refresh_token);localStorage.setItem('numedSbExpiresAt',String(Date.now()+(Number(d.expires_in||3600)*1000)));localStorage.setItem('numedDoctorSession','1');err.style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin();await loadPatientsFromSupabase();}catch(e){console.error(e);err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block';}finally{if(button){button.disabled=false;button.textContent='Ingresar al panel'}}};
 const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){const x=_openDoctorAdminV14.apply(this,arguments);if(sessionStorage.getItem('numedSbAccessToken'))setTimeout(loadPatientsFromSupabase,50);return x};
 const _markMeasuredLocal=window.markCurrentPatientMeasured;
@@ -4160,38 +4160,46 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;back
 })();
 </script>
 
-<script id="numed-v45-qr-sync-fix">
+<script id="numed-v102-sync-stability">
 (function(){
  'use strict';
- let syncing=false,lastSync=0;
- async function syncPatients(reason){
-   if(syncing||localStorage.getItem('numedDoctorSession')!=='1') return;
-   if(typeof window.loadPatientsFromSupabase!=='function') return;
+ let syncing=false,lastSync=0,pending=null;
+ const publicMode=()=>['consent','photobooth'].includes(new URLSearchParams(location.search).get('mode')||'');
+ const adminVisible=()=>{const el=document.getElementById('doctor-admin');return !!(el&&getComputedStyle(el).display!=='none');};
+ async function syncPatients(reason,force=false){
+   if(publicMode()||localStorage.getItem('numedDoctorSession')!=='1'||typeof window.loadPatientsFromSupabase!=='function') return [];
+   const now=Date.now();
+   if(!force && now-lastSync<30000) return pending||[];
+   if(syncing) return pending||[];
    syncing=true;
-   try{
-     const rows=await window.loadPatientsFromSupabase();
-     lastSync=Date.now();
-     if(typeof window.renderAdminAll==='function') window.renderAdminAll();
-     console.info('NUMED v45: pacientes sincronizados', {reason,total:Array.isArray(rows)?rows.length:0});
-   }catch(e){console.error('NUMED v45 sync:',e)}finally{syncing=false}
+   pending=(async()=>{
+     try{
+       const rows=await window.loadPatientsFromSupabase();
+       lastSync=Date.now();
+       console.info('NUMED v102: pacientes sincronizados',{reason,total:Array.isArray(rows)?rows.length:0});
+       return rows||[];
+     }catch(e){console.error('NUMED v102 sync:',e);return []}
+     finally{syncing=false;pending=null}
+   })();
+   return pending;
  }
- window.refreshNumedPatients=function(){return syncPatients('manual')};
+ window.refreshNumedPatients=()=>syncPatients('manual',true);
  function addRefreshButton(){
    const title=document.querySelector('#admin-patients .admin-title-row');
    if(!title||document.getElementById('numed-refresh-patients'))return;
    const b=document.createElement('button');b.id='numed-refresh-patients';b.className='admin-action';b.type='button';b.textContent='Actualizar pacientes';
-   b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='Actualizando...';await syncPatients('boton');b.textContent=old;b.disabled=false;if(window.numedStatus)window.numedStatus('Pacientes actualizados desde Supabase.');});
+   b.addEventListener('click',async()=>{b.disabled=true;const old=b.textContent;b.textContent='Actualizando...';await syncPatients('boton',true);b.textContent=old;b.disabled=false;if(window.numedStatus)window.numedStatus('Pacientes actualizados desde Supabase.');});
    title.appendChild(b);
  }
  document.addEventListener('DOMContentLoaded',()=>{
    addRefreshButton();
-   if(localStorage.getItem('numedDoctorSession')==='1')setTimeout(()=>syncPatients('inicio'),500);
-   setInterval(()=>{const admin=document.getElementById('doctor-admin');if(admin&&getComputedStyle(admin).display!=='none'&&document.visibilityState==='visible')syncPatients('automatico');},12000);
+   if(!publicMode()&&localStorage.getItem('numedDoctorSession')==='1'&&adminVisible())setTimeout(()=>syncPatients('inicio'),700);
+   setInterval(()=>{if(!publicMode()&&adminVisible()&&document.visibilityState==='visible')syncPatients('automatico');},60000);
  });
- window.addEventListener('focus',()=>{if(Date.now()-lastSync>3000)syncPatients('focus')});
- document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastSync>3000)syncPatients('visible')});
+ window.addEventListener('focus',()=>{if(!publicMode()&&adminVisible()&&Date.now()-lastSync>30000)syncPatients('focus')});
+ document.addEventListener('visibilitychange',()=>{if(!publicMode()&&adminVisible()&&document.visibilityState==='visible'&&Date.now()-lastSync>30000)syncPatients('visible')});
  const oldAdminNav=window.adminNav;
- if(typeof oldAdminNav==='function')window.adminNav=function(name,btn){const out=oldAdminNav.apply(this,arguments);if(name==='patients'||name==='dashboard'||name==='pending'||name==='completed')setTimeout(()=>syncPatients('navegacion'),50);return out};
+ if(typeof oldAdminNav==='function')window.adminNav=function(name,btn){const out=oldAdminNav.apply(this,arguments);if(['patients','dashboard','pending','completed'].includes(name))setTimeout(()=>syncPatients('navegacion'),100);return out};
 })();
 </script>
 
@@ -4701,7 +4709,7 @@ function point(e){const r=canvas.getBoundingClientRect(),t=e.touches?.[0]||e;ret
 function start(e){e.preventDefault();drawing=true;last=point(e)}function move(e){if(!drawing)return;e.preventDefault();const p=point(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;signed=true}function end(){drawing=false;last=null}
 window.cons65ClearSign=()=>{if(ctx&&canvas){ctx.clearRect(0,0,canvas.width,canvas.height);signed=false}};
 async function rpc(name,args){const r=await fetch(NUMED_SB_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify(args)}),txt=await r.text();let d;try{d=txt?JSON.parse(txt):null}catch(_){d=txt}if(!r.ok)throw new Error(d?.message||d?.hint||JSON.stringify(d)||'No se pudo guardar');return d}
-async function loadLocalities(){try{const r=await fetch(NUMED_SB_URL+'/rest/v1/localidades?select=id,nombre&activo=eq.true&order=nombre',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON}}),a=await r.json(),s=$('cons65-sucursal');(Array.isArray(a)?a:[]).forEach(x=>{const o=document.createElement('option');o.value=x.nombre;o.textContent=x.nombre;s.appendChild(o)});if(s.options.length===1){['Club Banreservas - Santo Domingo','Otra'].forEach(x=>s.add(new Option(x,x)))}}catch(_){const s=$('cons65-sucursal');['Club Banreservas - Santo Domingo','Otra'].forEach(x=>s.add(new Option(x,x)))}}
+async function loadLocalities(){const s=$('cons65-sucursal');if(!s)return;const fallback=()=>{if(s.options.length===1)['Club Banreservas - Santo Domingo','Otra'].forEach(x=>s.add(new Option(x,x)))};try{const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),8000);const r=await fetch(NUMED_SB_URL+'/rest/v1/localidades?select=id,nombre&activa=eq.true&order=nombre',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON},signal:ctrl.signal});clearTimeout(timer);const a=await r.json();if(!r.ok)throw new Error(a?.message||('Supabase '+r.status));const seen=new Set([...s.options].map(o=>o.value));(Array.isArray(a)?a:[]).forEach(x=>{if(!x?.nombre||seen.has(x.nombre))return;seen.add(x.nombre);s.add(new Option(x.nombre,x.nombre))});fallback()}catch(e){console.warn('NUMED: localidades no disponibles; usando opciones locales.',e);fallback()}}
 async function initConsent(){const p=new URLSearchParams(location.search);if(p.get('mode')!=='consent')return false;document.querySelectorAll('body > *').forEach(el=>{if(el.id!=='cons65-page'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.display='none'});$('cons65-page').style.display='block';$('cons65-logo').src=logo();$('cons65-fecha').value=new Date().toISOString().slice(0,10);await loadLocalities();requestAnimationFrame(()=>{fitCanvas();canvas.addEventListener('pointerdown',start);canvas.addEventListener('pointermove',move);window.addEventListener('pointerup',end)});return true}
 $('cons65-form')?.addEventListener('submit',async e=>{e.preventDefault();if(!signed)return alert('Dibuja tu firma antes de enviar el consentimiento.');if(!$('cons65-acepta').checked)return alert('Debes aceptar el consentimiento antes de enviarlo.');const b=$('cons65-submit');try{b.disabled=true;b.textContent='Guardando consentimiento…';const firma=canvas.toDataURL('image/png');const result=await rpc('numed_submit_consentimiento',{p_nombres:$('cons65-nombre').value.trim(),p_apellidos:$('cons65-apellido').value.trim(),p_cedula:$('cons65-cedula').value.trim(),p_telefono:$('cons65-telefono').value.trim(),p_email:$('cons65-email').value.trim(),p_sucursal:$('cons65-sucursal').value,p_fecha:$('cons65-fecha').value,p_firma_data:firma,p_aceptado:true,p_version:'NUMED Care / ARS Reservas v1'});$('cons65-form').innerHTML='<section class="cons65-card cons65-success"><div class="ok">✓</div><h2>Consentimiento enviado</h2><p>Tu firma y aceptación fueron guardadas correctamente en NUMED.</p><p style="color:#789;font-size:13px">Puedes cerrar esta página.</p></section>'}catch(err){console.error('Consentimiento NUMED',err);alert('No se pudo guardar el consentimiento.\n\n'+err.message);b.disabled=false;b.textContent='Enviar consentimiento'}});
 window.cons65OpenQR=()=>{const m=$('cons65-qr-modal'),q=$('cons65-qr');m.style.display='flex';$('cons65-qr-logo').src=logo();q.innerHTML='';const u=consentURL();if(window.QRCode)new QRCode(q,{text:u,width:230,height:230,correctLevel:QRCode.CorrectLevel.M});else q.textContent=u};
@@ -4966,32 +4974,48 @@ window.pb64CloseQR=()=>{$('pb64-qr-modal').style.display='none'};window.pb64Copy
 async function publicRPC(name,args){const r=await fetch(NUMED_SB_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify(args)}),txt=await r.text();let d=null;try{d=txt?JSON.parse(txt):null}catch(_){d=txt}if(!r.ok)throw new Error(d?.message||JSON.stringify(d)||'Acceso no disponible');return d}
 async function initPatient(){const p=new URLSearchParams(location.search);if(p.get('mode')!=='photobooth')return false;document.querySelectorAll('body > *').forEach(el=>{if(!['pb64-patient'].includes(el.id)&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.display='none'});$('pb64-patient').style.display='block';$('pb64-logo').src=logo();try{const d=await publicRPC('numed_get_photobooth_access',{p_token:p.get('token')||''});patientData=Array.isArray(d)?d[0]:d;if(!patientData?.paciente_id)throw new Error('El enlace venció o no es válido. Solicita un QR nuevo al personal de NUMED.');$('pb64-welcome').textContent='Hola '+(patientData.nombre||'')+'. Tu resultado está listo. Toma tu foto para crear tu ficha.';$('pb64-result').innerHTML='<div class="pb64-age"><small>Edad cronológica</small><strong>'+esc(patientData.edad_cronologica)+'</strong><span>años</span></div><div class="pb64-arrow">→</div><div class="pb64-age bio"><small>Edad biológica</small><strong>'+esc(patientData.edad_biologica)+'</strong><span>años</span></div>'}catch(e){$('pb64-result').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#a33;padding:20px"><strong>No se puede abrir este Photo Booth.</strong><br>'+esc(e.message)+'</div>';document.querySelector('.pb64-card').style.display='none'}return true}
 window.pb64StartCamera=async()=>{try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('La cámara no está disponible aquí. Usa “Subir foto”.');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});$('pb64-stage').innerHTML='<video id="pb64-video" autoplay playsinline muted></video>';$('pb64-video').srcObject=stream;$('pb64-shot').disabled=false;$('pb64-status').textContent='Cámara lista.'}catch(e){$('pb64-status').textContent=e.message}};
-window.pb64TakePhoto=()=>{const v=$('pb64-video');if(!v)return;const c=document.createElement('canvas'),w=v.videoWidth||720,h=v.videoHeight||900;c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);photoData=c.toDataURL('image/jpeg',.94);stream?.getTracks().forEach(t=>t.stop());stream=null;$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto lista. Ya puedes descargar tu ficha.'};
-$('pb64-file')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{photoData=rd.result;$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto lista. Ya puedes descargar tu ficha.'};rd.readAsDataURL(f)});
+function pb64CartoonizeCanvas(c){const ctx=c.getContext('2d',{willReadFrequently:true}),w=c.width,h=c.height;ctx.filter='saturate(1.28) contrast(1.08) brightness(1.04)';const copy=document.createElement('canvas');copy.width=w;copy.height=h;copy.getContext('2d').drawImage(c,0,0);ctx.clearRect(0,0,w,h);ctx.drawImage(copy,0,0);ctx.filter='none';const im=ctx.getImageData(0,0,w,h),d=im.data,levels=6,step=255/(levels-1);for(let i=0;i<d.length;i+=4){let r=Math.round(d[i]/step)*step,g=Math.round(d[i+1]/step)*step,b=Math.round(d[i+2]/step)*step;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),boost=(mx-mn)*.12;d[i]=Math.max(0,Math.min(255,r+(r-g)*.10+boost));d[i+1]=Math.max(0,Math.min(255,g+(g-b)*.06));d[i+2]=Math.max(0,Math.min(255,b+(b-r)*.08))}ctx.putImageData(im,0,0);return c}
+async function pb64AnimatedData(src){const im=await new Promise((ok,no)=>{const z=new Image();z.onload=()=>ok(z);z.onerror=no;z.src=src});const c=document.createElement('canvas');c.width=im.naturalWidth||1080;c.height=im.naturalHeight||1350;c.getContext('2d').drawImage(im,0,0,c.width,c.height);pb64CartoonizeCanvas(c);return c.toDataURL('image/jpeg',.94)}
+window.pb64TakePhoto=()=>{const v=$('pb64-video');if(!v)return;const c=document.createElement('canvas'),w=v.videoWidth||720,h=v.videoHeight||900;c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);pb64CartoonizeCanvas(c);photoData=c.toDataURL('image/jpeg',.94);stream?.getTracks().forEach(t=>t.stop());stream=null;$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto animada">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto animada lista. Ya puedes descargar tu ficha.'};
+$('pb64-file')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=async()=>{try{$('pb64-status').textContent='Aplicando estilo animado…';photoData=await pb64AnimatedData(rd.result);$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto animada">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto animada lista. Ya puedes descargar tu ficha.'}catch(err){console.error(err);$('pb64-status').textContent='No se pudo aplicar el estilo animado.'}};rd.readAsDataURL(f)});
 window.pb64Retake=()=>{stream?.getTracks().forEach(t=>t.stop());stream=null;photoData='';$('pb64-stage').innerHTML='<div class="empty"><b>📸</b>Abre la cámara o sube una foto.</div>';$('pb64-downloads').style.display='none';$('pb64-shot').disabled=true};
 async function renderCard(kind){
  if(!photoData||!patientData)throw new Error('Primero toma o sube una foto.');
  const story=kind==='story',c=document.createElement('canvas');c.width=1080;c.height=story?1920:1080;const x=c.getContext('2d');
- const W=c.width,H=c.height;
- const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#153f62');g.addColorStop(.50,'#315f82');g.addColorStop(1,'#071c2d');x.fillStyle=g;x.fillRect(0,0,W,H);
+ const W=c.width,H=c.height,green='#98bf2f',navy='#061d2f',muted='#9babb8';
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#17486d');g.addColorStop(.48,'#315f82');g.addColorStop(1,navy);x.fillStyle=g;x.fillRect(0,0,W,H);
  const im=await new Promise((ok,no)=>{const z=new Image();z.onload=()=>ok(z);z.onerror=no;z.src=photoData});
- const photoTop=story?0:0,photoH=story?1390:790,scale=Math.max(W/im.width,photoH/im.height),sw=W/scale,sh=photoH/scale,sx=(im.width-sw)/2,sy=Math.max(0,(im.height-sh)/2);
- x.save();x.globalAlpha=.98;x.drawImage(im,sx,sy,sw,sh,0,photoTop,W,photoH);x.restore();
- const fade=x.createLinearGradient(0,story?850:480,0,H);fade.addColorStop(0,'rgba(5,27,44,0)');fade.addColorStop(.45,'rgba(5,27,44,.72)');fade.addColorStop(1,'rgba(4,20,33,.98)');x.fillStyle=fade;x.fillRect(0,story?760:420,W,H-(story?760:420));
- x.fillStyle='#fff';x.font='900 '+(story?58:38)+'px Arial';x.fillText('NUMED',story?72:52,story?105:72);
- const name=(patientData.nombre||'Paciente NUMED').trim();x.textAlign='center';x.fillStyle='#fff';x.font='800 '+(story?48:32)+'px Arial';x.fillText(name,W/2,story?1320:760);
- const cy=story?1510:900;x.textAlign='left';x.font='900 '+(story?170:100)+'px Arial';x.fillStyle='#fff';x.fillText(String(patientData.edad_cronologica),story?90:70,cy);
- x.fillStyle='#92b933';x.fillText(String(patientData.edad_biologica),story?620:620,cy);
- x.fillStyle='#6f8394';x.font='700 '+(story?78:48)+'px Arial';x.fillText('/',story?510:510,cy-20);
- x.font='500 '+(story?28:18)+'px Arial';x.fillStyle='#fff';x.fillText('cronológica',story?225:150,cy+55);x.fillText('biológica',story?700:700,cy+55);
- x.textAlign='center';x.font='900 '+(story?55:34)+'px Arial';x.fillStyle='#fff';x.fillText('Tu edad tiene',W/2-95,story?1690:1010);x.fillStyle='#92b933';x.fillText('dos caras.',W/2+250,story?1690:1010);
- x.fillStyle='#8ea0ad';x.font='500 '+(story?24:16)+'px Arial';x.fillText('numedrd.com',W/2,H-(story?65:35));x.textAlign='left';return c
+ const photoH=story?1430:800,scale=Math.max(W/im.width,photoH/im.height),sw=W/scale,sh=photoH/scale,sx=(im.width-sw)/2,sy=Math.max(0,(im.height-sh)/2);
+ x.save();x.globalAlpha=.98;x.drawImage(im,sx,sy,sw,sh,0,0,W,photoH);x.restore();
+ const fadeStart=story?820:430,fade=x.createLinearGradient(0,fadeStart,0,H);fade.addColorStop(0,'rgba(6,29,47,0)');fade.addColorStop(.34,'rgba(6,29,47,.62)');fade.addColorStop(.70,'rgba(6,29,47,.94)');fade.addColorStop(1,'rgba(6,29,47,1)');x.fillStyle=fade;x.fillRect(0,fadeStart,W,H-fadeStart);
+ // Logo NUMED blanco para mantener contraste sobre la fotografía/fondo azul.
+ try{
+  const src=logo();
+  if(src){
+   const lg=await new Promise((ok,no)=>{const z=new Image();z.onload=()=>ok(z);z.onerror=no;z.src=src});
+   const maxW=story?300:190,maxH=story?105:68,ratio=Math.min(maxW/lg.width,maxH/lg.height),lw=lg.width*ratio,lh=lg.height*ratio;
+   const off=document.createElement('canvas');off.width=Math.max(1,Math.round(lw));off.height=Math.max(1,Math.round(lh));const ox=off.getContext('2d');
+   ox.drawImage(lg,0,0,off.width,off.height);ox.globalCompositeOperation='source-in';ox.fillStyle='#ffffff';ox.fillRect(0,0,off.width,off.height);
+   x.drawImage(off,story?68:48,story?58:38,lw,lh);
+  }
+ }catch(_){x.textAlign='left';x.fillStyle='#fff';x.font='900 '+(story?54:36)+'px Montserrat, Arial';x.fillText('NUMED',story?68:48,story?100:68)}
+ // Nombre: siempre separado del resultado.
+ const name=(patientData.nombre||'Paciente NUMED').trim();let nameSize=story?52:34;x.font='800 '+nameSize+'px Montserrat, Arial';while(x.measureText(name).width>W-140&&nameSize>(story?34:24)){nameSize-=2;x.font='800 '+nameSize+'px Montserrat, Arial'}x.textAlign='center';x.fillStyle='#fff';x.fillText(name,W/2,story?1290:710);
+ // Edades: dos columnas con espacio central fijo.
+ const numY=story?1490:850,numSize=story?176:108,leftX=285,rightX=795;x.font='900 '+numSize+'px Montserrat, Arial';x.textBaseline='alphabetic';x.fillStyle='#fff';x.textAlign='center';x.fillText(String(patientData.edad_cronologica??'—'),leftX,numY);x.fillStyle=green;x.fillText(String(patientData.edad_biologica??'—'),rightX,numY);
+ x.fillStyle='#72899b';x.font='700 '+(story?78:48)+'px Montserrat, Arial';x.fillText('/',W/2,numY-(story?28:16));
+ // Etiquetas debajo de cada número; nunca sobre el slogan.
+ const labelY=numY+(story?68:43);x.font='500 '+(story?29:19)+'px Montserrat, Arial';x.fillStyle='#fff';x.fillText('cronológica',leftX,labelY);x.fillText('biológica',rightX,labelY);
+ // Slogan en una línea independiente.
+ const sloganY=story?1695:980;x.font='900 '+(story?55:35)+'px Montserrat, Arial';const a='Tu edad tiene ',b='dos caras.';const aw=x.measureText(a).width;x.font='900 '+(story?55:35)+'px Montserrat, Arial';const bw=x.measureText(b).width,total=aw+bw,begin=(W-total)/2;x.textAlign='left';x.fillStyle='#fff';x.fillText(a,begin,sloganY);x.fillStyle=green;x.fillText(b,begin+aw,sloganY);
+ // Firma inferior con margen seguro para Stories.
+ x.textAlign='center';x.fillStyle=muted;x.font='500 '+(story?25:16)+'px Montserrat, Arial';x.fillText('numedrd.com',W/2,H-(story?72:28));x.textAlign='left';return c
 }
 async function blobOf(c){return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('No se pudo crear la imagen')),'image/png',1))}
 async function savePatientCard(blob,kind){const arr=new Uint8Array(await blob.arrayBuffer()),binary=Array.from(arr,b=>String.fromCharCode(b)).join(''),b64=btoa(binary);await publicRPC('numed_save_photobooth_card',{p_token:new URLSearchParams(location.search).get('token')||'',p_kind:kind,p_photo_data:photoData,p_card_data:'data:image/png;base64,'+b64})}
 window.pb64Download=async kind=>{try{$('pb64-status').textContent='Creando tu ficha…';const c=await renderCard(kind),blob=await blobOf(c);$('pb64-status').textContent='Ficha lista para descargar.';const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NUMED_PhotoBooth_'+kind+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}catch(e){alert(e.message)}};
 function addDoctorButton(){const tabs=document.querySelector('.detail-tabs');if(!tabs||document.getElementById('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=window.pb64OpenQR;tabs.appendChild(b)}new MutationObserver(addDoctorButton).observe(document.documentElement,{childList:true,subtree:true});addDoctorButton();
-window.addEventListener('DOMContentLoaded',initPatient);if(document.readyState!=='loading')initPatient();window.NUMED_RUNTIME_VERSION='64';})();
+window.addEventListener('DOMContentLoaded',initPatient);if(document.readyState!=='loading')initPatient();window.NUMED_RUNTIME_VERSION='101';})();
 </script>
 <style id="numed-v87-responsive-crossdevice">
 /* NUMED v87 - responsive layer: iPhone, iPad, Mac/Safari */
@@ -5109,12 +5133,12 @@ const FILTERS={
  contrast:{label:'Contraste',css:'contrast(1.16) saturate(1.08)'},
  cartoon:{label:'Animado',css:'saturate(1.28) contrast(1.08) brightness(1.04)'}
 };
-let selected='natural', originalData='', busy=false;
-window.__numedPBFilter='natural';
+let selected='cartoon', originalData='', busy=false;
+window.__numedPBFilter='cartoon';
 function ensureUI(){
  const camera=document.querySelector('#pb46-modal .pb46-camera'); if(!camera||$('pb96-filters'))return;
  const status=$('pb46-status'); const box=document.createElement('div');box.id='pb96-filters';box.className='pb96-filters';
- box.innerHTML='<div class="pb96-filter-head"><strong>Filtro de foto</strong><small>Vista previa y foto final</small></div><div class="pb96-filter-list">'+Object.entries(FILTERS).map(([k,v])=>`<button type="button" class="pb96-filter ${k==='natural'?'active':''}" data-pb96="${k}">${v.label}</button>`).join('')+'</div><div class="pb96-note"><b>Animado</b> crea un efecto ilustrado tipo cartoon directamente en el dispositivo. No cambia los rasgos ni utiliza IA externa.</div>';
+ box.innerHTML='<div class="pb96-filter-head"><strong>Filtro de foto</strong><small>Vista previa y foto final</small></div><div class="pb96-filter-list">'+Object.entries(FILTERS).map(([k,v])=>`<button type="button" class="pb96-filter ${k==='cartoon'?'active':''}" data-pb96="${k}">${v.label}</button>`).join('')+'</div><div class="pb96-note"><b>Animado</b> crea un efecto ilustrado tipo cartoon directamente en el dispositivo. No cambia los rasgos ni utiliza IA externa.</div>';
  if(status)camera.insertBefore(box,status);else camera.appendChild(box);
  box.addEventListener('click',e=>{const b=e.target.closest('[data-pb96]');if(!b)return;selectFilter(b.dataset.pb96)});
 }
@@ -5156,7 +5180,7 @@ async function applyToPhoto(){
 async function selectFilter(key){if(!FILTERS[key]||busy)return;selected=key;window.__numedPBFilter=key;updateButtons();applyLive();if($('pb46-photo')?.src)await applyToPhoto()}
 const oldStart=window.pb46Start;window.pb46Start=async function(){ensureUI();const r=await oldStart?.apply(this,arguments);setTimeout(applyLive,80);return r};
 const oldShot=window.pb46Shot;window.pb46Shot=function(){originalData='';const r=oldShot?.apply(this,arguments);setTimeout(async()=>{const img=$('pb46-photo');if(img?.src){originalData=img.src;await applyToPhoto()}},40);return r};
-const oldRetake=window.pb46Retake;window.pb46Retake=function(){originalData='';selected='natural';window.__numedPBFilter='natural';updateButtons();return oldRetake?.apply(this,arguments)};
+const oldRetake=window.pb46Retake;window.pb46Retake=function(){originalData='';selected='cartoon';window.__numedPBFilter='cartoon';updateButtons();return oldRetake?.apply(this,arguments)};
 const oldOpen=window.pb46Open;window.pb46Open=function(){ensureUI();const r=oldOpen?.apply(this,arguments);setTimeout(()=>{updateButtons();applyLive()},80);return r};
 document.addEventListener('change',e=>{if(e.target?.id!=='pb46-file')return;originalData='';setTimeout(async()=>{const img=$('pb46-photo');if(img?.src){originalData=img.src;await applyToPhoto()}},120)});
 document.addEventListener('DOMContentLoaded',ensureUI);
@@ -5171,5 +5195,44 @@ setTimeout(ensureUI,300);
 .pb97-story .pb46-ages{position:absolute;z-index:4;left:5%;right:5%;top:70%;display:grid;grid-template-columns:1fr auto 1fr;gap:5px;align-items:center;margin:0}.pb97-story .pb46-age{background:none;border:0;border-radius:0;padding:0;text-align:center}.pb97-story .pb46-age strong{font-size:clamp(62px,8.5vw,102px);line-height:.9;font-weight:950;color:#fff;text-shadow:7px 7px 0 rgba(145,185,51,.92)}.pb97-story .pb46-age.bio strong{color:#92b933;text-shadow:0 0 18px rgba(146,185,51,.18)}.pb97-story .pb46-age small{display:block;margin-top:10px;color:#fff;font-size:clamp(11px,1.3vw,16px);font-weight:500;letter-spacing:.02em;text-transform:none}.pb97-story .pb46-arrow{font-size:clamp(30px,4vw,52px);color:#748798;font-weight:700}.pb97-story .pb46-message{position:absolute;z-index:4;left:4%;right:4%;bottom:8.5%;margin:0;text-align:center;color:#fff;font-size:clamp(19px,2.7vw,32px);font-weight:900}.pb97-story .pb46-message b{color:#92b933}.pb97-story .pb46-foot{position:absolute;z-index:4;left:0;right:0;bottom:3.2%;margin:0;text-align:center;color:#91a0ab;font-size:clamp(9px,1vw,12px);letter-spacing:.08em}.pb46-preview>.pb46-actions{width:100%}
 @media(max-width:820px){.pb46-card.pb97-story{width:min(360px,92vw)}}
 </style>
+
+<style id="numed-v101-photobooth-final-audit">
+#pb64-patient,#pb64-patient *,#pb46-modal,#pb46-modal *,.pb46-card,.pb46-card *{font-family:Montserrat,Arial,sans-serif!important}
+</style>
 </body>
 </html>
+<style id="numed-v103-photobooth-layout">
+/* V103: Photo Booth con bloques verticales independientes, sin superposiciones */
+.pb97-story .pb46-person{top:auto!important;bottom:28.5%!important;left:6%!important;right:6%!important}
+.pb97-story .pb46-person strong{font-family:Montserrat,Arial,sans-serif!important;font-size:clamp(17px,2.2vw,25px)!important;line-height:1.15!important}
+.pb97-story .pb46-ages{top:auto!important;bottom:16.2%!important;left:6%!important;right:6%!important;align-items:end!important;gap:10px!important}
+.pb97-story .pb46-age strong{font-family:Montserrat,Arial,sans-serif!important;font-size:clamp(54px,7.3vw,86px)!important;line-height:.86!important;text-shadow:none!important}
+.pb97-story .pb46-age:first-child strong{text-shadow:5px 5px 0 rgba(146,185,51,.92)!important}
+.pb97-story .pb46-age small{font-family:Montserrat,Arial,sans-serif!important;margin-top:9px!important;font-size:clamp(10px,1.15vw,14px)!important;line-height:1.1!important}
+.pb97-story .pb46-arrow{font-family:Montserrat,Arial,sans-serif!important;font-size:clamp(25px,3.2vw,39px)!important;line-height:1!important;padding-bottom:18px!important}
+.pb97-story .pb46-message{top:auto!important;bottom:8.4%!important;left:5%!important;right:5%!important;font-family:Montserrat,Arial,sans-serif!important;font-size:clamp(16px,2.15vw,25px)!important;line-height:1.08!important;white-space:nowrap!important}
+.pb97-story .pb46-foot{bottom:3.2%!important;font-family:Montserrat,Arial,sans-serif!important}
+</style>
+<script id="numed-v103-public-render-layout">
+/* Ajusta el render público para que nombre, edades, etiquetas, slogan y web nunca se monten. */
+(function(){
+ const oldRender=typeof renderCard==='function'?renderCard:null;
+ if(!oldRender)return;
+ renderCard=async function(kind){
+  if(!photoData||!patientData)throw new Error('Primero toma o sube una foto.');
+  const story=kind==='story',c=document.createElement('canvas');c.width=1080;c.height=story?1920:1080;const x=c.getContext('2d');
+  const W=c.width,H=c.height,green='#98bf2f',navy='#061d2f',muted='#9babb8';
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#17486d');g.addColorStop(.48,'#315f82');g.addColorStop(1,navy);x.fillStyle=g;x.fillRect(0,0,W,H);
+  const im=await new Promise((ok,no)=>{const z=new Image();z.onload=()=>ok(z);z.onerror=no;z.src=photoData});
+  const photoH=story?1320:700,scale=Math.max(W/im.width,photoH/im.height),sw=W/scale,sh=photoH/scale,sx=(im.width-sw)/2,sy=Math.max(0,(im.height-sh)/2);
+  x.drawImage(im,sx,sy,sw,sh,0,0,W,photoH);
+  const fadeStart=story?760:380,fade=x.createLinearGradient(0,fadeStart,0,H);fade.addColorStop(0,'rgba(6,29,47,0)');fade.addColorStop(.35,'rgba(6,29,47,.60)');fade.addColorStop(.72,'rgba(6,29,47,.96)');fade.addColorStop(1,'rgba(6,29,47,1)');x.fillStyle=fade;x.fillRect(0,fadeStart,W,H-fadeStart);
+  try{const src=logo();if(src){const lg=await new Promise((ok,no)=>{const z=new Image();z.onload=()=>ok(z);z.onerror=no;z.src=src});const maxW=story?280:180,maxH=story?98:62,ratio=Math.min(maxW/lg.width,maxH/lg.height),lw=lg.width*ratio,lh=lg.height*ratio,off=document.createElement('canvas');off.width=Math.max(1,Math.round(lw));off.height=Math.max(1,Math.round(lh));const ox=off.getContext('2d');ox.drawImage(lg,0,0,off.width,off.height);ox.globalCompositeOperation='source-in';ox.fillStyle='#fff';ox.fillRect(0,0,off.width,off.height);x.drawImage(off,story?68:48,story?58:38,lw,lh)}}catch(_){x.fillStyle='#fff';x.font='900 '+(story?50:34)+'px Montserrat, Arial';x.fillText('NUMED',story?68:48,story?100:68)}
+  const name=(patientData.nombre||'Paciente NUMED').trim();let nameSize=story?48:31;x.font='800 '+nameSize+'px Montserrat, Arial';while(x.measureText(name).width>W-150&&nameSize>(story?32:22)){nameSize-=2;x.font='800 '+nameSize+'px Montserrat, Arial'}x.textAlign='center';x.fillStyle='#fff';x.fillText(name,W/2,story?1325:715);
+  const leftX=300,rightX=780,numY=story?1510:865,numSize=story?150:94;x.font='900 '+numSize+'px Montserrat, Arial';x.fillStyle='#fff';x.fillText(String(patientData.edad_cronologica??'—'),leftX,numY);x.fillStyle=green;x.fillText(String(patientData.edad_biologica??'—'),rightX,numY);x.fillStyle='#72899b';x.font='700 '+(story?62:40)+'px Montserrat, Arial';x.fillText('/',W/2,numY-(story?25:15));
+  const labelY=story?1580:910;x.font='500 '+(story?27:17)+'px Montserrat, Arial';x.fillStyle='#fff';x.fillText('cronológica',leftX,labelY);x.fillText('biológica',rightX,labelY);
+  const sloganY=story?1715:995,a='Tu edad tiene ',b='dos caras.';x.font='900 '+(story?49:30)+'px Montserrat, Arial';const aw=x.measureText(a).width,bw=x.measureText(b).width,begin=(W-aw-bw)/2;x.textAlign='left';x.fillStyle='#fff';x.fillText(a,begin,sloganY);x.fillStyle=green;x.fillText(b,begin+aw,sloganY);
+  x.textAlign='center';x.fillStyle=muted;x.font='500 '+(story?24:15)+'px Montserrat, Arial';x.fillText('numedrd.com',W/2,H-(story?70:26));x.textAlign='left';return c;
+ };
+})();
+</script>
