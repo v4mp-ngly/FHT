@@ -3675,7 +3675,7 @@ window.addEventListener('DOMContentLoaded',()=>{const sourceLogo=document.queryS
 const NUMED_SB_URL='https://fvbukwrdgsrvdinkmsph.supabase.co';
 const NUMED_SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2YnVrd3JkZ3NydmRpbmttc3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyMDUxNjksImV4cCI6MjEwMzc4MTE2OX0.hM4jjlIOL1HG3d1tYQ1uCADVHRNd_RyyjLAlji_nHyU';
 function sbHeaders(auth=false,extra={}){const token=auth?(sessionStorage.getItem('numedSbAccessToken')||localStorage.getItem('numedSbAccessToken')||NUMED_SB_ANON):NUMED_SB_ANON;return {apikey:NUMED_SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json',...extra}}
-async function sbJSON(path,options={},auth=false){const r=await fetch(NUMED_SB_URL+'/rest/v1/'+path,{...options,headers:sbHeaders(auth,options.headers||{})});const text=await r.text();if(!r.ok)throw new Error(text||('Supabase '+r.status));return text?JSON.parse(text):null}
+async function sbJSON(path,options={},auth=false){const ctl=!options.signal&&typeof AbortController!=='undefined'?new AbortController():null;const timer=ctl?setTimeout(()=>ctl.abort(),15000):null;try{const r=await fetch(NUMED_SB_URL+'/rest/v1/'+path,{...options,signal:options.signal||(ctl?ctl.signal:undefined),headers:sbHeaders(auth,options.headers||{})});const text=await r.text();if(!r.ok)throw new Error(text||('Supabase '+r.status));return text?JSON.parse(text):null}catch(e){if(e?.name==='AbortError')throw new Error('Supabase tardó demasiado en responder. Intenta nuevamente.');throw e}finally{if(timer)clearTimeout(timer)}}
 async function getLocalityId(name){const rows=await sbJSON('localidades?select=id,nombre&nombre=eq.'+encodeURIComponent(name)+'&activa=eq.true');if(!rows?.length)throw new Error('La localidad seleccionada no existe o esta inactiva.');return rows[0].id}
 async function saveFullPatientToSupabase(){
  const p=window.integralPatient,ps=window.integralPSS,q=window._questionnaireAnswers||{};if(!p||!ps)return;
@@ -3694,7 +3694,7 @@ async function saveFullPatientToSupabase(){
 function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),alcohol_frecuencia:cq.alcohol_frecuencia||'',actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),hora_acostarse:cq.hora_acostarse||'',hora_levantarse:cq.hora_levantarse||'',horas_sueno:Number(cq.horas_sueno||0),sueno_descanso:cq.sueno_descanso||'',dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_diastolica:m.presion_sistolica),presionDiastolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_sistolica:m.presion_diastolica),frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
 async function loadPatientsFromSupabase(){try{if(window.__numedPatientsLoadPromise)return window.__numedPatientsLoadPromise;window.__numedPatientsLoadPromise=sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);const rows=await window.__numedPatientsLoadPromise;localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();window.__numedPatientsLoadPromise=null;return rows||[]}catch(e){window.__numedPatientsLoadPromise=null;console.error('Carga Supabase:',e);if(!['consent','photobooth'].includes(new URLSearchParams(location.search).get('mode')||''))alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
 window.doctorLogin=async function(){const email=document.getElementById('doc-user').value.trim(),password=document.getElementById('doc-pass').value;const err=document.getElementById('doc-login-error');const button=document.querySelector('.doc-login-primary');try{if(button){button.disabled=true;button.textContent='Verificando...'}const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');sessionStorage.setItem('numedSbAccessToken',d.access_token);localStorage.setItem('numedSbAccessToken',d.access_token);if(d.refresh_token)localStorage.setItem('numedSbRefreshToken',d.refresh_token);localStorage.setItem('numedSbExpiresAt',String(Date.now()+(Number(d.expires_in||3600)*1000)));localStorage.setItem('numedDoctorSession','1');err.style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin();await loadPatientsFromSupabase();}catch(e){console.error(e);err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block';}finally{if(button){button.disabled=false;button.textContent='Ingresar al panel'}}};
-const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){const x=_openDoctorAdminV14.apply(this,arguments);if(sessionStorage.getItem('numedSbAccessToken'))setTimeout(loadPatientsFromSupabase,50);return x};
+const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){return _openDoctorAdminV14.apply(this,arguments)};
 const _markMeasuredLocal=window.markCurrentPatientMeasured;
 window.markCurrentPatientMeasured=async function(evaluationData){
  const p=window.integralPatient;
@@ -3783,6 +3783,8 @@ document.addEventListener('DOMContentLoaded',()=>{const u=document.getElementByI
 <script id="numed-v27-persistent-session">
 (function(){
   function resumeNumedDoctor(){
+    const mode=new URLSearchParams(location.search).get('mode');
+    if(['patient','consent','photobooth'].includes(mode||'')) return;
     if(localStorage.getItem('numedDoctorSession')==='1'){
       try{ openDoctorAdmin(); }catch(e){ console.error('NUMED: no se pudo restaurar la sesión médica',e); }
     }
@@ -3804,7 +3806,6 @@ document.addEventListener('DOMContentLoaded',()=>{const u=document.getElementByI
     try{
       if(typeof renderAdminAll==='function') renderAdminAll();
       if(typeof restoreAdminState==='function') restoreAdminState();
-      if(sessionStorage.getItem(TOKEN_KEY) && typeof loadPatientsFromSupabase==='function') loadPatientsFromSupabase();
     }catch(e){console.error('NUMED v28 restore:',e)}
     return true;
   }
@@ -3812,16 +3813,14 @@ document.addEventListener('DOMContentLoaded',()=>{const u=document.getElementByI
   function boot(){
     // El modo paciente siempre tiene prioridad cuando se abre el QR público.
     const mode=new URLSearchParams(location.search).get('mode');
-    if(mode==='patient') return;
+    if(['patient','consent','photobooth'].includes(mode||'')) return;
     if(localStorage.getItem(SESSION_KEY)==='1'){
       forceDoctorView();
-      setTimeout(forceDoctorView,0);
-      setTimeout(forceDoctorView,120);
     }
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
-  window.addEventListener('pageshow',boot);
+  // v105: no pageshow re-bootstrap; evita render/sync duplicados al volver a la pestaña.
 
   // Corrige el retorno desde una evaluación clínica: la sesión real se guarda en localStorage.
   window.showDoctorPanel=function(){
@@ -4194,12 +4193,7 @@ body:after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;back
  document.addEventListener('DOMContentLoaded',()=>{
    addRefreshButton();
    if(!publicMode()&&localStorage.getItem('numedDoctorSession')==='1'&&adminVisible())setTimeout(()=>syncPatients('inicio'),700);
-   setInterval(()=>{if(!publicMode()&&adminVisible()&&document.visibilityState==='visible')syncPatients('automatico');},60000);
  });
- window.addEventListener('focus',()=>{if(!publicMode()&&adminVisible()&&Date.now()-lastSync>30000)syncPatients('focus')});
- document.addEventListener('visibilitychange',()=>{if(!publicMode()&&adminVisible()&&document.visibilityState==='visible'&&Date.now()-lastSync>30000)syncPatients('visible')});
- const oldAdminNav=window.adminNav;
- if(typeof oldAdminNav==='function')window.adminNav=function(name,btn){const out=oldAdminNav.apply(this,arguments);if(['patients','dashboard','pending','completed'].includes(name))setTimeout(()=>syncPatients('navegacion'),100);return out};
 })();
 </script>
 
@@ -4717,7 +4711,7 @@ window.cons65CloseQR=()=>{$('cons65-qr-modal').style.display='none'};window.cons
 async function consentRow(pid){if(!pid)return null;try{if(typeof ensureSbSession==='function')await ensureSbSession();const t=sessionStorage.getItem('numedSbAccessToken')||localStorage.getItem('numedSbAccessToken');const r=await fetch(NUMED_SB_URL+'/rest/v1/consentimientos_programa?select=id,aceptado,fecha_consentimiento,created_at,nombres,apellidos,sucursal,firma_data,version_documento&paciente_id=eq.'+encodeURIComponent(pid)+'&order=created_at.desc&limit=1',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+t}}),a=await r.json();if(!r.ok)throw new Error(JSON.stringify(a));return a?.[0]||null}catch(e){console.warn('Consentimiento status',e);return null}}
 window.cons65RenderDoctor=async function(){const box=$('detail-content'),r=window.adminCurrentPatient;if(!box||!r)return;box.innerHTML='<div class="detail-card">Cargando consentimiento…</div>';const row=await consentRow(r.supabaseId);if(!row){box.innerHTML='<div class="detail-card"><small>Estado del consentimiento</small><strong>Pendiente</strong><p>El paciente todavía no ha firmado el consentimiento del programa.</p><button class="admin-action" onclick="cons65OpenQR()">Mostrar QR de consentimiento</button></div>';return}box.innerHTML='<div class="detail-grid"><div class="detail-card"><small>Estado</small><strong style="color:#5b9300">✓ Firmado</strong></div><div class="detail-card"><small>Fecha</small><strong>'+esc(row.fecha_consentimiento||row.created_at?.slice(0,10))+'</strong></div><div class="detail-card"><small>Sucursal</small><strong>'+esc(row.sucursal||'—')+'</strong></div><div class="detail-card"><small>Versión</small><strong>'+esc(row.version_documento||'—')+'</strong></div></div><div class="detail-card" style="margin-top:16px"><small>Firma del participante</small>'+(row.firma_data?'<img src="'+row.firma_data+'" alt="Firma" style="display:block;max-width:420px;width:100%;height:150px;object-fit:contain;border:1px solid #dce5ed;border-radius:12px;margin-top:12px;background:#fff">':'<strong>Firma registrada</strong>')+'</div>'};
 function enhanceDoctor(){const tabs=document.querySelector('.detail-tabs');if(tabs&&!$('cons65-tab')){const b=document.createElement('button');b.id='cons65-tab';b.textContent='Consentimiento';b.onclick=function(){document.querySelectorAll('.detail-tabs button').forEach(x=>x.classList.remove('active'));this.classList.add('active');window.cons65RenderDoctor()};const pb=[...tabs.querySelectorAll('button')].find(x=>/Photo Booth/i.test(x.textContent));tabs.insertBefore(b,pb||null)}const share=$('admin-share');if(share&&!$('cons65-share-card')){const d=document.createElement('div');d.id='cons65-share-card';d.className='share-card cons65-share-card';d.innerHTML='<div><h3>Consentimiento informado y compromiso</h3><p>QR 3 · El participante lee el documento, acepta y firma desde su propio celular o tablet. El consentimiento queda asociado a su expediente por cédula.</p><div class="share-actions"><button class="admin-action" onclick="cons65OpenQR()">Ver QR de consentimiento</button><button class="admin-action alt" onclick="cons65CopyLink()">Copiar enlace</button></div></div><div style="display:grid;place-items:center;font-size:44px">✍️</div>';share.appendChild(d)}}
-new MutationObserver(enhanceDoctor).observe(document.documentElement,{childList:true,subtree:true});enhanceDoctor();
+enhanceDoctor();document.addEventListener('numed:admin-rendered',enhanceDoctor);
 window.addEventListener('resize',()=>{if(new URLSearchParams(location.search).get('mode')==='consent'&&canvas)fitCanvas()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initConsent);else initConsent();
 })();
@@ -4762,9 +4756,9 @@ function addPhotoBoothQRCard(){const share=$('admin-share');if(!share||$('v66-pb
  const consent=$('cons65-share-card'); if(consent&&consent.parentNode===share)share.insertBefore(card,consent);else share.appendChild(card)}
 function ensurePhotoBoothTab(){const tabs=document.querySelector('.detail-tabs');if(!tabs||$('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=()=>window.pb64OpenQR?.();tabs.appendChild(b)}
 function polishShare(){addPhotoBoothQRCard();ensurePhotoBoothTab()}
-new MutationObserver(polishShare).observe(document.documentElement,{childList:true,subtree:true});
+polishShare();document.addEventListener('numed:admin-rendered',polishShare);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{consentModeClean();polishShare()});else{consentModeClean();polishShare()}
-window.addEventListener('pageshow',()=>{consentModeClean();polishShare()});
+// v105: pageshow no vuelve a mutar toda la interfaz.
 window.NUMED_RUNTIME_VERSION='66';
 })();
 </script>
@@ -4782,7 +4776,7 @@ html.numed-photobooth-route #pb64-patient{display:block!important;position:relat
  if(mode==='consent'){document.documentElement.classList.add('numed-consent-route');document.body?.classList.add('numed-consent-mode');setTimeout(()=>{document.querySelectorAll('body > *').forEach(el=>{if(el.id!=='cons65-page'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.setProperty('display','none','important')});const p=document.getElementById('cons65-page');if(p)p.style.setProperty('display','block','important')},0)}
  if(mode==='photobooth'){document.documentElement.classList.add('numed-photobooth-route');setTimeout(()=>{document.querySelectorAll('body > *').forEach(el=>{if(el.id!=='pb64-patient'&&el.id!=='pb64-qr-modal'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.setProperty('display','none','important')});const p=document.getElementById('pb64-patient');if(p)p.style.setProperty('display','block','important')},0)}
  function addPB(){const share=document.getElementById('admin-share');if(share&&!document.getElementById('v67-pb-share-card')){const d=document.createElement('div');d.id='v67-pb-share-card';d.className='share-card';d.innerHTML='<div><h3>QR 2 · Photo Booth</h3><p>Disponible después de calcular la Edad Biológica del paciente.</p><div class="share-actions"><button class="admin-action" type="button">Mostrar QR Photo Booth</button></div></div><div style="font-size:42px">📸</div>';d.querySelector('button').onclick=()=>window.pb64OpenQR?.();const c=document.getElementById('cons65-share-card');share.insertBefore(d,c||null)} }
- new MutationObserver(addPB).observe(document.documentElement,{childList:true,subtree:true});addPB();
+ addPB();document.addEventListener('numed:admin-rendered',addPB);
  window.NUMED_RUNTIME_VERSION='67';
 })();
 </script>
@@ -4948,7 +4942,6 @@ window.dynamicRecommendations=window.NUMED_dynamicRecommendations;
 function indicators(title,r,m){title=title.toLowerCase();if(title.includes('cardio'))return [['Presión arterial',`${val(m.presionSistolica)}/${val(m.presionDiastolica)} mmHg`],['Frecuencia cardíaca',val(m.frecuenciaCardiaca,' lpm')]];if(title.includes('metab'))return [['IMC',val(m.imc,' kg/m²')],['Perímetro abdominal',val(m.abdomen,' cm')],['Peso',val(m.peso,' kg')],['Talla',val(m.talla,' cm')]];if(title.includes('funcional'))return [['Fuerza prensil',val(m.fuerza,' kg')],['Flexibilidad',val(m.flexibilidad,' cm')]];return [['PSS-10',r.pss?.score==null?'—':`${esc(r.pss.score)}/40`],['Nivel de estrés',val(r.pss?.level)]]}
 function render(){const r=window.adminCurrentPatient,root=document.querySelector('#detail-content .v43-result');if(!r||!root)return;const m=r.measurements||{},A=areas(r,m),R=window.NUMED_dynamicRecommendations(r,m,A);root.querySelectorAll('.v80-summary,.v79-recs').forEach(x=>x.remove());root.querySelectorAll('.v43-area').forEach(card=>{const title=card.querySelector('h3')?.textContent?.trim()||'';let how=card.querySelector('.v95-status p')?.textContent?.trim();if(!how){const ps=[...card.querySelectorAll(':scope > p')];how=(ps.length>1?ps[1].textContent.trim():card.querySelector('.v80-status p')?.textContent?.trim()||'').replace(/^Interpretación\s*/i,'')}const k=title.toLowerCase().includes('cardio')?'cardio':title.toLowerCase().includes('metab')?'metabolic':title.toLowerCase().includes('funcional')?'functional':'psycho';const ii=indicators(title,r,m);card.innerHTML=`<div class="v95-head"><h3>${esc(title)}</h3></div><div class="v95-status"><small>¿Cómo te encuentras?</small><p>${esc(how||'Resultado disponible para seguimiento.')}</p></div><div class="v95-indicators">${ii.map(x=>`<div class="v95-indicator"><small>${esc(x[0])}</small><strong>${x[1]}</strong></div>`).join('')}</div><div class="v95-action"><small>Qué puedes hacer</small><p>${esc((R[k]||[]).join(' '))}</p></div>`})}
 document.addEventListener('click',e=>{const b=e.target.closest('.detail-tabs button');if(b&&/resultado/i.test(b.textContent||''))setTimeout(render,20)});
-const obs=new MutationObserver(()=>{if(document.querySelector('#detail-content .v43-result'))render()});obs.observe(document.documentElement,{childList:true,subtree:true});
 document.addEventListener('DOMContentLoaded',()=>setTimeout(render,30));setTimeout(render,50);window.NUMED_RUNTIME_VERSION='95-CLEAN';
 })();
 </script>
@@ -5014,7 +5007,7 @@ async function renderCard(kind){
 async function blobOf(c){return await new Promise((ok,no)=>c.toBlob(b=>b?ok(b):no(new Error('No se pudo crear la imagen')),'image/png',1))}
 async function savePatientCard(blob,kind){const arr=new Uint8Array(await blob.arrayBuffer()),binary=Array.from(arr,b=>String.fromCharCode(b)).join(''),b64=btoa(binary);await publicRPC('numed_save_photobooth_card',{p_token:new URLSearchParams(location.search).get('token')||'',p_kind:kind,p_photo_data:photoData,p_card_data:'data:image/png;base64,'+b64})}
 window.pb64Download=async kind=>{try{$('pb64-status').textContent='Creando tu ficha…';const c=await renderCard(kind),blob=await blobOf(c);$('pb64-status').textContent='Ficha lista para descargar.';const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='NUMED_PhotoBooth_'+kind+'.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}catch(e){alert(e.message)}};
-function addDoctorButton(){const tabs=document.querySelector('.detail-tabs');if(!tabs||document.getElementById('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=window.pb64OpenQR;tabs.appendChild(b)}new MutationObserver(addDoctorButton).observe(document.documentElement,{childList:true,subtree:true});addDoctorButton();
+function addDoctorButton(){const tabs=document.querySelector('.detail-tabs');if(!tabs||document.getElementById('pb64-doctor-btn'))return;const b=document.createElement('button');b.id='pb64-doctor-btn';b.textContent='QR Photo Booth';b.onclick=window.pb64OpenQR;tabs.appendChild(b)}addDoctorButton();document.addEventListener('numed:admin-rendered',addDoctorButton);
 window.addEventListener('DOMContentLoaded',initPatient);if(document.readyState!=='loading')initPatient();window.NUMED_RUNTIME_VERSION='101';})();
 </script>
 <style id="numed-v87-responsive-crossdevice">
@@ -5106,7 +5099,7 @@ video{object-fit:cover}
   function init(){wrapWideTables();safariViewport();document.addEventListener('click',activeTabIntoView,{passive:true});
     if(window.visualViewport)visualViewport.addEventListener('resize',safariViewport,{passive:true});
     window.addEventListener('orientationchange',function(){setTimeout(function(){safariViewport();wrapWideTables()},180)},{passive:true});
-    new MutationObserver(function(){clearTimeout(window.__v87rt);window.__v87rt=setTimeout(wrapWideTables,80)}).observe(document.body,{childList:true,subtree:true});
+    window.addEventListener('resize',function(){clearTimeout(window.__v87rt);window.__v87rt=setTimeout(wrapWideTables,120)},{passive:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   window.NUMED_RESPONSIVE_VERSION='87';
@@ -5199,8 +5192,6 @@ setTimeout(ensureUI,300);
 <style id="numed-v101-photobooth-final-audit">
 #pb64-patient,#pb64-patient *,#pb46-modal,#pb46-modal *,.pb46-card,.pb46-card *{font-family:Montserrat,Arial,sans-serif!important}
 </style>
-</body>
-</html>
 <style id="numed-v103-photobooth-layout">
 /* V103: Photo Booth con bloques verticales independientes, sin superposiciones */
 .pb97-story .pb46-person{top:auto!important;bottom:28.5%!important;left:6%!important;right:6%!important}
@@ -5236,3 +5227,49 @@ setTimeout(ensureUI,300);
  };
 })();
 </script>
+
+
+<script id="numed-v104-stability-guard">
+(function(){
+ const mode=()=>new URLSearchParams(location.search).get('mode')||'';
+ const publicMode=()=>['consent','photobooth','patient'].includes(mode());
+ let last=0;
+ const base=window.loadPatientsFromSupabase;
+ if(typeof base==='function'){
+   window.loadPatientsFromSupabase=async function(){
+     if(publicMode()) return [];
+     if(window.__v104LoadPromise) return window.__v104LoadPromise;
+     if(Date.now()-last<8000) return [];
+     last=Date.now();
+     window.__v104LoadPromise=Promise.resolve(base.apply(this,arguments)).finally(()=>{window.__v104LoadPromise=null});
+     return window.__v104LoadPromise;
+   };
+ }
+ window.NUMED_RUNTIME_VERSION='104-STABLE';
+})();
+</script>
+
+<script id="numed-v105-runtime-stability">
+(function(){
+ 'use strict';
+ if(window.__NUMED_V105_STABILITY__) return; window.__NUMED_V105_STABILITY__=true;
+ const nativeFetch=window.fetch.bind(window);
+ window.fetch=function(input,init){
+   try{
+     const url=typeof input==='string'?input:(input&&input.url)||'';
+     if(url && typeof NUMED_SB_URL!=='undefined' && url.startsWith(NUMED_SB_URL) && !(init&&init.signal)){
+       const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),15000);
+       return nativeFetch(input,Object.assign({},init||{},{signal:ctrl.signal})).finally(()=>clearTimeout(timer));
+     }
+   }catch(_){}
+   return nativeFetch(input,init);
+ };
+ window.addEventListener('unhandledrejection',function(e){
+   const m=String(e.reason&&e.reason.message||e.reason||'');
+   if(/AbortError|aborted/i.test(m)){console.warn('NUMED: solicitud cancelada por tiempo de espera.');e.preventDefault();}
+ });
+ console.info('NUMED v105 · estabilidad de rutas y solicitudes activa');
+})();
+</script>
+</body>
+</html>
