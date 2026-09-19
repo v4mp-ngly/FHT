@@ -5106,14 +5106,14 @@ const FILTERS={
  cool:{label:'Frio',css:'saturate(.96) hue-rotate(8deg) brightness(1.02)'},
  bw:{label:'B&N',css:'grayscale(1) contrast(1.05)'},
  contrast:{label:'Contraste',css:'contrast(1.16) saturate(1.08)'},
- cartoon:{label:'Animado',css:'saturate(1.28) contrast(1.08) brightness(1.04)'}
+ cartoon:{label:'Animado 3D',css:'saturate(1.10) contrast(1.03) brightness(1.04)'}
 };
-let selected='natural', originalData='', busy=false;
-window.__numedPBFilter='natural';
+let selected='cartoon', originalData='', busy=false;
+window.__numedPBFilter='cartoon';
 function ensureUI(){
  const camera=document.querySelector('#pb46-modal .pb46-camera'); if(!camera||$('pb96-filters'))return;
  const status=$('pb46-status'); const box=document.createElement('div');box.id='pb96-filters';box.className='pb96-filters';
- box.innerHTML='<div class="pb96-filter-head"><strong>Filtro de foto</strong><small>Vista previa y foto final</small></div><div class="pb96-filter-list">'+Object.entries(FILTERS).map(([k,v])=>`<button type="button" class="pb96-filter ${k==='natural'?'active':''}" data-pb96="${k}">${v.label}</button>`).join('')+'</div><div class="pb96-note"><b>Animado</b> crea un efecto ilustrado tipo cartoon directamente en el dispositivo. No cambia los rasgos ni utiliza IA externa.</div>';
+ box.innerHTML='<div class="pb96-filter-head"><strong>Filtro de foto</strong><small>Vista previa y foto final</small></div><div class="pb96-filter-list">'+Object.entries(FILTERS).map(([k,v])=>`<button type="button" class="pb96-filter ${k==='cartoon'?'active':''}" data-pb96="${k}">${v.label}</button>`).join('')+'</div><div class="pb96-note"><b>Animado 3D</b> aplica un acabado ilustrado suave directamente en el dispositivo, conservando los rasgos de la persona. No utiliza IA externa.</div>';
  if(status)camera.insertBefore(box,status);else camera.appendChild(box);
  box.addEventListener('click',e=>{const b=e.target.closest('[data-pb96]');if(!b)return;selectFilter(b.dataset.pb96)});
 }
@@ -5122,40 +5122,67 @@ function updateButtons(){document.querySelectorAll('.pb96-filter').forEach(b=>b.
 function applyLive(){const media=currentMedia();if(media)media.style.filter=FILTERS[selected]?.css||'none'}
 function loadImage(src){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=src})}
 function cartoonize(ctx,w,h){
- const im=ctx.getImageData(0,0,w,h),d=im.data,levels=6,step=255/(levels-1);
- for(let i=0;i<d.length;i+=4){
-   let r=d[i],g=d[i+1],b=d[i+2];
-   r=Math.round(r/step)*step;g=Math.round(g/step)*step;b=Math.round(b/step)*step;
-   const max=Math.max(r,g,b),min=Math.min(r,g,b),boost=(max-min)*.12;
-   d[i]=Math.max(0,Math.min(255,r+(r-g)*.10+boost));
-   d[i+1]=Math.max(0,Math.min(255,g+(g-b)*.06));
-   d[i+2]=Math.max(0,Math.min(255,b+(b-r)*.08));
- }
- ctx.putImageData(im,0,0);
- // Soft ink-like edges at reduced resolution for performance.
- const small=document.createElement('canvas'),scale=Math.min(1,420/w);small.width=Math.max(1,Math.round(w*scale));small.height=Math.max(1,Math.round(h*scale));
- const sc=small.getContext('2d');sc.drawImage(ctx.canvas,0,0,small.width,small.height);const p=sc.getImageData(0,0,small.width,small.height),a=p.data,copy=new Uint8ClampedArray(a);
+ // Ilustracion 3D suave y estable para Safari/iPad.
+ // Evita posterizacion fluorescente: piel limpia, volumen suave y contornos discretos.
+ const source=document.createElement('canvas');source.width=w;source.height=h;
+ const sx=source.getContext('2d');sx.drawImage(ctx.canvas,0,0);
+
+ // Base suavizada tipo render digital.
+ ctx.clearRect(0,0,w,h);
+ ctx.save();ctx.filter='blur(2.2px) brightness(1.045) saturate(1.09) contrast(.98)';ctx.drawImage(source,0,0,w,h);ctx.restore();
+
+ // Recupera detalles de ojos, cabello, labios y ropa sin devolver textura fotografica dura.
+ ctx.save();ctx.globalAlpha=.58;ctx.filter='contrast(1.07) saturate(1.04)';ctx.drawImage(source,0,0,w,h);ctx.restore();
+
+ // Luz suave para volumen tipo personaje 3D.
+ const glow=ctx.createRadialGradient(w*.48,h*.28,0,w*.48,h*.32,Math.max(w,h)*.62);
+ glow.addColorStop(0,'rgba(255,244,232,.13)');glow.addColorStop(.52,'rgba(255,255,255,.025)');glow.addColorStop(1,'rgba(8,28,44,.08)');
+ ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
+
+ // Contornos muy suaves a baja resolucion; sin recorrer millones de pixeles.
+ const small=document.createElement('canvas');
+ const scale=Math.min(1,280/Math.max(w,h));
+ small.width=Math.max(2,Math.round(w*scale));small.height=Math.max(2,Math.round(h*scale));
+ const sc=small.getContext('2d',{willReadFrequently:true});
+ sc.filter='grayscale(1) contrast(1.35)';sc.drawImage(source,0,0,small.width,small.height);sc.filter='none';
+ const im=sc.getImageData(0,0,small.width,small.height),d=im.data,copy=new Uint8ClampedArray(d);
  const lum=i=>.299*copy[i]+.587*copy[i+1]+.114*copy[i+2];
- for(let y=1;y<small.height-1;y++)for(let x=1;x<small.width-1;x++){const i=(y*small.width+x)*4;const gx=Math.abs(lum(i+4)-lum(i-4)),gy=Math.abs(lum(i+small.width*4)-lum(i-small.width*4));if(gx+gy>62){a[i]*=.58;a[i+1]*=.58;a[i+2]*=.58}}
- sc.putImageData(p,0,0);ctx.save();ctx.globalAlpha=.28;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,w,h);ctx.restore();
+ for(let y=1;y<small.height-1;y++)for(let x=1;x<small.width-1;x++){
+   const i=(y*small.width+x)*4;
+   const gx=Math.abs(lum(i+4)-lum(i-4));
+   const gy=Math.abs(lum(i+small.width*4)-lum(i-small.width*4));
+   const edge=gx+gy;
+   const v=edge>92?Math.max(72,255-(edge-92)*1.55):255;
+   d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;
+ }
+ sc.putImageData(im,0,0);
+ ctx.save();ctx.globalCompositeOperation='multiply';ctx.globalAlpha=.12;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,w,h);ctx.restore();
+
+ // Acabado final limpio y ligeramente calido.
+ ctx.save();ctx.globalAlpha=.12;ctx.fillStyle='rgba(255,176,120,.08)';ctx.fillRect(0,0,w,h);ctx.restore();
 }
 async function renderFiltered(src,key){
- const im=await loadImage(src),c=document.createElement('canvas');c.width=im.naturalWidth||960;c.height=im.naturalHeight||1200;const ctx=c.getContext('2d',{willReadFrequently:key==='cartoon'});
- if(key!=='cartoon')ctx.filter=FILTERS[key]?.css||'none';else ctx.filter=FILTERS.cartoon.css;
- ctx.drawImage(im,0,0,c.width,c.height);ctx.filter='none';if(key==='cartoon')cartoonize(ctx,c.width,c.height);
- return c.toDataURL('image/jpeg',.92);
+ const im=await loadImage(src),ow=im.naturalWidth||960,oh=im.naturalHeight||1200;
+ if(key!=='cartoon'){
+   const c=document.createElement('canvas');c.width=ow;c.height=oh;const ctx=c.getContext('2d');ctx.filter=FILTERS[key]?.css||'none';ctx.drawImage(im,0,0,ow,oh);ctx.filter='none';return c.toDataURL('image/jpeg',.92);
+ }
+ // Procesa una copia moderada para evitar bloqueos en Safari/iPad y luego vuelve al tamano final.
+ const maxSide=900,scale=Math.min(1,maxSide/Math.max(ow,oh)),pw=Math.max(2,Math.round(ow*scale)),ph=Math.max(2,Math.round(oh*scale));
+ const work=document.createElement('canvas');work.width=pw;work.height=ph;const wx=work.getContext('2d',{willReadFrequently:true});
+ wx.filter='brightness(1.025) saturate(1.05) contrast(1.015)';wx.drawImage(im,0,0,pw,ph);wx.filter='none';cartoonize(wx,pw,ph);
+ const out=document.createElement('canvas');out.width=ow;out.height=oh;const ox=out.getContext('2d');ox.imageSmoothingEnabled=true;ox.imageSmoothingQuality='high';ox.drawImage(work,0,0,ow,oh);return out.toDataURL('image/jpeg',.91);
 }
 async function applyToPhoto(){
  const img=$('pb46-photo');if(!img?.src||busy)return;if(!originalData)originalData=img.src;
  busy=true;$('pb96-filters')?.classList.add('pb96-working');
- try{const data=selected==='natural'?originalData:await renderFiltered(originalData,selected);img.src=data;const stage=$('pb46-stage');if(stage&&!stage.querySelector('video'))stage.innerHTML=`<img src="${data}" alt="Foto con filtro ${FILTERS[selected].label}">`;window.__numedPBFilteredPhoto=data;if($('pb46-status'))$('pb46-status').textContent=selected==='natural'?'Foto lista sin filtro.':'Filtro '+FILTERS[selected].label+' aplicado. La ficha se guardara con este acabado.'}
+ try{const data=selected==='natural'?originalData:await renderFiltered(originalData,selected);img.src=data;const stage=$('pb46-stage');if(stage&&!stage.querySelector('video'))stage.innerHTML=`<img src="${data}" alt="Foto con filtro ${FILTERS[selected].label}">`;window.__numedPBFilteredPhoto=data;if($('pb46-status'))$('pb46-status').textContent=selected==='natural'?'Foto lista sin filtro.':'Filtro '+FILTERS[selected].label+' aplicado. La ficha se guardará con este acabado.'}
  catch(e){console.error('Filtro Photo Booth',e);if($('pb46-status'))$('pb46-status').textContent='No se pudo aplicar el filtro. Se conserva la foto original.'}
  finally{busy=false;$('pb96-filters')?.classList.remove('pb96-working')}
 }
 async function selectFilter(key){if(!FILTERS[key]||busy)return;selected=key;window.__numedPBFilter=key;updateButtons();applyLive();if($('pb46-photo')?.src)await applyToPhoto()}
 const oldStart=window.pb46Start;window.pb46Start=async function(){ensureUI();const r=await oldStart?.apply(this,arguments);setTimeout(applyLive,80);return r};
 const oldShot=window.pb46Shot;window.pb46Shot=function(){originalData='';const r=oldShot?.apply(this,arguments);setTimeout(async()=>{const img=$('pb46-photo');if(img?.src){originalData=img.src;await applyToPhoto()}},40);return r};
-const oldRetake=window.pb46Retake;window.pb46Retake=function(){originalData='';selected='natural';window.__numedPBFilter='natural';updateButtons();return oldRetake?.apply(this,arguments)};
+const oldRetake=window.pb46Retake;window.pb46Retake=function(){originalData='';selected='cartoon';window.__numedPBFilter='cartoon';updateButtons();return oldRetake?.apply(this,arguments)};
 const oldOpen=window.pb46Open;window.pb46Open=function(){ensureUI();const r=oldOpen?.apply(this,arguments);setTimeout(()=>{updateButtons();applyLive()},80);return r};
 document.addEventListener('change',e=>{if(e.target?.id!=='pb46-file')return;originalData='';setTimeout(async()=>{const img=$('pb46-photo');if(img?.src){originalData=img.src;await applyToPhoto()}},120)});
 document.addEventListener('DOMContentLoaded',ensureUI);
@@ -5229,5 +5256,15 @@ document.addEventListener('click',e=>{if(e.target.closest('.detail-tabs button')
 setTimeout(paint,100);window.NUMED_RUNTIME_VERSION='98-RESULT-RECOMMENDATIONS';
 })();
 </script>
+
+<style id="numed-v107-photobooth-polish">
+#pb46-modal,#pb46-modal *{font-family:Montserrat,Arial,sans-serif!important}
+.pb97-story .pb46-person{top:62.5%!important}
+.pb97-story .pb46-ages{top:68.5%!important}
+.pb97-story .pb46-message{bottom:8.8%!important}
+.pb97-story .pb46-age strong{font-size:clamp(54px,7.2vw,86px)!important}
+.pb97-story .pb46-age small{margin-top:8px!important}
+.pb96-note{line-height:1.5}
+</style>
 </body>
 </html>
