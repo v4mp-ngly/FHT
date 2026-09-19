@@ -1223,6 +1223,30 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 })();
 </script>
 
+
+<style id="numed-v125-results-compact">
+.v43-result .v43-areas{gap:12px!important;align-items:start!important}
+.v43-result .v43-area{min-height:0!important;height:auto!important;border-radius:18px!important}
+.v43-result .v95-head{padding:16px 18px 10px!important}
+.v43-result .v95-head h3{font-size:17px!important;line-height:1.25!important;overflow-wrap:anywhere}
+.v43-result .v95-status{margin:0 18px 10px!important;padding:11px 13px!important;border-radius:12px!important}
+.v43-result .v95-status small,.v43-result .v95-action small{font-size:8px!important;margin-bottom:5px!important}
+.v43-result .v95-status p,.v43-result .v95-action p{font-size:11.5px!important;line-height:1.45!important;overflow-wrap:anywhere;word-break:normal}
+.v43-result .v95-indicators{padding:0 18px 10px!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.v43-result .v95-indicator{display:block!important;min-width:0!important;border:1px solid #e4ebef!important;border-radius:11px!important;padding:9px 10px!important;background:#f8fafb!important}
+.v43-result .v95-indicator small{display:block!important;font-size:7.5px!important;line-height:1.25!important;overflow-wrap:anywhere}
+.v43-result .v95-indicator strong{display:block!important;margin-top:4px!important;font-size:12.5px!important;line-height:1.25!important;text-align:left!important;overflow-wrap:anywhere}
+.v43-result .v95-action{margin:0 18px 16px!important;padding:11px 13px!important;border-radius:12px!important;min-width:0!important}
+.v43-result .v98-rec-list{gap:6px!important}
+.v43-result .v98-rec-item{font-size:11px!important;line-height:1.4!important;padding-left:14px!important;overflow-wrap:anywhere;word-break:normal}
+.v43-result .v43-age{margin-top:14px!important;padding:18px!important;border-radius:18px!important}
+.v43-result .v43-age>p{margin-bottom:12px!important}
+.v43-result .v43-age-box{padding:11px!important}
+.v43-result .v43-age-box strong{font-size:32px!important}
+.v43-result .v43-meaning{margin-top:12px!important;padding:12px!important}
+@media(max-width:800px){.v43-result .v95-indicators{grid-template-columns:1fr 1fr!important}.v43-result .v43-areas{gap:10px!important}}
+@media(max-width:420px){.v43-result .v95-indicators{grid-template-columns:1fr!important}.v43-result .v95-head{padding:14px 15px 9px!important}.v43-result .v95-status,.v43-result .v95-action{margin-left:15px!important;margin-right:15px!important}.v43-result .v95-indicators{padding-left:15px!important;padding-right:15px!important}}
+</style>
 </head>
 <body>
 <div id="access-portal">
@@ -4707,6 +4731,7 @@ window.downloadBioReport=function(){
  if(!window.jspdf)return alert('No se pudo cargar el generador PDF.');
  const m=r.measurements||{},A=areas(r,m),DYN=window.NUMED_dynamicRecommendations(r,m,A),{jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),f=fontPack(d),age=num(r.age)||0,bio=num(m.edadBiologica)??age,diff=bio-age,abs=Math.abs(diff);
  const statusColor=a=>a.key==='favorable'?C.green:a.key==='observacion'?C.orange:C.red;
+ const cleanCopy=v=>String(v??'').replace(/\s*,\s*,+/g,', ').replace(/\s+,/g,',').replace(/,\s*([,.;:])/g,'$1').replace(/\s{2,}/g,' ').trim();
  const how={
   cardio:{favorable:'Tus valores de presión arterial y frecuencia cardíaca se encuentran en un perfil cardiovascular favorable.',observacion:'Tus signos vitales muestran valores que conviene vigilar y confirmar en reposo.',atencion:'Tus signos vitales muestran valores que requieren atención y valoración profesional.'},
   metabolic:{favorable:'Tu IMC y perímetro abdominal se encuentran en un perfil metabólico favorable.',observacion:'Algunos de tus indicadores metabólicos conviene vigilarlos y darles seguimiento.',atencion:'Tus indicadores metabólicos muestran hallazgos que requieren valoración y seguimiento.'},
@@ -4719,38 +4744,44 @@ window.downloadBioReport=function(){
   functional:[['Fuerza prensil',`${m.fuerza??'—'} kg`],['Flexibilidad',`${m.flexibilidad??'—'} cm`]],
   psycho:[['PSS-10',`${r.pss?.score??'—'}/40`],['Nivel de estrés',r.pss?.level||A.psycho.level]]
  };
- function resultCard(x,y,w,h,title,a,key){
-  const c=statusColor(a),rec=(DYN[key]||[]).join(' ');
-  d.setFillColor(255,255,255);d.setDrawColor(...C.line);d.roundedRect(x,y,w,h,5,5,'FD');d.setFillColor(...c);d.roundedRect(x,y,w,2.3,1,1,'F');
-  txt(d,f,title,x+6,y+10,{bold:true,size:6.6,color:C.blue});
-  txt(d,f,'¿CÓMO TE ENCUENTRAS?',x+6,y+18,{bold:true,size:3.6,color:C.muted});
-  txt(d,f,wrap(d,how[key][a.key],w-12),x+6,y+24,{size:4.25,color:C.muted});
-  const my=y+40,gap=4,mw=(w-16-gap)/2;
-  metrics[key].forEach((mt,i)=>{const mx=x+6+i*(mw+gap);d.setFillColor(...C.soft);d.roundedRect(mx,my,mw,16,3,3,'F');txt(d,f,mt[0].toUpperCase(),mx+4,my+5.5,{bold:true,size:3.2,color:C.muted});txt(d,f,mt[1],mx+4,my+11.8,{bold:true,size:5.1,color:C.blue})});
-  d.setFillColor(a.key==='favorable'?248:255,a.key==='favorable'?251:a.key==='observacion'?250:246,a.key==='favorable'?239:a.key==='observacion'?239:246);d.roundedRect(x+6,y+60,w-12,h-66,3,3,'F');
-  txt(d,f,'QUÉ PUEDES HACER',x+10,y+67,{bold:true,size:3.5,color:C.muted});txt(d,f,wrap(d,rec||'Mantener seguimiento según criterio profesional.',w-20),x+10,y+73,{size:4.05,color:C.ink});
+ function fitLines(value,maxWidth,maxLines){
+   let lines=wrap(d,cleanCopy(value),maxWidth);if(!Array.isArray(lines))lines=[String(lines)];
+   if(lines.length>maxLines){lines=lines.slice(0,maxLines);let last=lines[maxLines-1].replace(/[\s.,;:]+$/,'');while(d.getTextWidth(last+'…')>maxWidth&&last.length>2)last=last.slice(0,-1);lines[maxLines-1]=last+'…'}
+   return lines;
  }
- // PÁGINA 1: copia del contenido visible en Resultados, sin repetir ficha demográfica.
+ function resultCard(x,y,w,title,a,key){
+  const c=statusColor(a),rec=cleanCopy((DYN[key]||[]).join(' ')),howLines=fitLines(how[key][a.key],w-12,3),recLines=fitLines(rec||'Mantener seguimiento según criterio profesional.',w-18,5);
+  const howH=Math.max(13,5.2+howLines.length*4.3),metricY=y+16+howH,actionY=metricY+18,actionH=Math.max(18,9+recLines.length*4.15),h=(actionY-y)+actionH+5;
+  d.setFillColor(255,255,255);d.setDrawColor(...C.line);d.roundedRect(x,y,w,h,4,4,'FD');d.setFillColor(...c);d.roundedRect(x,y,w,2,1,1,'F');
+  txt(d,f,title,x+6,y+8,{bold:true,size:6.2,color:C.blue});
+  txt(d,f,'¿CÓMO TE ENCUENTRAS?',x+6,y+14,{bold:true,size:3.2,color:C.muted});
+  txt(d,f,howLines,x+6,y+19,{size:3.8,color:C.muted});
+  const gap=3,mw=(w-15-gap)/2;
+  metrics[key].forEach((mt,i)=>{const mx=x+6+i*(mw+gap);d.setFillColor(...C.soft);d.roundedRect(mx,metricY,mw,14,2.4,2.4,'F');txt(d,f,fitLines(mt[0].toUpperCase(),mw-7,2),mx+3.5,metricY+4.8,{bold:true,size:2.8,color:C.muted});txt(d,f,fitLines(mt[1],mw-7,2),mx+3.5,metricY+10.6,{bold:true,size:4.5,color:C.blue})});
+  d.setFillColor(a.key==='favorable'?248:255,a.key==='favorable'?251:a.key==='observacion'?250:246,a.key==='favorable'?239:a.key==='observacion'?239:246);d.roundedRect(x+6,actionY,w-12,actionH,2.5,2.5,'F');
+  txt(d,f,'QUÉ PUEDES HACER',x+10,actionY+5.5,{bold:true,size:3.1,color:C.muted});txt(d,f,recLines,x+10,actionY+10.5,{size:3.65,color:C.ink});
+  return h;
+ }
  header(d,f,'RESULTADOS','EVALUACIÓN INTEGRAL NUMED');
- txt(d,f,'Perfil de salud por condiciones',14,43,{bold:true,size:13,color:C.navy});
- txt(d,f,`${r.first||''} ${r.last||''}`.trim(),196,43,{bold:true,size:5.4,color:C.blue,opts:{align:'right'}});
- txt(d,f,'Así se muestran tus resultados en NUMED: interpretación, indicadores y acciones sugeridas.',14,50,{size:5.2,color:C.muted});
- resultCard(14,59,87,92,'Condición cardiovascular',A.cardio,'cardio');
- resultCard(109,59,87,92,'Condición metabólica',A.metabolic,'metabolic');
- resultCard(14,159,87,92,'Condición funcional',A.functional,'functional');
- resultCard(109,159,87,92,'Condición psicosocial',A.psycho,'psycho');
+ txt(d,f,'Perfil de salud por condiciones',14,42,{bold:true,size:12.5,color:C.navy});
+ txt(d,f,`${r.first||''} ${r.last||''}`.trim(),196,42,{bold:true,size:5,color:C.blue,opts:{align:'right'}});
+ txt(d,f,'Interpretación, indicadores y acciones sugeridas.',14,49,{size:4.9,color:C.muted});
+ const h1=resultCard(14,57,87,'Condición cardiovascular',A.cardio,'cardio');
+ const h2=resultCard(109,57,87,'Condición metabólica',A.metabolic,'metabolic');
+ const y2=57+Math.max(h1,h2)+8;
+ resultCard(14,y2,87,'Condición funcional',A.functional,'functional');
+ resultCard(109,y2,87,'Condición psicosocial',A.psycho,'psycho');
  footer(d,f,1,2);
- // PÁGINA 2: mismo bloque de Edad Biológica mostrado en Resultados.
  d.addPage();header(d,f,'EDAD BIOLÓGICA','RESULTADO');
- txt(d,f,'Edad biológica',14,45,{bold:true,size:14,color:C.navy});
- txt(d,f,'Comparación entre tu edad cronológica y tu edad biológica estimada.',14,52,{size:5.4,color:C.muted});
- d.setFillColor(...C.navy);d.roundedRect(14,65,182,126,7,7,'F');
- txt(d,f,'EDAD CRONOLÓGICA',58,88,{bold:true,size:4.8,color:[196,210,221],opts:{align:'center'}});txt(d,f,String(age),58,118,{bold:true,size:30,color:C.white,opts:{align:'center'}});txt(d,f,'AÑOS',58,128,{size:4.4,color:[196,210,221],opts:{align:'center'}});
- txt(d,f,'→',105,113,{bold:true,size:18,color:[202,231,101],opts:{align:'center'}});
- txt(d,f,'EDAD BIOLÓGICA',152,88,{bold:true,size:4.8,color:[196,210,221],opts:{align:'center'}});txt(d,f,String(bio),152,118,{bold:true,size:30,color:[202,231,101],opts:{align:'center'}});txt(d,f,'AÑOS',152,128,{size:4.4,color:[196,210,221],opts:{align:'center'}});
+ txt(d,f,'Edad biológica',14,43,{bold:true,size:13,color:C.navy});
+ txt(d,f,'Comparación entre tu edad cronológica y tu edad biológica estimada.',14,50,{size:5,color:C.muted});
+ d.setFillColor(...C.navy);d.roundedRect(14,61,182,82,6,6,'F');
+ txt(d,f,'EDAD CRONOLÓGICA',58,77,{bold:true,size:4.4,color:[196,210,221],opts:{align:'center'}});txt(d,f,String(age),58,104,{bold:true,size:28,color:C.white,opts:{align:'center'}});txt(d,f,'AÑOS',58,114,{size:4,color:[196,210,221],opts:{align:'center'}});
+ txt(d,f,'→',105,99,{bold:true,size:16,color:[202,231,101],opts:{align:'center'}});
+ txt(d,f,'EDAD BIOLÓGICA',152,77,{bold:true,size:4.4,color:[196,210,221],opts:{align:'center'}});txt(d,f,String(bio),152,104,{bold:true,size:28,color:[202,231,101],opts:{align:'center'}});txt(d,f,'AÑOS',152,114,{size:4,color:[196,210,221],opts:{align:'center'}});
  const meaning=diff<0?`Su edad biológica es ${abs} año${abs===1?'':'s'} menor que la edad cronológica.`:diff>0?`Su edad biológica es ${abs} año${abs===1?'':'s'} mayor que la edad cronológica.`:'Su edad biológica es igual a la edad cronológica.';
- d.setFillColor(...C.white);d.roundedRect(26,145,158,28,4,4,'F');txt(d,f,wrap(d,meaning,142),105,157,{bold:true,size:6.4,color:C.blue,opts:{align:'center'}});txt(d,f,'Resultado orientativo basado en el algoritmo NUMED actual.',105,169,{size:4.3,color:C.muted,opts:{align:'center'}});
- d.setFillColor(...C.mint);d.roundedRect(14,205,182,33,5,5,'F');txt(d,f,'Sobre este resultado',22,216,{bold:true,size:6.3,color:C.blue});txt(d,f,wrap(d,'El PSS-10 se interpreta de manera independiente y no modifica la edad biológica. Los resultados son orientativos y deben complementarse con valoración profesional.',164),22,224,{size:4.8,color:C.muted});
+ d.setFillColor(...C.mint);d.roundedRect(14,153,182,29,4,4,'F');txt(d,f,fitLines(meaning,164,2),105,164,{bold:true,size:6,color:C.blue,opts:{align:'center'}});txt(d,f,'Resultado orientativo basado en el algoritmo NUMED actual.',105,176,{size:4.2,color:C.muted,opts:{align:'center'}});
+ d.setFillColor(...C.soft);d.roundedRect(14,192,182,29,4,4,'F');txt(d,f,'Sobre este resultado',20,202,{bold:true,size:5.8,color:C.blue});txt(d,f,fitLines('El PSS-10 se interpreta de manera independiente y no modifica la edad biológica. Los resultados son orientativos y deben complementarse con valoración profesional.',164,4),20,210,{size:4.5,color:C.muted});
  footer(d,f,2,2);
  d.save(`NUMED_Resultados_${clean(r.first)}_${clean(r.last)}.pdf`)
 };
@@ -5046,7 +5077,9 @@ window.NUMED_FHT_CARDIO_V74 = {
 })();
 </script>
 
-\n\n\n<style id="numed-v95-results-clean">
+
+
+<style id="numed-v95-results-clean">
 .v43-result .v43-areas{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important}
 .v43-result .v43-area{padding:0!important;overflow:hidden!important;border-radius:24px!important;background:#fff!important;border:1px solid #dfe8ee!important;box-shadow:0 14px 36px rgba(6,47,87,.065)!important;position:relative}
 .v95-head{padding:24px 28px 16px;border-top:5px solid #93c52b}.v43-area.observacion .v95-head{border-top-color:#efa326}.v43-area.atencion .v95-head{border-top-color:#e2504c}
