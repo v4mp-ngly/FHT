@@ -4736,7 +4736,7 @@ window.NUMED_RUNTIME_VERSION='91-PDF-DESCARGA-CORREGIDA';
 <script>
 (function(){
 const $=id=>document.getElementById(id), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const logo=()=>document.querySelector('.wc-logo img')?.src||document.querySelector('.brand-logo img')?.src||document.querySelector('img[src*="logo"]')?.src||'';
+const logo=()=>document.querySelector('img.wc-logo')?.src||document.querySelector('#portal-logo')?.src||document.querySelector('.admin-brand-logo')?.src||document.querySelector('.brand-logo img')?.src||document.querySelector('img[src*="logo"]')?.src||'';
 const consentURL=()=>{const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('mode','consent');return u.toString()};
 let signed=false,ctx=null,canvas=null,drawing=false,last=null;
 function fitCanvas(){canvas=$('cons65-sign');if(!canvas)return;const dpr=Math.max(1,window.devicePixelRatio||1),r=canvas.getBoundingClientRect(),old=canvas.toDataURL();canvas.width=Math.round(r.width*dpr);canvas.height=Math.round(r.height*dpr);ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.lineWidth=2.3;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#123f6a';if(signed&&old&&old!=='data:,'){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height);im.src=old}}
@@ -4775,8 +4775,11 @@ window.cons65DownloadPDF=async function(){
    const doc=new jsPDFCtor({orientation:'portrait',unit:'mm',format:'a4'});
    const navy=[13,79,120],green=[146,185,51],muted=[96,116,132];
    doc.setFillColor(...navy);doc.rect(0,0,210,31,'F');
-   doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(18);doc.text('NUMED',18,18);
-   doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('Consentimiento informado',18,25);
+   const brandLogo=logo();
+   let logoDrawn=false;
+   if(brandLogo){try{doc.addImage(brandLogo,'PNG',18,6,39,16,undefined,'FAST');logoDrawn=true}catch(_){try{doc.addImage(brandLogo,'JPEG',18,6,39,16,undefined,'FAST');logoDrawn=true}catch(__){}}}
+   doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(18);if(!logoDrawn)doc.text('NUMED',18,18);
+   doc.setFontSize(10);doc.setFont('helvetica','normal');doc.text('Consentimiento informado',logoDrawn?64:18,19);
    doc.setTextColor(...navy);doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text('Consentimiento informado y compromiso',18,48);
    doc.setDrawColor(222,230,236);doc.line(18,54,192,54);
    const full=((row.nombres||r.first||'')+' '+(row.apellidos||r.last||'')).trim()||'Paciente NUMED';
@@ -5377,6 +5380,76 @@ window.NUMEDCartoonPhoto=async function(src){
  const glow=x.createRadialGradient(w*.46,h*.25,0,w*.46,h*.3,Math.max(w,h)*.7);glow.addColorStop(0,'rgba(255,245,235,.18)');glow.addColorStop(.55,'rgba(255,255,255,.02)');glow.addColorStop(1,'rgba(5,30,48,.10)');x.fillStyle=glow;x.fillRect(0,0,w,h);
  return out.toDataURL('image/jpeg',.92);
 };
+})();
+</script>
+
+<style id="numed-v112-saas-patient-profile">
+:root{--v112-navy:#073a68;--v112-navy2:#0b527e;--v112-green:#78bd13;--v112-lime:#a8ca3a;--v112-ink:#0b345d;--v112-muted:#6d8499;--v112-line:#e3ebf1;--v112-soft:#f5f9fb}
+#doctor-admin .admin-main{background:radial-gradient(circle at 88% 4%,rgba(168,202,58,.10),transparent 24%),linear-gradient(180deg,#f7fbfd 0,#f3f7fa 100%)}
+#admin-detail{animation:v112PageIn .38s ease both}
+#admin-detail>.detail-back{border:0!important;background:transparent!important;color:var(--v112-green)!important;font-weight:800!important;padding:6px 0 14px!important;box-shadow:none!important}
+#detail-head{background:linear-gradient(135deg,#fff 0%,#fbfdfe 65%,#f1f8e8 100%);border:1px solid rgba(211,225,234,.9);border-radius:24px;padding:26px 28px;box-shadow:0 18px 50px rgba(8,58,104,.07);position:relative;overflow:hidden}
+#detail-head:after{content:'';position:absolute;width:190px;height:190px;border-radius:50%;right:-80px;top:-95px;background:radial-gradient(circle,rgba(120,189,19,.18),rgba(120,189,19,0));pointer-events:none}
+#detail-head .detail-head{padding:0!important;background:none!important;border:0!important;box-shadow:none!important;display:flex;align-items:center;gap:18px;position:relative;z-index:1}
+#detail-head .detail-head>div:first-child{position:relative;padding-left:78px;min-height:62px;display:flex;flex-direction:column;justify-content:center}
+#detail-head .detail-head>div:first-child:before{content:attr(data-initials);position:absolute;left:0;top:0;width:60px;height:60px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,#eef8dc,#dff0bd);border:1px solid #d3e7ad;color:#58a319;font-size:22px;font-weight:900;box-shadow:inset 0 0 0 5px rgba(255,255,255,.45)}
+#detail-head h2{font-size:28px!important;letter-spacing:-.03em;margin:0 0 5px!important;color:var(--v112-ink)!important}
+#detail-head p{margin:0!important;color:#54738e!important;font-size:14px!important}
+#detail-head .admin-action{margin-left:auto;min-height:46px;border-radius:14px!important;box-shadow:0 9px 20px rgba(7,58,104,.14)}
+.v112-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px;position:relative;z-index:1}
+.v112-metric{min-width:0;background:rgba(255,255,255,.78);border:1px solid #e0eaf0;border-radius:17px;padding:14px 15px;display:flex;gap:11px;align-items:center;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;animation:v112CardIn .42s ease both}
+.v112-metric:nth-child(2){animation-delay:.04s}.v112-metric:nth-child(3){animation-delay:.08s}.v112-metric:nth-child(4){animation-delay:.12s}
+.v112-metric-icon{width:39px;height:39px;border-radius:13px;display:grid;place-items:center;flex:0 0 auto;background:#edf7df;color:#63aa1d;font-size:18px}
+.v112-metric.pss .v112-metric-icon{background:#fff0f3;color:#e44b68}.v112-metric.measure .v112-metric-icon{background:#eaf5fb;color:#1584b2}.v112-metric.consent .v112-metric-icon{background:#ecf8f1;color:#139563}
+.v112-metric small{display:block;color:#7890a4;font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:800}.v112-metric strong{display:block;color:var(--v112-ink);font-size:15px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v112-metric em{font-style:normal;color:#70aa25;font-size:10px;font-weight:800}
+.detail-tabs{margin-top:16px!important;padding:7px!important;border:1px solid #e1eaf0!important;background:rgba(255,255,255,.86)!important;border-radius:18px!important;box-shadow:0 10px 30px rgba(8,58,104,.05);gap:4px!important;overflow-x:auto!important}
+.detail-tabs button{border-radius:12px!important;min-height:42px!important;padding:0 16px!important;white-space:nowrap!important;transition:background .2s ease,color .2s ease,transform .2s ease!important}
+.detail-tabs button.active{background:linear-gradient(135deg,#edf8dd,#f6faee)!important;color:#4d8e14!important;box-shadow:inset 0 0 0 1px #d7e9b7!important}
+#detail-content{margin-top:18px;animation:v112Content .3s ease both}
+.v112-general-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,.7fr);gap:16px;align-items:start}
+.v112-panel{background:#fff;border:1px solid #e1eaf0;border-radius:22px;padding:22px;box-shadow:0 14px 40px rgba(8,58,104,.055)}
+.v112-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.v112-panel-head h3{margin:0;color:var(--v112-ink);font-size:17px}.v112-panel-head p{margin:3px 0 0;color:#8497a8;font-size:12px}
+.v112-data-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.v112-data{background:linear-gradient(145deg,#f8fbfd,#f3f7fa);border:1px solid #e8eef3;border-radius:15px;padding:14px;min-height:78px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.v112-data small{display:block;color:#7990a4;font-size:11px;margin-bottom:7px}.v112-data strong{display:block;color:#0a3763;font-size:14px;line-height:1.25;overflow-wrap:anywhere}.v112-data.wide{grid-column:span 3}
+.v112-side-stack{display:grid;gap:12px}.v112-side-card{background:#fff;border:1px solid #e1eaf0;border-radius:20px;padding:18px;box-shadow:0 12px 32px rgba(8,58,104,.05)}.v112-side-card h4{margin:0 0 13px;color:var(--v112-ink);font-size:14px}.v112-status-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #edf2f5}.v112-status-row:last-child{border:0}.v112-dot{width:9px;height:9px;border-radius:50%;background:var(--v112-green);box-shadow:0 0 0 5px rgba(120,189,19,.11)}.v112-dot.pending{background:#e3ad45;box-shadow:0 0 0 5px rgba(227,173,69,.12)}.v112-status-row span{font-size:12px;color:#6f879a}.v112-status-row b{display:block;color:#17466e;font-size:12px}.v112-actions{display:grid;gap:8px}.v112-actions button{width:100%;min-height:43px!important;border-radius:12px!important}
+.cons110-head,.cons110-grid,.cons110-sign,.cons110-actions{animation:v112Content .3s ease both}.cons110-head{background:linear-gradient(135deg,#073a68,#0b527e)!important;border-radius:22px!important;padding:22px!important;color:#fff!important}.cons110-head h3,.cons110-head p,.cons110-kicker{color:#fff!important}.cons110-status{background:#e9f7dc!important;color:#4f8d18!important;border-radius:999px!important;padding:8px 12px!important}
+@media(hover:hover) and (pointer:fine){.v112-metric:hover,.v112-data:hover{transform:translateY(-2px);border-color:#cfe0e8;box-shadow:0 10px 24px rgba(8,58,104,.08)}}
+@keyframes v112PageIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}@keyframes v112CardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes v112Content{from{opacity:.2;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#admin-detail,.v112-metric,#detail-content,.cons110-head,.cons110-grid,.cons110-sign,.cons110-actions{animation:none!important;transition:none!important}}
+@media(max-width:1050px){.v112-metrics{grid-template-columns:1fr 1fr}.v112-general-layout{grid-template-columns:1fr}.v112-data-grid{grid-template-columns:1fr 1fr}.v112-data.wide{grid-column:span 2}}
+@media(max-width:600px){#detail-head{padding:20px 16px}#detail-head .detail-head{align-items:flex-start;flex-wrap:wrap}#detail-head .detail-head>div:first-child{padding-left:62px}#detail-head .detail-head>div:first-child:before{width:50px;height:50px;border-radius:15px}#detail-head h2{font-size:22px!important}#detail-head .admin-action{width:100%;margin-left:0}.v112-metrics{grid-template-columns:1fr}.v112-data-grid{grid-template-columns:1fr}.v112-data.wide{grid-column:auto}.v112-panel{padding:16px}}
+</style>
+<script id="numed-v112-saas-patient-profile-js">
+(function(){
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const val=v=>(v===null||v===undefined||v==='')?'—':esc(v);
+ function bioValue(r){const b=Number(r?.measurements?.edadBiologica);return Number.isFinite(b)?Math.round(b):null}
+ async function consentStatus(r){
+   try{if(typeof consentRow==='function'){const row=await consentRow(r?.supabaseId);return !!(row&&row.aceptado)}}catch(_){}
+   return !!window.__numedCurrentConsent;
+ }
+ async function enhanceHead(){
+   const r=window.adminCurrentPatient,host=document.getElementById('detail-head');if(!r||!host)return;
+   const core=host.querySelector('.detail-head');if(core){const first=core.firstElementChild;if(first&&!first.dataset.initials){const initials=((r.first||'').trim().charAt(0)+(r.last||'').trim().charAt(0)).toUpperCase()||'P';first.dataset.initials=initials}}
+   host.querySelector('.v112-metrics')?.remove();
+   const bio=bioValue(r),score=r.pss?.score??'—';
+   const wrap=document.createElement('div');wrap.className='v112-metrics';
+   wrap.innerHTML=`<div class="v112-metric"><span class="v112-metric-icon">◒</span><div><small>Edad biológica</small><strong>${bio==null?'Pendiente':bio+' años'}</strong><em>${bio!=null&&Number(r.age)?(bio<Number(r.age)?'↓ '+(Number(r.age)-bio)+' vs. cronológica':bio>Number(r.age)?'↑ '+(bio-Number(r.age))+' vs. cronológica':'Igual a cronológica'):''}</em></div></div><div class="v112-metric pss"><span class="v112-metric-icon">♡</span><div><small>PSS-10</small><strong>${val(score)} / 40</strong><em>${val(r.pss?.level||'Pendiente')}</em></div></div><div class="v112-metric measure"><span class="v112-metric-icon">✓</span><div><small>Mediciones</small><strong>${r.measured?'Completadas':'Pendientes'}</strong><em>${r.measured?'Evaluación actualizada':'Requiere completar'}</em></div></div><div class="v112-metric consent"><span class="v112-metric-icon">▤</span><div><small>Consentimiento</small><strong id="v112-consent-state">Verificando…</strong><em id="v112-consent-sub">Expediente NUMED</em></div></div>`;
+   host.appendChild(wrap);
+   const ok=await consentStatus(r);const state=document.getElementById('v112-consent-state'),sub=document.getElementById('v112-consent-sub');if(state)state.textContent=ok?'Firmado':'Pendiente';if(sub)sub.textContent=ok?'Documento disponible':'Pendiente de firma';
+ }
+ function renderGeneral(){
+   const r=window.adminCurrentPatient;if(!r)return;const c=document.getElementById('detail-content');if(!c)return;
+   const consentKnown=!!window.__numedCurrentConsent;
+   c.innerHTML=`<div class="v112-general-layout"><section class="v112-panel"><div class="v112-panel-head"><div><h3>Información personal</h3><p>Datos generales del paciente</p></div><span style="font-size:20px">◎</span></div><div class="v112-data-grid"><div class="v112-data"><small>Nombre completo</small><strong>${val((r.first||'')+' '+(r.last||''))}</strong></div><div class="v112-data"><small>Cédula</small><strong>${val(r.id)}</strong></div><div class="v112-data"><small>Edad cronológica</small><strong>${val(r.age)} años</strong></div><div class="v112-data"><small>Celular</small><strong>${val(r.phone)}</strong></div><div class="v112-data"><small>Sexo</small><strong>${val(r.gender)}</strong></div><div class="v112-data"><small>Código de colaborador</small><strong>${r.hasCollaboratorCode?val(r.collaboratorCode):'No posee'}</strong></div><div class="v112-data wide"><small>Localidad</small><strong>${val(r.locality)}</strong></div></div></section><aside class="v112-side-stack"><div class="v112-side-card"><h4>Estado de la evaluación</h4><div class="v112-status-row"><i class="v112-dot"></i><div><b>Datos registrados</b><span>Información del paciente</span></div></div><div class="v112-status-row"><i class="v112-dot"></i><div><b>PSS-10 ${r.pss?.score!=null?'completado':'pendiente'}</b><span>${r.pss?.score!=null?val(r.pss.score)+'/40 · '+val(r.pss.level):'Sin resultado'}</span></div></div><div class="v112-status-row"><i class="v112-dot ${r.measured?'':'pending'}"></i><div><b>Mediciones ${r.measured?'completadas':'pendientes'}</b><span>Evaluación funcional</span></div></div><div class="v112-status-row"><i id="v112-consent-dot" class="v112-dot ${consentKnown?'':'pending'}"></i><div><b id="v112-consent-side">Consentimiento ${consentKnown?'firmado':'verificando…'}</b><span>Documento del expediente</span></div></div></div><div class="v112-side-card"><h4>Acciones rápidas</h4><div class="v112-actions"><button class="admin-action" onclick="downloadPSSReport()">Descargar PDF PSS-10</button><button class="admin-action alt" onclick="downloadBioReport()" ${r.measured?'':'disabled'}>Descargar Edad Biológica</button></div></div></aside></div>`;
+   consentStatus(r).then(ok=>{const t=document.getElementById('v112-consent-side'),d=document.getElementById('v112-consent-dot');if(t)t.textContent='Consentimiento '+(ok?'firmado':'pendiente');if(d)d.classList.toggle('pending',!ok)});
+ }
+ const prevOpen=window.openAdminPatient;
+ if(typeof prevOpen==='function')window.openAdminPatient=function(){const out=prevOpen.apply(this,arguments);requestAnimationFrame(()=>enhanceHead());return out};
+ const prevTab=window.detailTab;
+ if(typeof prevTab==='function')window.detailTab=function(tab,btn){if(tab==='general'){document.querySelectorAll('.detail-tabs button').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');renderGeneral();enhanceHead();return}const out=prevTab.apply(this,arguments);requestAnimationFrame(()=>enhanceHead());return out};
+ if(window.adminCurrentPatient&&document.getElementById('admin-detail')?.style.display!=='none')requestAnimationFrame(()=>enhanceHead());
 })();
 </script>
 </body>
