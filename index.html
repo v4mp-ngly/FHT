@@ -5802,5 +5802,48 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
  };
 })();
 </script>
+
+<style id="numed-v130-photobooth-camera-normal">
+/* v130 · Photo Booth: vista y captura sin efecto espejo */
+#pb64-video,#pb46-stage video,[id*="photobooth"] video{
+  transform:none!important;
+  -webkit-transform:none!important;
+  scale:1 1!important;
+}
+#pb64-stage img,#pb46-stage img{transform:none!important;-webkit-transform:none!important;}
+</style>
+<script id="numed-v130-photobooth-camera-normal-js">
+(function(){
+  function forceNormal(video){
+    if(!video)return;
+    video.style.setProperty('transform','none','important');
+    video.style.setProperty('-webkit-transform','none','important');
+  }
+  const oldStart=window.pb64StartCamera;
+  if(typeof oldStart==='function'){
+    window.pb64StartCamera=async function(){
+      const r=await oldStart.apply(this,arguments);
+      forceNormal(document.getElementById('pb64-video'));
+      return r;
+    };
+  }
+  const oldTake=window.pb64TakePhoto;
+  if(typeof oldTake==='function'){
+    window.pb64TakePhoto=async function(){
+      forceNormal(document.getElementById('pb64-video'));
+      return oldTake.apply(this,arguments);
+    };
+  }
+  const old46=window.pb46Start;
+  if(typeof old46==='function'){
+    window.pb46Start=async function(){
+      const r=await old46.apply(this,arguments);
+      const v=document.querySelector('#pb46-stage video');
+      forceNormal(v);
+      return r;
+    };
+  }
+})();
+</script>
 </body>
 </html>
