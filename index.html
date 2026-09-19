@@ -1169,6 +1169,60 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 @media(max-width:620px){.pss109-card{padding:18px;border-radius:20px}.pss109-main{grid-template-columns:1fr}.pss109-score{min-height:108px}.pss109-head h3{font-size:19px}.pss109-status{padding:7px 10px}.pss109-score strong{font-size:48px}}
 </style>
 
+
+<style id="numed-v115-pss-premium">
+/* NUMED v115 · PSS-10 premium, una pregunta a la vez */
+#integral-pss-step{--pss-blue:#274C71;--pss-green:#ABC942;--pss-soft:#f5f8fa;--pss-line:#e3e9ee}
+#integral-pss-step>.card-title,#integral-pss-step>p{display:none}
+.pss115-head{margin-bottom:26px;padding:4px 2px 0}
+.pss115-kicker{display:flex;align-items:center;gap:8px;color:#78932f;font-size:9px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;margin-bottom:10px}
+.pss115-kicker:before{content:"";width:8px;height:8px;border-radius:50%;background:var(--pss-green);box-shadow:0 0 0 5px rgba(171,201,66,.13)}
+.pss115-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.pss115-title-row h3{margin:0;color:var(--pss-blue);font-size:25px;letter-spacing:-.025em}.pss115-count{font-size:11px;color:#738393;font-weight:800;white-space:nowrap}
+.pss115-copy{margin:7px 0 18px;color:#758696;font-size:11px;line-height:1.6}
+.pss115-progress{height:7px;background:#edf1f4;border-radius:999px;overflow:hidden}.pss115-progress>i{display:block;height:100%;width:10%;background:linear-gradient(90deg,var(--pss-green),#c5dc6c);border-radius:inherit;transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.pss115-scale{display:flex;justify-content:space-between;margin-top:8px;color:#9aa6b1;font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+#integral-pss-step .pss-grid{display:block;min-height:315px}
+#integral-pss-step .pss-q{display:none;border:0;border-radius:22px;padding:30px;background:linear-gradient(145deg,#f8fafb,#fff);box-shadow:inset 0 0 0 1px var(--pss-line);animation:pss115In .34s ease both}
+#integral-pss-step .pss-q.pss115-active{display:block}
+@keyframes pss115In{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+#integral-pss-step .pss-q-top{display:block;margin:0 0 25px}.pss115-qmeta{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+#integral-pss-step .pss-num{width:auto;height:auto;border-radius:999px;padding:7px 10px;background:#edf3e1;color:#708c2d;font-size:9px;letter-spacing:.08em}
+#integral-pss-step .pss-text{font-size:20px;line-height:1.42;letter-spacing:-.015em;color:var(--pss-blue);font-weight:750;max-width:680px}
+#integral-pss-step .pss-options{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+#integral-pss-step .pss-opt span{min-height:72px;border:1px solid var(--pss-line);border-radius:14px;padding:10px 8px;font-size:10px;color:#647688;background:#fff;box-shadow:0 3px 12px rgba(39,76,113,.035);transition:.2s ease;position:relative}
+#integral-pss-step .pss-opt span:before{content:"";position:absolute;top:11px;width:12px;height:12px;border:1.5px solid #c8d2da;border-radius:50%;background:#fff}
+#integral-pss-step .pss-opt span{padding-top:31px}
+#integral-pss-step .pss-opt:hover span{transform:translateY(-2px);border-color:#bdcbd5;box-shadow:0 8px 22px rgba(39,76,113,.08)}
+#integral-pss-step .pss-opt input:checked+span{border-color:var(--pss-green);background:#f4f8e8;color:var(--pss-blue);box-shadow:0 0 0 3px rgba(171,201,66,.12)}
+#integral-pss-step .pss-opt input:checked+span:before{border:4px solid var(--pss-green);box-sizing:border-box}
+.pss115-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}.pss115-actions-right{display:flex;gap:9px}.pss115-btn{border:0;border-radius:12px;padding:12px 18px;font-family:inherit;font-size:10px;font-weight:850;cursor:pointer;transition:.2s ease}.pss115-btn:hover{transform:translateY(-1px)}.pss115-back{background:#f2f5f7;color:#657789}.pss115-next{background:var(--pss-blue);color:#fff;min-width:128px}.pss115-next.is-final{background:var(--pss-green);color:#fff}.pss115-hint{color:#9aa6b1;font-size:9px}.pss115-error{display:none;margin-top:13px;color:#a84d48;font-size:9.5px;font-weight:750}.pss115-error.show{display:block;animation:pss115In .2s ease}
+#integral-pss-step>.btn-group{display:none!important}
+@media(max-width:700px){.pss115-title-row{align-items:flex-start}.pss115-title-row h3{font-size:21px}#integral-pss-step .pss-q{padding:22px 17px}#integral-pss-step .pss-text{font-size:17px}#integral-pss-step .pss-options{grid-template-columns:1fr}.pss115-actions{align-items:flex-end}.pss115-hint{display:none}.pss115-btn{padding:12px 14px}#integral-pss-step .pss-opt span{min-height:52px;padding:17px 14px 17px 38px;justify-content:flex-start;text-align:left}#integral-pss-step .pss-opt span:before{top:50%;left:14px;transform:translateY(-50%)}}
+</style>
+<script id="numed-v115-pss-premium-js">
+(function(){
+ let current=0,ready=false;
+ function qs(s,r=document){return r.querySelector(s)}
+ function qsa(s,r=document){return [...r.querySelectorAll(s)]}
+ function init(){
+  const step=qs('#integral-pss-step'); if(!step||ready)return; const grid=qs('.pss-grid',step); if(!grid)return;
+  const questions=qsa('.pss-q',grid); if(questions.length!==10)return;
+  const head=document.createElement('div');head.className='pss115-head';head.innerHTML='<div class="pss115-kicker">Bienestar psicosocial</div><div class="pss115-title-row"><h3>Estrés percibido · PSS-10</h3><div class="pss115-count"><span id="pss115-current">1</span> de 10</div></div><p class="pss115-copy">Piensa en cómo te has sentido durante el último mes. Selecciona la opción que mejor represente tu experiencia.</p><div class="pss115-progress"><i id="pss115-bar"></i></div><div class="pss115-scale"><span>Inicio</span><span id="pss115-progress-label">10% completado</span></div>';
+  grid.before(head);
+  questions.forEach((q,i)=>{const top=qs('.pss-q-top',q),num=qs('.pss-num',q);if(top&&num){const meta=document.createElement('div');meta.className='pss115-qmeta';top.insertBefore(meta,top.firstChild);meta.appendChild(num);const micro=document.createElement('span');micro.style.cssText='font-size:9px;color:#98a5af;font-weight:800;letter-spacing:.06em;text-transform:uppercase';micro.textContent='Pregunta '+(i+1);meta.appendChild(micro)}});
+  const actions=document.createElement('div');actions.className='pss115-actions';actions.innerHTML='<div class="pss115-hint">Tus respuestas se guardarán al finalizar esta sección.</div><div class="pss115-actions-right"><button type="button" class="pss115-btn pss115-back" id="pss115-back">← Anterior</button><button type="button" class="pss115-btn pss115-next" id="pss115-next">Continuar →</button></div><div class="pss115-error" id="pss115-error">Selecciona una respuesta para continuar.</div>';
+  grid.after(actions);
+  qs('#pss115-back').addEventListener('click',()=>{if(current===0){if(typeof window.backToData==='function')window.backToData();return}show(current-1)});
+  qs('#pss115-next').addEventListener('click',()=>{const q=questions[current],checked=qs('input[type="radio"]:checked',q);if(!checked){qs('#pss115-error').classList.add('show');q.animate([{transform:'translateX(0)'},{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'translateX(0)'}],{duration:240});return}qs('#pss115-error').classList.remove('show');if(current<questions.length-1)show(current+1);else{const submit=qsa('#integral-pss-step>.btn-group button[type="submit"]')[0];if(submit)submit.click();}});
+  qsa('input[type="radio"]',grid).forEach(x=>x.addEventListener('change',()=>{qs('#pss115-error')?.classList.remove('show')}));
+  ready=true; show(0);
+ }
+ function show(i){const step=qs('#integral-pss-step');if(!step)return;const questions=qsa('.pss-q',step);current=Math.max(0,Math.min(i,questions.length-1));questions.forEach((q,n)=>q.classList.toggle('pss115-active',n===current));const n=current+1,pct=Math.round(n/questions.length*100);const c=qs('#pss115-current'),b=qs('#pss115-bar'),l=qs('#pss115-progress-label'),next=qs('#pss115-next'),back=qs('#pss115-back');if(c)c.textContent=n;if(b)b.style.width=pct+'%';if(l)l.textContent=pct+'% completado';if(next){next.textContent=current===questions.length-1?'Guardar y continuar →':'Continuar →';next.classList.toggle('is-final',current===questions.length-1)}if(back)back.textContent=current===0?'← Datos':'← Anterior';qs('#pss115-error')?.classList.remove('show');step.scrollIntoView({behavior:'smooth',block:'start'})}
+ document.addEventListener('DOMContentLoaded',init);
+ const old=window.goToPSS;window.addEventListener('load',()=>{const fn=window.goToPSS;if(typeof fn==='function'&&!fn.__pss115){const wrapped=function(){const r=fn.apply(this,arguments);setTimeout(()=>{init();show(0)},30);return r};wrapped.__pss115=true;window.goToPSS=wrapped}});
+})();
+</script>
+
 </head>
 <body>
 <div id="access-portal">
