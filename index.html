@@ -4803,20 +4803,35 @@ window.downloadBioReport=function(){
   blockText(recLines,x+12,actionY+12,4.05,C.ink,recLineH);
   return h;
  }
- header(d,f,'RESULTADOS','EVALUACIÓN INTEGRAL NUMED');
- txt(d,f,'Perfil de salud por condiciones',14,42,{bold:true,size:12.5,color:C.navy});
- txt(d,f,`${r.first||''} ${r.last||''}`.trim(),196,42,{bold:true,size:5,color:C.blue,opts:{align:'right'}});
- txt(d,f,'Interpretación, indicadores y acciones sugeridas.',14,49,{size:4.9,color:C.muted});
- let cardY=57;
  const cards=[
   ['Condición cardiovascular',A.cardio,'cardio'],
   ['Condición metabólica',A.metabolic,'metabolic'],
   ['Condición funcional',A.functional,'functional'],
   ['Condición psicosocial',A.psycho,'psycho']
  ];
- cards.forEach((item)=>{const hh=resultCard(14,cardY,182,item[0],item[1],item[2]);cardY+=hh+5;});
- footer(d,f,1,2);
- d.addPage();header(d,f,'EDAD BIOLÓGICA','RESULTADO');
+ function cardHeight(title,a,key){
+  const rec=cleanCopy((DYN[key]||[]).join(' '))||'Mantener seguimiento según criterio profesional.';
+  const inner=166, howLines=wrapSized(how[key][a.key],inner,4.15,false), recLines=wrapSized(rec,inner-8,4.05,false);
+  const howLineH=4.5, metricYRel=8.5+7+6+(howLines.length-1)*howLineH+7;
+  const actionYRel=metricYRel+16+5, recLineH=4.45, actionH=Math.max(18,11+(recLines.length-1)*recLineH+5);
+  return actionYRel+actionH+5;
+ }
+ const heights=cards.map(item=>cardHeight(item[0],item[1],item[2]));
+ const resultPages=[];let simY=57,sim=[];
+ cards.forEach((item,i)=>{const h=heights[i];if(sim.length&&simY+h>276){resultPages.push(sim);sim=[];simY=57}sim.push(i);simY+=h+5});
+ if(sim.length)resultPages.push(sim);
+ const totalPages=resultPages.length+1;
+ resultPages.forEach((indexes,pageIndex)=>{
+  if(pageIndex>0)d.addPage();
+  header(d,f,'RESULTADOS','EVALUACIÓN INTEGRAL NUMED');
+  txt(d,f,'Perfil de salud por condiciones',14,42,{bold:true,size:12.5,color:C.navy});
+  txt(d,f,`${r.first||''} ${r.last||''}`.trim(),196,42,{bold:true,size:5,color:C.blue,opts:{align:'right'}});
+  txt(d,f,pageIndex===0?'Interpretación, indicadores y acciones sugeridas.':'Continuación de resultados.',14,49,{size:4.9,color:C.muted});
+  let cardY=57;
+  indexes.forEach(i=>{const item=cards[i],hh=resultCard(14,cardY,182,item[0],item[1],item[2]);cardY+=hh+5});
+  footer(d,f,pageIndex+1,totalPages);
+ });
+ d.addPage();const bioPage=resultPages.length+1;header(d,f,'EDAD BIOLÓGICA','RESULTADO');
  txt(d,f,'Edad biológica',14,43,{bold:true,size:13,color:C.navy});
  txt(d,f,'Comparación entre tu edad cronológica y tu edad biológica estimada.',14,50,{size:5,color:C.muted});
  d.setFillColor(...C.navy);d.roundedRect(14,61,182,82,6,6,'F');
@@ -4824,12 +4839,18 @@ window.downloadBioReport=function(){
  txt(d,f,'→',105,99,{bold:true,size:16,color:[202,231,101],opts:{align:'center'}});
  txt(d,f,'EDAD BIOLÓGICA',152,77,{bold:true,size:4.4,color:[196,210,221],opts:{align:'center'}});txt(d,f,String(bio),152,104,{bold:true,size:28,color:[202,231,101],opts:{align:'center'}});txt(d,f,'AÑOS',152,114,{size:4,color:[196,210,221],opts:{align:'center'}});
  const meaning=diff<0?`Su edad biológica es ${abs} año${abs===1?'':'s'} menor que la edad cronológica.`:diff>0?`Su edad biológica es ${abs} año${abs===1?'':'s'} mayor que la edad cronológica.`:'Su edad biológica es igual a la edad cronológica.';
- d.setFillColor(...C.mint);d.roundedRect(14,153,182,29,4,4,'F');txt(d,f,fitLines(meaning,164,2),105,164,{bold:true,size:6,color:C.blue,opts:{align:'center'}});txt(d,f,'Resultado orientativo basado en el algoritmo NUMED actual.',105,176,{size:4.2,color:C.muted,opts:{align:'center'}});
- d.setFillColor(...C.soft);d.roundedRect(14,192,182,29,4,4,'F');txt(d,f,'Sobre este resultado',20,202,{bold:true,size:5.8,color:C.blue});txt(d,f,fitLines('El PSS-10 se interpreta de manera independiente y no modifica la edad biológica. Los resultados son orientativos y deben complementarse con valoración profesional.',164,4),20,210,{size:4.5,color:C.muted});
- footer(d,f,2,2);
+ const meaningLines=wrapSized(meaning,164,6,true), meaningLineH=6.2, meaningH=Math.max(29,16+(meaningLines.length-1)*meaningLineH);
+ d.setFillColor(...C.mint);d.roundedRect(14,153,182,meaningH,4,4,'F');
+ meaningLines.forEach((line,i)=>txt(d,f,line,105,164+i*meaningLineH,{bold:true,size:6,color:C.blue,opts:{align:'center'}}));
+ txt(d,f,'Resultado orientativo basado en el algoritmo NUMED actual.',105,153+meaningH-6,{size:4.2,color:C.muted,opts:{align:'center'}});
+ const note='El PSS-10 se interpreta de manera independiente y no modifica la edad biológica. Los resultados son orientativos y deben complementarse con valoración profesional.';
+ const noteLines=wrapSized(note,164,4.5,false), noteLineH=4.8, noteY=153+meaningH+10, noteH=Math.max(29,17+(noteLines.length-1)*noteLineH);
+ d.setFillColor(...C.soft);d.roundedRect(14,noteY,182,noteH,4,4,'F');txt(d,f,'Sobre este resultado',20,noteY+10,{bold:true,size:5.8,color:C.blue});
+ noteLines.forEach((line,i)=>txt(d,f,line,20,noteY+18+i*noteLineH,{size:4.5,color:C.muted}));
+ footer(d,f,bioPage,totalPages);
  d.save(`NUMED_Resultados_${clean(r.first)}_${clean(r.last)}.pdf`)
 };
-window.NUMED_RUNTIME_VERSION='128-PDF-FLUIDO-SIN-OVERFLOW';
+window.NUMED_RUNTIME_VERSION='129-PDF-PAGINACION-AUTOMATICA';
 })();
 </script>
 
