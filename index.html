@@ -5498,5 +5498,61 @@ window.NUMEDCartoonPhoto=async function(src){
  if(window.adminCurrentPatient&&document.getElementById('admin-detail')?.style.display!=='none')requestAnimationFrame(()=>enhanceHead());
 })();
 </script>
+
+<style id="numed-v116-bio-questionnaire-mobile">
+/* v116 · Cuestionario Edad Biológica optimizado para iPhone/celular */
+#questionnaire-modal{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#questionnaire-modal .modal-box{width:min(680px,100%);box-sizing:border-box}
+#questionnaire-form .q-opt{min-height:46px;box-sizing:border-box}
+#questionnaire-form .q-opt input[type="radio"]{width:18px!important;height:18px!important;min-width:18px;flex:0 0 18px;margin:0;accent-color:#a9c93f}
+#questionnaire-form input[type="time"]{-webkit-appearance:none;appearance:none;box-sizing:border-box}
+@media(max-width:600px){
+ #questionnaire-modal{padding:0!important;background:#f4f7f9!important;overflow-y:auto!important;overflow-x:hidden!important}
+ #questionnaire-modal .modal-box{width:100%!important;max-width:none!important;min-height:100dvh;margin:0!important;padding:calc(22px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom))!important;border-radius:0!important;box-shadow:none!important;background:#f7f9fb!important;overflow:visible!important}
+ #questionnaire-modal .modal-title{position:relative;text-align:left!important;font-size:25px!important;line-height:1.12!important;letter-spacing:-.025em;margin:0 0 22px!important;padding:0 0 18px!important;color:#07345d!important;border-bottom:1px solid #dde6ec}
+ #questionnaire-modal .modal-title:before{content:'EVALUACIÓN NUMED';display:block;font-size:10px;line-height:1;font-weight:900;letter-spacing:.15em;color:#8cab36;margin-bottom:9px}
+ #questionnaire-modal .modal-title:after{content:'Responde según tus hábitos actuales';display:block;font-size:12px;line-height:1.4;font-weight:600;letter-spacing:0;color:#6b7e8f;margin-top:8px}
+ #questionnaire-form{display:block;width:100%;max-width:100%;overflow:visible}
+ #questionnaire-form .q-item,#questionnaire-form .q-item-v70{display:block!important;width:100%!important;box-sizing:border-box!important;margin:0 0 14px!important;padding:18px 16px!important;border:1px solid #dfe8ee!important;border-radius:18px!important;background:#fff!important;box-shadow:0 5px 18px rgba(7,52,93,.045)!important;overflow:hidden!important}
+ #questionnaire-form .q-item:last-of-type{margin-bottom:18px!important}
+ #questionnaire-form .q-num,#questionnaire-form .q-item-v70 .q-num{display:flex!important;width:34px!important;height:34px!important;min-width:34px!important;align-items:center!important;justify-content:center!important;border-radius:11px!important;margin:0 0 12px!important;background:#edf4dc!important;color:#718f22!important;font-size:11px!important;font-weight:900!important;letter-spacing:.08em!important}
+ #questionnaire-form .q-text,#questionnaire-form .q-item-v70 .q-text{display:block!important;width:100%!important;margin:0 0 14px!important;font-size:16px!important;line-height:1.42!important;font-weight:800!important;color:#0b3e68!important}
+ #questionnaire-form .q-options,#questionnaire-form .q-options-five,#questionnaire-form .sleep-rest-v70{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;width:100%!important;margin:0!important}
+ #questionnaire-form .q-opt{width:100%!important;min-height:52px!important;padding:13px 14px!important;border-radius:14px!important;justify-content:flex-start!important;gap:11px!important;font-size:14px!important;line-height:1.35!important;background:#f8fafb!important;border:1.5px solid #dce6ec!important;color:#38546c!important;white-space:normal!important;text-align:left!important}
+ #questionnaire-form .q-opt:has(input:checked){background:#f1f8dc!important;border-color:#9fbe3f!important;box-shadow:0 0 0 3px rgba(159,190,63,.10)!important;color:#07345d!important}
+ #questionnaire-form .sleep-grid-v70{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;margin:0 0 15px!important;width:100%!important}
+ #questionnaire-form .sleep-field-v70{display:block!important;width:100%!important}
+ #questionnaire-form .sleep-field-v70 span{font-size:12px!important;margin-bottom:7px!important;color:#536c80!important}
+ #questionnaire-form .sleep-field-v70 input{display:block!important;width:100%!important;max-width:100%!important;min-height:54px!important;font-size:16px!important;padding:0 14px!important;border-radius:14px!important;background:#fff!important}
+ #questionnaire-form .sleep-total-v70{grid-column:auto!important;width:100%!important;min-height:58px!important;border-radius:14px!important;padding:10px 14px!important;box-sizing:border-box!important;background:#f4f8fa!important}
+ #questionnaire-form .sleep-rest-title-v70{margin:4px 0 10px!important;font-size:14px!important;line-height:1.4!important}
+ #questionnaire-form>.btn-group{position:fixed!important;left:0!important;right:0!important;bottom:0!important;z-index:1004!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin:0!important;padding:12px 14px calc(12px + env(safe-area-inset-bottom))!important;background:rgba(255,255,255,.96)!important;border-top:1px solid #dfe8ee!important;box-shadow:0 -10px 30px rgba(7,52,93,.08)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+ #questionnaire-form>.btn-group .btn{width:100%!important;min-height:48px!important;justify-content:center!important;padding:11px 10px!important;font-size:13px!important;border-radius:14px!important;margin:0!important}
+}
+@media(max-width:380px){
+ #questionnaire-modal .modal-box{padding-left:12px!important;padding-right:12px!important}
+ #questionnaire-modal .modal-title{font-size:22px!important}
+ #questionnaire-form .q-item,#questionnaire-form .q-item-v70{padding:16px 13px!important;border-radius:16px!important}
+ #questionnaire-form>.btn-group{padding-left:10px!important;padding-right:10px!important}
+}
+@media(orientation:landscape) and (max-height:500px){
+ #questionnaire-modal .modal-box{padding-top:14px!important}
+ #questionnaire-form>.btn-group{position:sticky!important;bottom:0!important}
+}
+</style>
+<script id="numed-v116-bio-questionnaire-mobile-js">
+(function(){
+ const oldOpen=window.openQuestionnaire, oldClose=window.closeQuestionnaire;
+ window.openQuestionnaire=function(){
+   if(typeof oldOpen==='function') oldOpen.apply(this,arguments);
+   const modal=document.getElementById('questionnaire-modal');
+   if(modal){modal.scrollTop=0; requestAnimationFrame(()=>{modal.scrollTop=0});}
+ };
+ window.closeQuestionnaire=function(){
+   if(typeof oldClose==='function') return oldClose.apply(this,arguments);
+   const modal=document.getElementById('questionnaire-modal'); if(modal) modal.style.display='none';
+ };
+})();
+</script>
 </body>
 </html>
