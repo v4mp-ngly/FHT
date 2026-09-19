@@ -5554,5 +5554,43 @@ window.NUMEDCartoonPhoto=async function(src){
  };
 })();
 </script>
+
+<style id="numed-v117-photobooth-boot-fix">
+html.numed-photobooth-route,html.numed-photobooth-route body{margin:0!important;min-height:100%!important;background:#f4f9f7!important;overflow-x:hidden!important}
+html.numed-photobooth-route body> *:not(#pb64-patient):not(#pb64-qr-modal):not(script):not(style){display:none!important}
+html.numed-photobooth-route #pb64-patient{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2147483000!important;min-height:100dvh!important}
+html.numed-photobooth-route #pb114-login{display:block!important;visibility:visible!important;opacity:1!important}
+html.numed-photobooth-route #pb114-booth{display:none!important}
+html.numed-photobooth-route.pb117-patient-ok #pb114-login{display:none!important}
+html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!important}
+@media(max-width:600px){html.numed-photobooth-route #pb64-patient{padding:max(14px,env(safe-area-inset-top)) 12px max(24px,env(safe-area-inset-bottom))!important}.pb64-patient-head{margin:4px 0 12px!important}.pb114-login{border-radius:20px!important;padding:22px 17px!important}.pb114-input-wrap input{font-size:16px!important;min-height:54px!important}.pb114-continue{width:100%!important;min-height:54px!important}}
+</style>
+<script id="numed-v117-photobooth-boot-fix-js">
+(function(){'use strict';
+ const mode=new URLSearchParams(location.search).get('mode');
+ if(mode!=='photobooth')return;
+ const root=document.documentElement;
+ root.classList.add('numed-photobooth-route');
+ function boot(){
+   const page=document.getElementById('pb64-patient'),login=document.getElementById('pb114-login'),booth=document.getElementById('pb114-booth'),ced=document.getElementById('pb114-cedula');
+   if(!page||!login){console.error('NUMED Photo Booth: no se encontro la pantalla publica.');return}
+   document.querySelectorAll('body > *').forEach(el=>{if(el!==page&&el.id!=='pb64-qr-modal'&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.setProperty('display','none','important')});
+   page.style.setProperty('display','block','important');page.style.setProperty('visibility','visible','important');page.style.setProperty('opacity','1','important');
+   root.classList.remove('pb117-patient-ok');
+   login.style.setProperty('display','block','important');
+   if(booth)booth.style.setProperty('display','none','important');
+   const logo=document.getElementById('pb64-logo');if(logo&&!logo.getAttribute('src')){const src=document.querySelector('#welcome-screen .wc-logo,.portal-logo,#portal-logo')?.src;if(src)logo.src=src}
+   const err=document.getElementById('pb114-error');if(err){err.textContent='';err.style.display='none'}
+   requestAnimationFrame(()=>{try{ced?.focus({preventScroll:true})}catch(_){}});
+ }
+ // Keep the general login as the first public screen. The patient state is enabled only after a successful lookup.
+ const oldShow=window.pb114ChangePatient;window.pb114ChangePatient=function(){root.classList.remove('pb117-patient-ok');return oldShow?.apply(this,arguments)};
+ // showPatient is local to v114, so detect the booth becoming visible after successful login without observers.
+ const form=document.getElementById('pb114-login-form');if(form&&!form.dataset.v117){form.dataset.v117='1';form.addEventListener('submit',()=>{let tries=0;const check=()=>{tries++;const b=document.getElementById('pb114-booth');if(b&&b.style.display==='block'){root.classList.add('pb117-patient-ok');return}if(tries<80)setTimeout(check,100)};setTimeout(check,100)})}
+ boot();
+ window.addEventListener('pageshow',()=>{if(!root.classList.contains('pb117-patient-ok'))boot()},{once:true});
+ window.NUMED_RUNTIME_VERSION='117-PHOTOBOOTH-BOOT-FIX';
+})();
+</script>
 </body>
 </html>
