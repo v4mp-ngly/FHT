@@ -4758,33 +4758,63 @@ window.downloadBioReport=function(){
   functional:[['Fuerza prensil',`${m.fuerza??'—'} kg`],['Flexibilidad',`${m.flexibilidad??'—'} cm`]],
   psycho:[['PSS-10',`${r.pss?.score??'—'}/40`],['Nivel de estrés',r.pss?.level||A.psycho.level]]
  };
- function fitLines(value,maxWidth,maxLines){
-   let lines=wrap(d,cleanCopy(value),maxWidth);if(!Array.isArray(lines))lines=[String(lines)];
-   if(lines.length>maxLines){lines=lines.slice(0,maxLines);let last=lines[maxLines-1].replace(/[\s.,;:]+$/,'');while(d.getTextWidth(last+'…')>maxWidth&&last.length>2)last=last.slice(0,-1);lines[maxLines-1]=last+'…'}
-   return lines;
+ function wrapSized(value,maxWidth,size=4.2,bold=false){
+   const v=cleanCopy(value);
+   d.setFont(f,bold?'bold':'normal');
+   d.setFontSize(size);
+   const lines=d.splitTextToSize(v||'—',maxWidth);
+   return Array.isArray(lines)?lines:[String(lines)];
+ }
+ function blockText(lines,x,y,size,color,lineH){
+   (lines||[]).forEach((line,i)=>txt(d,f,line,x,y+i*lineH,{size,color}));
  }
  function resultCard(x,y,w,title,a,key){
-  const c=statusColor(a),rec=cleanCopy((DYN[key]||[]).join(' ')),howLines=fitLines(how[key][a.key],w-12,3),recLines=fitLines(rec||'Mantener seguimiento según criterio profesional.',w-18,5);
-  const howH=Math.max(13,5.2+howLines.length*4.3),metricY=y+16+howH,actionY=metricY+18,actionH=Math.max(18,9+recLines.length*4.15),h=(actionY-y)+actionH+5;
-  d.setFillColor(255,255,255);d.setDrawColor(...C.line);d.roundedRect(x,y,w,h,4,4,'FD');d.setFillColor(...c);d.roundedRect(x,y,w,2,1,1,'F');
-  txt(d,f,title,x+6,y+8,{bold:true,size:6.2,color:C.blue});
-  txt(d,f,'¿CÓMO TE ENCUENTRAS?',x+6,y+14,{bold:true,size:3.2,color:C.muted});
-  txt(d,f,howLines,x+6,y+19,{size:3.8,color:C.muted});
-  const gap=3,mw=(w-15-gap)/2;
-  metrics[key].forEach((mt,i)=>{const mx=x+6+i*(mw+gap);d.setFillColor(...C.soft);d.roundedRect(mx,metricY,mw,14,2.4,2.4,'F');txt(d,f,fitLines(mt[0].toUpperCase(),mw-7,2),mx+3.5,metricY+4.8,{bold:true,size:2.8,color:C.muted});txt(d,f,fitLines(mt[1],mw-7,2),mx+3.5,metricY+10.6,{bold:true,size:4.5,color:C.blue})});
-  d.setFillColor(a.key==='favorable'?248:255,a.key==='favorable'?251:a.key==='observacion'?250:246,a.key==='favorable'?239:a.key==='observacion'?239:246);d.roundedRect(x+6,actionY,w-12,actionH,2.5,2.5,'F');
-  txt(d,f,'QUÉ PUEDES HACER',x+10,actionY+5.5,{bold:true,size:3.1,color:C.muted});txt(d,f,recLines,x+10,actionY+10.5,{size:3.65,color:C.ink});
+  const c=statusColor(a), rec=cleanCopy((DYN[key]||[]).join(' '))||'Mantener seguimiento según criterio profesional.';
+  const inner=w-16;
+  const howLines=wrapSized(how[key][a.key],inner,4.15,false);
+  const recLines=wrapSized(rec,inner-8,4.05,false);
+  const titleY=y+8.5;
+  const howLabelY=titleY+7;
+  const howTextY=howLabelY+6;
+  const howLineH=4.5;
+  const metricY=howTextY+(howLines.length-1)*howLineH+7;
+  const gap=4, mw=(inner-gap)/2;
+  const metricH=16;
+  const actionY=metricY+metricH+5;
+  const recLineH=4.45;
+  const actionH=Math.max(18,11+(recLines.length-1)*recLineH+5);
+  const h=(actionY-y)+actionH+5;
+  d.setFillColor(255,255,255);d.setDrawColor(...C.line);d.roundedRect(x,y,w,h,4,4,'FD');
+  d.setFillColor(...c);d.roundedRect(x,y,w,2,1,1,'F');
+  txt(d,f,title,x+8,titleY,{bold:true,size:6.4,color:C.blue});
+  txt(d,f,'¿CÓMO TE ENCUENTRAS?',x+8,howLabelY,{bold:true,size:3.2,color:C.muted});
+  blockText(howLines,x+8,howTextY,4.15,C.muted,howLineH);
+  metrics[key].forEach((mt,i)=>{
+    const mx=x+8+i*(mw+gap);
+    d.setFillColor(...C.soft);d.roundedRect(mx,metricY,mw,metricH,2.5,2.5,'F');
+    const lab=wrapSized(mt[0].toUpperCase(),mw-8,2.9,true);
+    blockText(lab,mx+4,metricY+5,2.9,C.muted,3.2);
+    const val=wrapSized(mt[1],mw-8,4.7,true);
+    blockText(val,mx+4,metricY+11.5,4.7,C.blue,4.8);
+  });
+  if(a.key==='favorable')d.setFillColor(248,251,239);else if(a.key==='observacion')d.setFillColor(255,250,239);else d.setFillColor(255,246,246);
+  d.roundedRect(x+8,actionY,w-16,actionH,2.8,2.8,'F');
+  txt(d,f,'QUÉ PUEDES HACER',x+12,actionY+6,{bold:true,size:3.2,color:C.muted});
+  blockText(recLines,x+12,actionY+12,4.05,C.ink,recLineH);
   return h;
  }
  header(d,f,'RESULTADOS','EVALUACIÓN INTEGRAL NUMED');
  txt(d,f,'Perfil de salud por condiciones',14,42,{bold:true,size:12.5,color:C.navy});
  txt(d,f,`${r.first||''} ${r.last||''}`.trim(),196,42,{bold:true,size:5,color:C.blue,opts:{align:'right'}});
  txt(d,f,'Interpretación, indicadores y acciones sugeridas.',14,49,{size:4.9,color:C.muted});
- const h1=resultCard(14,57,87,'Condición cardiovascular',A.cardio,'cardio');
- const h2=resultCard(109,57,87,'Condición metabólica',A.metabolic,'metabolic');
- const y2=57+Math.max(h1,h2)+8;
- resultCard(14,y2,87,'Condición funcional',A.functional,'functional');
- resultCard(109,y2,87,'Condición psicosocial',A.psycho,'psycho');
+ let cardY=57;
+ const cards=[
+  ['Condición cardiovascular',A.cardio,'cardio'],
+  ['Condición metabólica',A.metabolic,'metabolic'],
+  ['Condición funcional',A.functional,'functional'],
+  ['Condición psicosocial',A.psycho,'psycho']
+ ];
+ cards.forEach((item)=>{const hh=resultCard(14,cardY,182,item[0],item[1],item[2]);cardY+=hh+5;});
  footer(d,f,1,2);
  d.addPage();header(d,f,'EDAD BIOLÓGICA','RESULTADO');
  txt(d,f,'Edad biológica',14,43,{bold:true,size:13,color:C.navy});
@@ -4799,7 +4829,7 @@ window.downloadBioReport=function(){
  footer(d,f,2,2);
  d.save(`NUMED_Resultados_${clean(r.first)}_${clean(r.last)}.pdf`)
 };
-window.NUMED_RUNTIME_VERSION='91-PDF-DESCARGA-CORREGIDA';
+window.NUMED_RUNTIME_VERSION='128-PDF-FLUIDO-SIN-OVERFLOW';
 })();
 </script>
 
