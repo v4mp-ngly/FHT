@@ -5696,5 +5696,60 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
 #pb64-stage.pb124-final-preview canvas{display:block!important;width:100%!important;height:auto!important;aspect-ratio:9/16!important;object-fit:contain!important;max-height:none!important}
 @media(max-width:520px){#pb64-stage.pb124-final-preview{width:100%!important;border-radius:18px!important}}
 </style>
+
+<style id="numed-v127-pss-measurements-premium">
+#doctor-admin #detail-content .v127-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+#doctor-admin #detail-content .v127-stat{min-width:0;padding:14px 16px;border:1px solid #e3ebf2;border-radius:15px;background:#fff;overflow:hidden}
+#doctor-admin #detail-content .v127-stat small{display:block;margin-bottom:5px;color:#6a8299;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+#doctor-admin #detail-content .v127-stat strong{display:block;color:#0b315f;font-size:14px;line-height:1.3;overflow-wrap:anywhere}
+#doctor-admin #detail-content .v127-stat.ok{background:#f7faee;border-color:#dfeab8}.v127-stat.warn{background:#fff9ed!important;border-color:#f1dfb2!important}.v127-stat.attn{background:#fff2f1!important;border-color:#efcfcb!important}
+#doctor-admin #detail-content .v127-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+#doctor-admin #detail-content .v127-card{min-width:0;padding:15px 16px;border:1px solid #e3ebf2;border-radius:15px;background:#fff;box-shadow:0 7px 18px rgba(12,50,88,.045);overflow:hidden}
+#doctor-admin #detail-content .v127-card small{display:block;margin-bottom:7px;color:#6a8299;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.055em}
+#doctor-admin #detail-content .v127-card strong{display:block;color:#0b315f;font-size:18px;line-height:1.15;overflow-wrap:anywhere}
+#doctor-admin #detail-content .v127-card em{display:block;margin-top:7px;color:#6b8195;font-size:11px;line-height:1.35;font-style:normal;overflow-wrap:anywhere}
+#doctor-admin #detail-content .v127-pss-hero{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:center;padding:18px;border-radius:17px;background:linear-gradient(135deg,#073b68,#0d5b83);color:#fff;margin-top:14px;overflow:hidden}
+#doctor-admin #detail-content .v127-score{text-align:center;border-right:1px solid rgba(255,255,255,.2);padding-right:16px}.v127-score b{display:block;font-size:36px;line-height:1}.v127-score span{display:block;margin-top:5px;font-size:10px;color:#d7e5ee;text-transform:uppercase;letter-spacing:.06em}
+#doctor-admin #detail-content .v127-pss-copy{min-width:0}.v127-pss-copy b{display:block;font-size:16px;line-height:1.25}.v127-pss-copy p{margin:7px 0 0;color:#e7f0f5;font-size:12px;line-height:1.48;overflow-wrap:anywhere}
+#doctor-admin #detail-content .v127-scale{display:grid;grid-template-columns:14fr 13fr 14fr;gap:4px;margin-top:14px}.v127-scale span{height:7px;border-radius:999px;background:#dbe6ec}.v127-scale .low{background:#b8d57e}.v127-scale .mid{background:#efc15b}.v127-scale .high{background:#df746b}.v127-scale-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;color:#6d8295;font-size:10px}.v127-scale-labels span:nth-child(2){text-align:center}.v127-scale-labels span:last-child{text-align:right}
+#doctor-admin #detail-content .v127-recs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.v127-rec{display:flex;gap:9px;align-items:flex-start;min-width:0;padding:12px 13px;border:1px solid #e5edf1;border-radius:13px;background:#fbfcfd;color:#365873;font-size:11.5px;line-height:1.45}.v127-rec i{flex:0 0 23px;height:23px;border-radius:8px;background:#eff6dc;color:#668d18;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900}.v127-rec span{min-width:0;overflow-wrap:anywhere}
+#doctor-admin #detail-content .v127-follow{margin-top:12px;padding:13px 15px;border-radius:13px;background:#f7faee;border:1px solid #e0eabf;color:#49657f;font-size:11.5px;line-height:1.5;overflow-wrap:anywhere}.v127-follow b{color:#0b315f}
+@media(max-width:760px){#doctor-admin #detail-content .v127-grid,#doctor-admin #detail-content .v127-recs{grid-template-columns:1fr}#doctor-admin #detail-content .v127-pss-hero{grid-template-columns:1fr}.v127-score{border-right:0!important;border-bottom:1px solid rgba(255,255,255,.2);padding:0 0 14px!important}}
+@media(max-width:620px){#doctor-admin #detail-content .v127-summary{grid-template-columns:1fr}#doctor-admin #detail-content .v127-card{padding:13px 14px}#doctor-admin #detail-content .v127-card strong{font-size:16px}}
+</style>
+<script id="numed-v127-pss-measurements-premium-js">
+(function(){
+ const previous=window.detailTab;
+ if(typeof previous!=='function')return;
+ const esc=v=>typeof safeText==='function'?safeText(v??'—'):String(v??'—').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
+ const val=(v,u='')=>(v===null||v===undefined||v==='')?'—':esc(v)+u;
+ window.detailTab=function(tab,btn){
+  const out=previous.apply(this,arguments);
+  if(tab!=='pss'&&tab!=='measurements')return out;
+  const host=document.getElementById('detail-content'),r=window.adminCurrentPatient;if(!host||!r)return out;
+  const m=r.measurements||{};
+  if(tab==='measurements'){
+   const complete=!!r.measured,bio=m.edadBiologica;
+   const items=[
+    ['Presión arterial',`${val(m.presionSistolica)}/${val(m.presionDiastolica)} mmHg`,'Cardiovascular'],
+    ['Frecuencia cardíaca',val(m.frecuenciaCardiaca,' lpm'),'Cardiovascular'],
+    ['Peso',val(m.peso,' kg'),'Composición corporal'],['Talla',val(m.talla,' cm'),'Composición corporal'],
+    ['IMC',val(m.imc),'Metabólico'],['Perímetro abdominal',val(m.abdomen,' cm'),'Metabólico'],
+    ['Fuerza prensil',val(m.fuerza,' kg'),'Funcional'],['Flexibilidad',val(m.flexibilidad,' cm'),'Funcional']
+   ];
+   host.innerHTML=`<div class="v127-summary"><div class="v127-stat"><small>Evaluación</small><strong>Mediciones clínicas</strong></div><div class="v127-stat ${complete?'ok':''}"><small>Estado</small><strong>${complete?'Completadas ✓':'Pendientes'}</strong></div><div class="v127-stat ${bio!=null?'ok':''}"><small>Edad biológica</small><strong>${bio!=null?esc(bio)+' años':'Pendiente'}</strong></div></div><div class="v127-grid">${items.map(x=>`<div class="v127-card"><small>${x[2]}</small><strong>${x[1]}</strong><em>${x[0]}</em></div>`).join('')}</div>`;
+  } else {
+   const score=Number(r.pss?.score||0),level=String(r.pss?.level||'Sin resultado');
+   const key=score<=13?'low':score<=26?'mid':'high',klass=key==='low'?'ok':key==='mid'?'warn':'attn';
+   const title=key==='low'?'Estrés percibido bajo':key==='mid'?'Estrés percibido moderado':'Estrés percibido alto';
+   const desc=key==='low'?'El resultado refleja un nivel bajo de estrés percibido durante el último mes.':key==='mid'?'El resultado refleja un nivel moderado de estrés percibido. Conviene reforzar descanso, recuperación y manejo del estrés.':'El resultado refleja un nivel alto de estrés percibido y requiere seguimiento profesional.';
+   const recs=key==='low'?['Mantener horarios regulares de sueño y descanso.','Conservar actividad física y espacios de recuperación.','Mantener hábitos de autocuidado y apoyo social.']:key==='mid'?['Reforzar sueño y pausas de recuperación.','Practicar respiración, relajación o actividad física.','Organizar actividades por prioridades y reducir sobrecarga.','Repetir el PSS-10 en 2 a 3 meses.']:['Solicitar valoración profesional.','Priorizar sueño, descanso y red de apoyo.','Aplicar estrategias diarias de relajación.','Repetir el PSS-10 según indicación profesional.'];
+   const follow=key==='low'?'Mantener seguimiento preventivo y repetir la evaluación ante cambios importantes.':key==='mid'?'Dar seguimiento a la evolución del estrés y considerar valoración profesional si persisten los síntomas.':'Se recomienda valoración profesional y seguimiento cercano.';
+   host.innerHTML=`<div class="v127-summary"><div class="v127-stat"><small>Instrumento</small><strong>PSS-10</strong></div><div class="v127-stat ${klass}"><small>Nivel</small><strong>${esc(level)}</strong></div><div class="v127-stat"><small>Puntuación</small><strong>${esc(score)} / 40</strong></div></div><div class="v127-pss-hero"><div class="v127-score"><b>${esc(score)}</b><span>de 40 puntos</span></div><div class="v127-pss-copy"><b>${title}</b><p>${desc}</p></div></div><div class="v127-scale"><span class="low"></span><span class="mid"></span><span class="high"></span></div><div class="v127-scale-labels"><span>0–13 Bajo</span><span>14–26 Moderado</span><span>27–40 Alto</span></div><div class="v127-recs">${recs.map((x,i)=>`<div class="v127-rec"><i>${i+1}</i><span>${esc(x)}</span></div>`).join('')}</div><div class="v127-follow"><b>Seguimiento:</b> ${esc(follow)}</div>`;
+  }
+  return out;
+ };
+})();
+</script>
 </body>
 </html>
