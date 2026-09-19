@@ -5050,8 +5050,8 @@ window.pb64CloseQR=()=>{$('pb64-qr-modal').style.display='none'};window.pb64Copy
 async function publicRPC(name,args){const r=await fetch(NUMED_SB_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify(args)}),txt=await r.text();let d=null;try{d=txt?JSON.parse(txt):null}catch(_){d=txt}if(!r.ok)throw new Error(d?.message||JSON.stringify(d)||'Acceso no disponible');return d}
 async function initPatient(){const p=new URLSearchParams(location.search);if(p.get('mode')!=='photobooth')return false;document.querySelectorAll('body > *').forEach(el=>{if(!['pb64-patient'].includes(el.id)&&el.tagName!=='SCRIPT'&&el.tagName!=='STYLE')el.style.display='none'});$('pb64-patient').style.display='block';$('pb64-logo').src=logo();try{const d=await publicRPC('numed_get_photobooth_access',{p_token:p.get('token')||''});patientData=Array.isArray(d)?d[0]:d;if(!patientData?.paciente_id)throw new Error('El enlace venció o no es válido. Solicita un QR nuevo al personal de NUMED.');$('pb64-welcome').textContent='Hola '+(patientData.nombre||'')+'. Tu resultado está listo. Toma tu foto para crear tu ficha.';$('pb64-result').innerHTML='<div class="pb64-age"><small>Edad cronológica</small><strong>'+esc(patientData.edad_cronologica)+'</strong><span>años</span></div><div class="pb64-arrow">→</div><div class="pb64-age bio"><small>Edad biológica</small><strong>'+esc(patientData.edad_biologica)+'</strong><span>años</span></div>'}catch(e){$('pb64-result').innerHTML='<div style="grid-column:1/-1;text-align:center;color:#a33;padding:20px"><strong>No se puede abrir este Photo Booth.</strong><br>'+esc(e.message)+'</div>';document.querySelector('.pb64-card').style.display='none'}return true}
 window.pb64StartCamera=async()=>{try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('La cámara no está disponible aquí. Usa “Subir foto”.');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});$('pb64-stage').innerHTML='<video id="pb64-video" autoplay playsinline muted></video>';$('pb64-video').srcObject=stream;$('pb64-shot').disabled=false;$('pb64-status').textContent='Cámara lista.'}catch(e){$('pb64-status').textContent=e.message}};
-window.pb64TakePhoto=()=>{const v=$('pb64-video');if(!v)return;const c=document.createElement('canvas'),w=v.videoWidth||720,h=v.videoHeight||900;c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);photoData=c.toDataURL('image/jpeg',.94);stream?.getTracks().forEach(t=>t.stop());stream=null;$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto lista. Ya puedes descargar tu ficha.'};
-$('pb64-file')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{photoData=rd.result;$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto lista. Ya puedes descargar tu ficha.'};rd.readAsDataURL(f)});
+window.pb64TakePhoto=async()=>{const v=$('pb64-video');if(!v)return;const c=document.createElement('canvas'),w=v.videoWidth||720,h=v.videoHeight||900;c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);const raw=c.toDataURL('image/jpeg',.94);stream?.getTracks().forEach(t=>t.stop());stream=null;$('pb64-status').textContent='Creando tu versión animada…';try{photoData=window.NUMEDCartoonPhoto?await window.NUMEDCartoonPhoto(raw):raw}catch(e){console.warn('Animado publico',e);photoData=raw}$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto animada">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto animada lista. Ya puedes descargar tu ficha.'};
+$('pb64-file')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=async()=>{const raw=rd.result;$('pb64-status').textContent='Creando tu versión animada…';try{photoData=window.NUMEDCartoonPhoto?await window.NUMEDCartoonPhoto(raw):raw}catch(err){console.warn('Animado publico',err);photoData=raw}$('pb64-stage').innerHTML='<img src="'+photoData+'" alt="Tu foto animada">';$('pb64-downloads').style.display='grid';$('pb64-status').textContent='Foto animada lista. Ya puedes descargar tu ficha.'};rd.readAsDataURL(f)});
 window.pb64Retake=()=>{stream?.getTracks().forEach(t=>t.stop());stream=null;photoData='';$('pb64-stage').innerHTML='<div class="empty"><b>📸</b>Abre la cámara o sube una foto.</div>';$('pb64-downloads').style.display='none';$('pb64-shot').disabled=true};
 async function renderCard(kind){
  if(!photoData||!patientData)throw new Error('Primero toma o sube una foto.');
@@ -5214,10 +5214,10 @@ function cartoonize(ctx,w,h){
 
  // Base suavizada tipo render digital.
  ctx.clearRect(0,0,w,h);
- ctx.save();ctx.filter='blur(2.2px) brightness(1.045) saturate(1.09) contrast(.98)';ctx.drawImage(source,0,0,w,h);ctx.restore();
+ ctx.save();ctx.filter='blur(3.4px) brightness(1.06) saturate(1.16) contrast(.94)';ctx.drawImage(source,0,0,w,h);ctx.restore();
 
  // Recupera detalles de ojos, cabello, labios y ropa sin devolver textura fotografica dura.
- ctx.save();ctx.globalAlpha=.58;ctx.filter='contrast(1.07) saturate(1.04)';ctx.drawImage(source,0,0,w,h);ctx.restore();
+ ctx.save();ctx.globalAlpha=.44;ctx.filter='contrast(1.12) saturate(1.08)';ctx.drawImage(source,0,0,w,h);ctx.restore();
 
  // Luz suave para volumen tipo personaje 3D.
  const glow=ctx.createRadialGradient(w*.48,h*.28,0,w*.48,h*.32,Math.max(w,h)*.62);
@@ -5241,7 +5241,7 @@ function cartoonize(ctx,w,h){
    d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;
  }
  sc.putImageData(im,0,0);
- ctx.save();ctx.globalCompositeOperation='multiply';ctx.globalAlpha=.12;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,w,h);ctx.restore();
+ ctx.save();ctx.globalCompositeOperation='multiply';ctx.globalAlpha=.22;ctx.imageSmoothingEnabled=true;ctx.drawImage(small,0,0,w,h);ctx.restore();
 
  // Acabado final limpio y ligeramente calido.
  ctx.save();ctx.globalAlpha=.12;ctx.fillStyle='rgba(255,176,120,.08)';ctx.fillRect(0,0,w,h);ctx.restore();
@@ -5356,5 +5356,28 @@ setTimeout(paint,100);window.NUMED_RUNTIME_VERSION='98-RESULT-RECOMMENDATIONS';
 .cons110-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px;padding:20px 22px;border-radius:18px;background:linear-gradient(135deg,#0d4f78,#173f61);color:#fff}.cons110-head h3{font-family:'Montserrat',Arial,sans-serif;margin:5px 0 4px;font-size:22px}.cons110-head p{margin:0;opacity:.82;font-size:12px}.cons110-kicker{font-size:9px;font-weight:800;letter-spacing:.15em;opacity:.72}.cons110-status{flex:0 0 auto;padding:9px 13px;border-radius:999px;background:#eef7d8;color:#5b7f0b;font-size:11px;font-weight:900}.cons110-grid .detail-card{min-height:92px}.cons110-sign{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:20px}.cons110-sign>div{display:grid;gap:5px}.cons110-sign img{width:min(360px,48%);height:120px;object-fit:contain;border:1px solid #dce5ed;border-radius:14px;background:#fff}.cons110-saved{font-size:12px;color:#5b9300;font-weight:800}.cons110-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.cons110-empty{text-align:center;padding:34px!important}.cons110-empty .cons110-icon{font-size:34px;margin-bottom:10px}.cons110-empty strong{display:block;font-size:20px;color:#123f6a;margin:7px 0}.cons110-loading{padding:28px!important;color:#64748b}@media(max-width:720px){.cons110-head,.cons110-sign{flex-direction:column}.cons110-sign img{width:100%;max-width:360px}.cons110-status{align-self:flex-start}}
 </style>
 
+
+<script id="numed-v111-public-cartoon">
+(function(){
+'use strict';
+function load(src){return new Promise((ok,no)=>{const im=new Image();im.onload=()=>ok(im);im.onerror=no;im.src=src})}
+window.NUMEDCartoonPhoto=async function(src){
+ const im=await load(src),ow=im.naturalWidth||720,oh=im.naturalHeight||900,maxSide=760,k=Math.min(1,maxSide/Math.max(ow,oh)),w=Math.max(2,Math.round(ow*k)),h=Math.max(2,Math.round(oh*k));
+ const base=document.createElement('canvas');base.width=w;base.height=h;const b=base.getContext('2d',{willReadFrequently:true});b.drawImage(im,0,0,w,h);
+ const out=document.createElement('canvas');out.width=w;out.height=h;const x=out.getContext('2d');
+ // Piel y superficies suaves, manteniendo rasgos.
+ x.filter='blur(3.2px) brightness(1.065) saturate(1.18) contrast(.93)';x.drawImage(base,0,0);x.filter='none';
+ x.globalAlpha=.42;x.filter='contrast(1.13) saturate(1.08)';x.drawImage(base,0,0);x.filter='none';x.globalAlpha=1;
+ // Contorno ilustrado calculado en miniatura para no bloquear iPad/Safari.
+ const ew=Math.max(2,Math.round(w*.34)),eh=Math.max(2,Math.round(h*.34)),edge=document.createElement('canvas');edge.width=ew;edge.height=eh;const e=edge.getContext('2d',{willReadFrequently:true});e.filter='grayscale(1) contrast(1.45)';e.drawImage(base,0,0,ew,eh);e.filter='none';
+ const id=e.getImageData(0,0,ew,eh),d=id.data,c=new Uint8ClampedArray(d),lum=i=>.299*c[i]+.587*c[i+1]+.114*c[i+2];
+ for(let yy=1;yy<eh-1;yy++)for(let xx=1;xx<ew-1;xx++){const i=(yy*ew+xx)*4,g=Math.abs(lum(i+4)-lum(i-4))+Math.abs(lum(i+ew*4)-lum(i-ew*4)),v=g>72?Math.max(42,255-(g-72)*2.0):255;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255}
+ e.putImageData(id,0,0);x.globalCompositeOperation='multiply';x.globalAlpha=.24;x.drawImage(edge,0,0,w,h);x.globalAlpha=1;x.globalCompositeOperation='source-over';
+ // Luz suave tipo personaje 3D.
+ const glow=x.createRadialGradient(w*.46,h*.25,0,w*.46,h*.3,Math.max(w,h)*.7);glow.addColorStop(0,'rgba(255,245,235,.18)');glow.addColorStop(.55,'rgba(255,255,255,.02)');glow.addColorStop(1,'rgba(5,30,48,.10)');x.fillStyle=glow;x.fillRect(0,0,w,h);
+ return out.toDataURL('image/jpeg',.92);
+};
+})();
+</script>
 </body>
 </html>
