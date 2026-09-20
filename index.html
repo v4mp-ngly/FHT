@@ -1261,26 +1261,7 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 #doctor-admin #detail-content .questionnaire126-stat.ok{background:#f7faee;border-color:#dfeab8}
 @media(max-width:900px){#doctor-admin #detail-content .bio-patient-answers{grid-template-columns:1fr}}
 @media(max-width:620px){#doctor-admin #detail-content .questionnaire126-summary{grid-template-columns:1fr}#doctor-admin #detail-content .bio-patient-answers .answer-row{grid-template-columns:1fr;gap:9px;padding:13px}#doctor-admin #detail-content .bio-patient-answers .answer-row>span:last-child{max-width:none;text-align:left;width:fit-content}#doctor-admin #detail-content .bio-patient-answers .answer-row>span:first-child{font-size:12px}}
-</style><style id="v143-measure-ui">
-/* V143 · Estación de mediciones dinámica */
-#clinical-page .card{overflow:visible}
-#clinical-page .card>.card-title{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#274C71}
-.measure143-shell{margin:16px 0 22px;border:1px solid #e5ebf0;border-radius:22px;padding:18px;background:linear-gradient(145deg,#f8fbfd 0%,#fff 58%,#f7faee 100%);position:relative;overflow:hidden}
-.measure143-shell:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(171,201,66,.10);right:-70px;top:-90px;pointer-events:none}
-.measure143-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;position:relative;z-index:1}
-.measure143-kicker{font-size:10px;font-weight:900;letter-spacing:.14em;color:#6b7c8e;text-transform:uppercase}.measure143-title{margin:4px 0 5px;font-size:22px;line-height:1.08;color:#274C71}.measure143-copy{margin:0;color:#718096;font-size:12px;max-width:620px}
-.measure143-progress{display:flex;align-items:center;gap:12px}.measure143-ring{--p:0;position:relative;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#ABC942 calc(var(--p)*1%),#e8edf1 0);transition:background .45s ease,transform .25s ease}.measure143-ring:before{content:"";position:absolute;inset:7px;border-radius:50%;background:#fff}.measure143-ring strong{position:relative;color:#274C71;font-size:17px}.measure143-progress-copy small{display:block;color:#7a8997;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.measure143-progress-copy b{color:#274C71;font-size:12px}
-.measure143-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}.measure143-section{background:#fff;border:1px solid #e6ebef;border-radius:18px;padding:15px;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;animation:m143in .42s ease both}.measure143-section:nth-child(2){animation-delay:.05s}.measure143-section:nth-child(3){animation-delay:.10s}.measure143-section:nth-child(4){animation-delay:.15s}.measure143-section.complete{border-color:rgba(171,201,66,.65);box-shadow:0 8px 24px rgba(39,76,113,.07)}.measure143-section:focus-within{transform:translateY(-2px);border-color:#abc942;box-shadow:0 10px 26px rgba(39,76,113,.10)}
-.measure143-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.measure143-head-left{display:flex;align-items:center;gap:10px}.measure143-icon{width:36px;height:36px;border-radius:12px;background:#f0f5f8;display:grid;place-items:center;font-size:17px}.measure143-head h3{font-size:13px;color:#274C71;margin:0}.measure143-head p{font-size:9px;color:#8a98a5;margin:2px 0 0}.measure143-check{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#eef2f5;color:#a4afb8;font-size:11px;font-weight:900;transition:.25s}.measure143-section.complete .measure143-check{background:#ABC942;color:#fff;transform:scale(1.06)}
-.measure143-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.measure143-grid .field{margin:0}.measure143-grid .field label{font-size:10px;font-weight:800;color:#526678}.measure143-grid input,.measure143-grid select{border:1.5px solid #dfe7ec!important;border-radius:12px!important;background:#fbfcfd!important;min-height:48px!important;font-size:16px!important;font-weight:750!important;color:#274C71!important;transition:border-color .2s,box-shadow .2s,background .2s,transform .2s}.measure143-grid input:focus,.measure143-grid select:focus{border-color:#ABC942!important;box-shadow:0 0 0 4px rgba(171,201,66,.14)!important;background:#fff!important;outline:none}.measure143-grid input.m143-filled{border-color:rgba(171,201,66,.75)!important;background:#fbfdf5!important}
-.measure143-result{margin-top:14px;display:none;align-items:center;justify-content:space-between;gap:14px;background:#274C71;color:#fff;border-radius:16px;padding:14px 16px;animation:m143pop .32s ease}.measure143-result.show{display:flex}.measure143-result small{display:block;font-size:9px;letter-spacing:.09em;text-transform:uppercase;opacity:.7}.measure143-result strong{font-size:24px}.measure143-result span{font-size:11px;opacity:.85;text-align:right}
-#clinical-page #imc-display-container{margin-top:14px!important;border-radius:16px;padding:14px 16px;background:#f5f8ed;border:1px solid #dfe9bd}#clinical-page #imc-display-container .card-title{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#66754a}#clinical-page .imc-badge{display:flex;align-items:baseline;gap:10px}#clinical-page .imc-value{font-size:27px;font-weight:900;color:#274C71}
-#clinical-page #main-btn-group{position:sticky;bottom:12px;z-index:8;margin-top:18px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid #e3e9ed;border-radius:16px;padding:10px;box-shadow:0 12px 34px rgba(39,76,113,.14)}#clinical-page #evaluate-btn{min-height:48px;border-radius:12px!important;transition:transform .2s,box-shadow .2s}#clinical-page #evaluate-btn:not(:disabled){box-shadow:0 8px 20px rgba(39,76,113,.18)}
-@keyframes m143in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}@keyframes m143pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-@media(max-width:760px){.measure143-top{grid-template-columns:1fr}.measure143-progress{justify-content:flex-start}.measure143-sections{grid-template-columns:1fr}.measure143-grid{grid-template-columns:1fr}.measure143-title{font-size:19px}}
-@media(prefers-reduced-motion:reduce){.measure143-section,.measure143-result{animation:none!important}.measure143-section,.measure143-ring{transition:none!important}}
-</style>
-</head>
+</style></head>
 <body>
 <div id="access-portal">
  <div class="portal-shell">
@@ -3847,7 +3828,7 @@ async function saveFullPatientToSupabase(){
  const p=window.integralPatient,ps=window.integralPSS,q=window._questionnaireAnswers||{};if(!p||!ps)return;
  const localityId=await getLocalityId(p.locality);
  const pid=(globalThis.crypto&&crypto.randomUUID)?crypto.randomUUID():('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16)}));
- const patient={id:pid,nombres:p.first,apellidos:p.last,cedula:p.id,fecha_nacimiento:p.birth,sexo:(String(p.gender).toLowerCase()==='femenino'?'Femenino':'Masculino'),telefono:p.phone||null,tiene_codigo_colaborador:!!p.hasCollaboratorCode,codigo_colaborador:p.hasCollaboratorCode?(p.collaboratorCode||null):null,localidad_id:localityId,pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false,estado_proceso:'pendiente'};
+ const patient={id:pid,nombres:p.first,apellidos:p.last,cedula:p.id,fecha_nacimiento:p.birth,sexo:(String(p.gender).toLowerCase()==='femenino'?'Femenino':'Masculino'),telefono:p.phone||null,tiene_codigo_colaborador:!!p.hasCollaboratorCode,codigo_colaborador:p.hasCollaboratorCode?(p.collaboratorCode||null):null,localidad_id:localityId,pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false};
  // No usamos return=representation: el cuestionario publico tiene INSERT, pero no SELECT de pacientes.
  // El UUID se genera en el navegador y permite enlazar PSS-10 y Edad Biologica sin abrir lectura publica.
  await sbJSON('pacientes_evaluacion',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify(patient)});p.supabaseId=pid;
@@ -3857,7 +3838,7 @@ async function saveFullPatientToSupabase(){
  await sbJSON('cuestionario_edad_biologica',{method:'POST',body:JSON.stringify({paciente_id:pid,fuma_actual:String(q.fuma_actual??''),ex_fumador:String(q.ex_fumador??''),alcohol:String(q.alcohol??''),alcohol_frecuencia:q.alcohol_frecuencia||null,hora_acostarse:q.hora_acostarse||null,hora_levantarse:q.hora_levantarse||null,horas_sueno:q.horas_sueno||null,sueno_descanso:q.sueno_descanso||null,actividad:String(q.actividad??''),fuerza:String(q.fuerza_q??''),sueno:String(q.sueno??''),dieta:String(q.dieta??''),enfermedades_cronicas:String(q.cronicas??''),antecedentes_familiares:String(q.familia??''),puntuacion_estilo_vida:window.lifestyleDisplay?.score??0,clasificacion_estilo_vida:window.lifestyleDisplay?.label||'No evaluado'})});
  return pid;
 }
-function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),alcohol_frecuencia:cq.alcohol_frecuencia||'',actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),hora_acostarse:cq.hora_acostarse||'',hora_levantarse:cq.hora_levantarse||'',horas_sueno:Number(cq.horas_sueno||0),sueno_descanso:cq.sueno_descanso||'',dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,processStatus:(m&&m.edad_biologica!=null?'completo':(p.estado_proceso==='en_proceso'?'en_proceso':'pendiente')),processStartedAt:p.proceso_iniciado_at||null,measured:!!(m&&m.edad_biologica!=null),measurements:m?{presionSistolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_diastolica:m.presion_sistolica),presionDiastolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_sistolica:m.presion_diastolica),frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
+function mapSbPatient(p){const ps=(p.evaluaciones_pss10||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const cq=(p.cuestionario_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const m=(p.mediciones_edad_biologica||[]).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)))[0];const answers=ps?{pss_1:ps.pregunta_1,pss_2:ps.pregunta_2,pss_3:ps.pregunta_3,pss_4:ps.pregunta_4,pss_5:ps.pregunta_5,pss_6:ps.pregunta_6,pss_7:ps.pregunta_7,pss_8:ps.pregunta_8,pss_9:ps.pregunta_9,pss_10:ps.pregunta_10}:{};return {supabaseId:p.id,id:p.cedula||p.id,first:p.nombres,last:p.apellidos,birth:p.fecha_nacimiento,age:calcIntegralAge(p.fecha_nacimiento),gender:String(p.sexo||'').toLowerCase(),phone:p.telefono||'',locality:p.localidades?.nombre||'',hasCollaboratorCode:!!p.tiene_codigo_colaborador,collaboratorCode:p.codigo_colaborador||'',pss:ps?{score:ps.puntuacion_total,level:ps.clasificacion,answers,createdAt:ps.created_at||null}:null,questionnaire:cq?{fuma_actual:Number(cq.fuma_actual),ex_fumador:Number(cq.ex_fumador),alcohol:Number(cq.alcohol),alcohol_frecuencia:cq.alcohol_frecuencia||'',actividad:Number(cq.actividad),fuerza_q:Number(cq.fuerza),sueno:Number(cq.sueno),hora_acostarse:cq.hora_acostarse||'',hora_levantarse:cq.hora_levantarse||'',horas_sueno:Number(cq.horas_sueno||0),sueno_descanso:cq.sueno_descanso||'',dieta:Number(cq.dieta),cronicas:Number(cq.enfermedades_cronicas),familia:Number(cq.antecedentes_familiares)}:{},lifestyleScore:cq?.puntuacion_estilo_vida??0,lifestyleLabel:cq?.clasificacion_estilo_vida||'No evaluado',completedAt:p.created_at,measured:!!p.mediciones_completadas,measurements:m?{presionSistolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_diastolica:m.presion_sistolica),presionDiastolica:(Number(m.presion_sistolica)<Number(m.presion_diastolica)?m.presion_sistolica:m.presion_diastolica),frecuenciaCardiaca:m.frecuencia_cardiaca??m.frecuencia_cardiaca_reposo??null,fuerza:m.fuerza,nivelFuerza:m.nivel_fuerza||'',peso:m.peso_kg,talla:m.talla_cm,abdomen:m.perimetro_abdominal_cm,flexibilidad:m.flexibilidad_cm,nivelFlexibilidad:m.nivel_flexibilidad||'',imc:m.imc,imcCategoria:m.imc_categoria||'',edadBiologica:m.edad_biologica}:{},photoBooth:(p.paciente_photobooth||[]).sort((a,b)=>String(b.updated_at||b.created_at).localeCompare(String(a.updated_at||a.created_at)))[0]||null}}
 async function loadPatientsFromSupabase(){try{const rows=await sbJSON('pacientes_evaluacion?select=*,localidades(id,nombre),evaluaciones_pss10(*),cuestionario_edad_biologica(*),mediciones_edad_biologica(*),paciente_photobooth(*)&order=created_at.desc',{},true);localStorage.setItem('numedPacientesPendientes',JSON.stringify((rows||[]).map(mapSbPatient)));renderDoctorPatients();if(typeof renderAdminAll==='function')renderAdminAll();return rows||[]}catch(e){console.error('Carga Supabase:',e);alert('No se pudieron cargar los pacientes desde Supabase. Inicia sesión con un usuario médico autorizado.');return []}}
 window.doctorLogin=async function(){const email=document.getElementById('doc-user').value.trim(),password=document.getElementById('doc-pass').value;const err=document.getElementById('doc-login-error');const button=document.querySelector('.doc-login-primary');try{if(button){button.disabled=true;button.textContent='Verificando...'}const r=await fetch(NUMED_SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:NUMED_SB_ANON,'Content-Type':'application/json'},body:JSON.stringify({email,password})});const d=await r.json();if(!r.ok||!d.access_token)throw new Error(d.error_description||d.msg||'Credenciales incorrectas');sessionStorage.setItem('numedSbAccessToken',d.access_token);localStorage.setItem('numedSbAccessToken',d.access_token);if(d.refresh_token)localStorage.setItem('numedSbRefreshToken',d.refresh_token);localStorage.setItem('numedSbExpiresAt',String(Date.now()+(Number(d.expires_in||3600)*1000)));localStorage.setItem('numedDoctorSession','1');err.style.display='none';document.getElementById('doctor-login').style.display='none';openDoctorAdmin();await loadPatientsFromSupabase();}catch(e){console.error(e);err.textContent='Correo o contraseña incorrectos, o usuario no autorizado.';err.style.display='block';}finally{if(button){button.disabled=false;button.textContent='Ingresar al panel'}}};
 const _openDoctorAdminV14=window.openDoctorAdmin;window.openDoctorAdmin=function(){const x=_openDoctorAdminV14.apply(this,arguments);if(sessionStorage.getItem('numedSbAccessToken'))setTimeout(loadPatientsFromSupabase,50);return x};
@@ -3922,7 +3903,7 @@ window.markCurrentPatientMeasured=async function(evaluationData){
      }
    }
    await saveMeasurement(body);
-   await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(p.supabaseId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({mediciones_completadas:true,estado_proceso:'completo',proceso_completado_at:new Date().toISOString()})},true);
+   await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(p.supabaseId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({mediciones_completadas:true})},true);
    _markMeasuredLocal.call(this,evaluationData);
    await loadPatientsFromSupabase();
    console.info('NUMED: Edad biologica guardada correctamente en Supabase',body);
@@ -4484,7 +4465,7 @@ window.saveFullPatientToSupabase=async function(){
  await sbJSON('rpc/numed_sync_pss_medicion',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({p_patient_id:pid,p_score:Number(ps.score),p_nivel:ps.level||null,p_fecha:new Date().toISOString()})});
  await sbJSON('cuestionario_edad_biologica',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({paciente_id:pid,fuma_actual:String(q.fuma_actual??''),ex_fumador:String(q.ex_fumador??''),alcohol:String(q.alcohol??''),alcohol_frecuencia:q.alcohol_frecuencia||null,hora_acostarse:q.hora_acostarse||null,hora_levantarse:q.hora_levantarse||null,horas_sueno:q.horas_sueno||null,sueno_descanso:q.sueno_descanso||null,actividad:String(q.actividad??''),fuerza:String(q.fuerza_q??''),sueno:String(q.sueno??''),dieta:String(q.dieta??''),enfermedades_cronicas:String(q.cronicas??''),antecedentes_familiares:String(q.familia??''),puntuacion_estilo_vida:window.lifestyleDisplay?.score??0,clasificacion_estilo_vida:window.lifestyleDisplay?.label||'No evaluado'})});
  // La nueva evaluación queda pendiente de nuevas mediciones, sin duplicar al paciente.
- try{await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(pid),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false,estado_proceso:'pendiente',proceso_iniciado_at:null,proceso_completado_at:null})})}catch(e){console.warn('NUMED v55: no se pudo actualizar estado público; los formularios sí quedaron guardados.',e)}
+ try{await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(pid),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({pss_completado:true,cuestionario_biologico_completado:true,mediciones_completadas:false})})}catch(e){console.warn('NUMED v55: no se pudo actualizar estado público; los formularios sí quedaron guardados.',e)}
  return pid;
 };
 
@@ -6065,146 +6046,29 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
  window.renderDashboard140=function(loc){render();const m=document.getElementById('measure134-locality');if(m&&[...m.options].some(o=>o.value===loc)){m.value=loc;if(typeof window.renderMeasurementLocalityStats==='function')window.renderMeasurementLocalityStats(loc)}const p=document.getElementById('admin-locality-filter');if(p&&[...p.options].some(o=>o.value===loc)){p.value=loc;if(typeof window.setLocalityFilter==='function')window.setLocalityFilter(loc)}};
  const oldAll=window.renderAdminAll;if(typeof oldAll==='function')window.renderAdminAll=function(){const r=oldAll.apply(this,arguments);render();return r};
  const oldStats=window.renderMeasurementLocalityStats;if(typeof oldStats==='function')window.renderMeasurementLocalityStats=function(){const r=oldStats.apply(this,arguments);setTimeout(render,0);return r};
- setTimeout(render,250);window.NUMED_RUNTIME_VERSION='144-SUPABASE-ESTADOS-SINCRONIZADOS';
+ setTimeout(render,250);window.NUMED_RUNTIME_VERSION='140-NUMED-DASHBOARD-EJECUTIVO';
 })();
 </script>
 
 
-<style id="numed-v142-process-style">
-.proc142{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}.proc142:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}.proc142.pending{background:#f1f5f7;color:#64748b}.proc142.progress{background:#fff4d6;color:#a46b00}.proc142.done{background:#eef7d5;color:#668b19}.proc142-btn{border:0;border-radius:10px;padding:8px 11px;font-size:11px;font-weight:800;cursor:pointer;background:#274c71;color:#fff}.proc142-btn:disabled{opacity:.45;cursor:default}.proc142-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 16px}.proc142-kpi{border:1px solid #e2eaee;border-radius:16px;background:#fff;padding:15px}.proc142-kpi small{display:block;color:#71808c;font-weight:700}.proc142-kpi strong{display:block;color:#173f62;font-size:28px;margin:4px 0}.proc142-kpi span{font-size:11px;color:#7a8994}@media(max-width:720px){.proc142-kpis{grid-template-columns:1fr}}
+<style id="numed-v141-edit-measurements-css">
+.v141-editbar{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(135deg,#f6faed,#fff);border:1px solid #dfe9c3;border-radius:16px;padding:15px 17px;margin:0 0 16px}.v141-editbar div{min-width:0}.v141-editbar b{display:block;color:#173f65;font-size:13px}.v141-editbar span{display:block;color:#72859a;font-size:10px;margin-top:4px;line-height:1.45}.v141-editbar button{white-space:nowrap}@media(max-width:620px){.v141-editbar{align-items:stretch;flex-direction:column}.v141-editbar button{width:100%}}
 </style>
-<script id="numed-v142-process-flow">
+<script id="numed-v141-edit-measurements-js">
 (function(){
- 'use strict';
- function rows(){return typeof getPendingPatients==='function'?getPendingPatients():[]}
- function status(r){if(r?.measured)return 'completo';const s=String(r?.processStatus||'pendiente').toLowerCase();return s==='completado'?'completo':s}
- function saveLocal(id,patch){const a=rows(),i=a.findIndex(x=>String(x.id)===String(id));if(i<0)return null;a[i]={...a[i],...patch};localStorage.setItem('numedPacientesPendientes',JSON.stringify(a));return a[i]}
- window.startPatientProcess142=async function(id){
-   const r=rows().find(x=>String(x.id)===String(id));if(!r||status(r)==='completo')return;
-   const now=new Date().toISOString();
-   try{
-     if(r.supabaseId&&typeof sbJSON==='function')await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(r.supabaseId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({estado_proceso:'en_proceso',proceso_iniciado_at:now})},true);
-     saveLocal(id,{processStatus:'en_proceso',processStartedAt:now});
-     if(typeof renderAdminAll==='function')renderAdminAll();
-     if(typeof renderDoctorPatients==='function')renderDoctorPatients();
-     if(typeof window.renderDashboard140==='function')window.renderDashboard140(document.getElementById('d140-locality')?.value||'all');
-     if(typeof window.numedStatus==='function')window.numedStatus('Paciente marcado En proceso.');
-   }catch(e){console.error('Estado proceso:',e);alert('No se pudo cambiar el paciente a En proceso. Ejecuta primero el SQL V142 y verifica tu sesión médica.');}
+ const prior=window.detailTab;
+ if(typeof prior!=='function')return;
+ window.detailTab=function(tab,btn){
+   const out=prior.apply(this,arguments);
+   if(tab!=='measurements')return out;
+   const host=document.getElementById('detail-content'),r=window.adminCurrentPatient;
+   if(!host||!r||host.querySelector('.v141-editbar'))return out;
+   const id=String(r.id||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+   host.insertAdjacentHTML('afterbegin',`<div class="v141-editbar"><div><b>Mediciones editables</b><span>Puedes corregir presión arterial, frecuencia cardíaca, fuerza, peso, talla, perímetro abdominal y flexibilidad. Al guardar se recalculan IMC, clasificaciones y Edad Biológica.</span></div><button class="admin-action primary" type="button" onclick="evaluateFromAdmin('${id}')">✎ Editar mediciones</button></div>`);
+   return out;
  };
- function label(r){const st=status(r);return st==='completo'?'<span class="proc142 done">Completo</span>':st==='en_proceso'?'<span class="proc142 progress">En proceso</span>':'<span class="proc142 pending">Pendiente</span>'}
- function enhanceTables(){document.querySelectorAll('.admin-table tbody tr').forEach(tr=>{if(tr.querySelector('.proc142'))return;const btn=tr.querySelector('button[onclick*="openAdminPatient"]');if(!btn)return;const m=(btn.getAttribute('onclick')||'').match(/openAdminPatient\('([^']+)'\)/);if(!m)return;const r=rows().find(x=>String(x.id)===String(m[1]));if(!r)return;const td=btn.closest('td');if(!td)return;td.insertAdjacentHTML('afterbegin','<div style="margin-bottom:7px">'+label(r)+'</div>');if(status(r)==='pendiente')td.insertAdjacentHTML('beforeend','<button class="proc142-btn" style="margin-left:6px" onclick="event.stopPropagation();startPatientProcess142(\''+String(r.id).replace(/'/g,"\\'")+'\')">Iniciar proceso</button>')})}
- function renderCounters(){const host=document.getElementById('admin-kpis');if(!host)return;const a=rows(),pending=a.filter(r=>status(r)==='pendiente').length,progress=a.filter(r=>status(r)==='en_proceso').length,done=a.filter(r=>status(r)==='completo').length;let box=document.getElementById('proc142-counters');if(!box){box=document.createElement('div');box.id='proc142-counters';box.className='proc142-kpis';host.insertAdjacentElement('afterend',box)}box.innerHTML='<div class="proc142-kpi"><small>En espera</small><strong>'+pending+'</strong><span>Registro terminado · aún no pasa con el doctor</span></div><div class="proc142-kpi"><small>En proceso</small><strong>'+progress+'</strong><span>Con el doctor · mediciones en curso</span></div><div class="proc142-kpi"><small>Completas</small><strong>'+done+'</strong><span>Mediciones finalizadas</span></div>'}
- const oldAll=window.renderAdminAll;if(typeof oldAll==='function')window.renderAdminAll=function(){const v=oldAll.apply(this,arguments);renderCounters();setTimeout(enhanceTables,0);return v};
- const oldTable=window.renderAdminTable;if(typeof oldTable==='function')window.renderAdminTable=function(){const v=oldTable.apply(this,arguments);setTimeout(enhanceTables,0);renderCounters();return v};
- const oldDoctor=window.selectDoctorPatient;if(typeof oldDoctor==='function')window.selectDoctorPatient=function(id){const r=rows().find(x=>String(x.id)===String(id));if(r&&status(r)==='pendiente')window.startPatientProcess142(id);return oldDoctor.apply(this,arguments)};
- const oldDash=window.renderDashboard140;if(typeof oldDash==='function')window.renderDashboard140=function(){const v=oldDash.apply(this,arguments);renderCounters();return v};
- document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{renderCounters();enhanceTables()},700));
 })();
 </script>
 
-<script id="numed-v144-supabase-state-sync">
-(function(){
- 'use strict';
- function normalize144(v, measured){if(measured)return 'completo';v=String(v||'pendiente').toLowerCase();return v==='completado'?'completo':(v==='en_proceso'?'en_proceso':'pendiente')}
- window.NUMED_PROCESS_STATUS_NORMALIZE=normalize144;
- // Reconciliacion defensiva: una evaluacion con mediciones completas nunca debe quedar Pendiente.
- const previousLoad=window.loadPatientsFromSupabase;
- if(typeof previousLoad==='function')window.loadPatientsFromSupabase=async function(){
-   const result=await previousLoad.apply(this,arguments);
-   try{
-     const rows=typeof getPendingPatients==='function'?getPendingPatients():[];
-     const inconsistent=rows.filter(r=>r?.supabaseId&&r?.measured&&normalize144(r.processStatus,true)!==String(r.processStatus||'').toLowerCase());
-     for(const r of inconsistent){
-       try{await sbJSON('pacientes_evaluacion?id=eq.'+encodeURIComponent(r.supabaseId),{method:'PATCH',headers:{Prefer:'return=minimal'},body:JSON.stringify({mediciones_completadas:true,estado_proceso:'completo'})},true);r.processStatus='completo'}catch(e){console.warn('NUMED v144: no se pudo reconciliar estado de',r.supabaseId,e)}
-     }
-     if(inconsistent.length)localStorage.setItem('numedPacientesPendientes',JSON.stringify(rows));
-   }catch(e){console.warn('NUMED v144: reconciliacion de estados omitida',e)}
-   return result;
- };
-})();
-</script>
-<script id="v143-measure-ui-js">
-(function(){
- const ids=['systolic-pressure','diastolic-pressure','heart-rate','patient-weight','patient-height','abdominal-perimeter','strength-value','flexibility-value'];
- const defs=[
-  {title:'Signos vitales',sub:'Cardiovascular',icon:'♥',ids:['systolic-pressure','diastolic-pressure','heart-rate']},
-  {title:'Composición corporal',sub:'Metabólica',icon:'◉',ids:['patient-weight','patient-height','abdominal-perimeter']},
-  {title:'Fuerza',sub:'Capacidad funcional',icon:'↗',ids:['strength-value']},
-  {title:'Flexibilidad',sub:'Movilidad funcional',icon:'⌁',ids:['flexibility-value']}
- ];
- function init143(){
-  const clinical=document.getElementById('clinical-page'); if(!clinical||clinical.dataset.v143==='1')return; clinical.dataset.v143='1';
-  const oldGrid=clinical.querySelector('.form-grid'); if(!oldGrid)return;
-  // Datos personales permanecen fuera de la estación de medición.
-  const anchor=oldGrid;
-  const shell=document.createElement('div'); shell.className='measure143-shell'; shell.innerHTML='<div class="measure143-top"><div><div class="measure143-kicker">Estación clínica · NUMED</div><h2 class="measure143-title">Mediciones del paciente</h2><p class="measure143-copy">Registra cada medición. El progreso se completa en tiempo real para que el equipo vea de inmediato qué falta.</p></div><div class="measure143-progress"><div class="measure143-ring" id="measure143-ring"><strong id="measure143-pct">0%</strong></div><div class="measure143-progress-copy"><small>Progreso</small><b id="measure143-count">0 de 8 listas</b></div></div></div><div class="measure143-sections" id="measure143-sections"></div><div class="measure143-result" id="measure143-result"><div><small>Estado de mediciones</small><strong>¡Todo listo!</strong></div><span>Ya puedes calcular la edad biológica<br>y guardar la evaluación.</span></div>';
-  anchor.parentNode.insertBefore(shell,anchor.nextSibling);
-  const sections=shell.querySelector('#measure143-sections');
-  defs.forEach((d,i)=>{const sec=document.createElement('section');sec.className='measure143-section';sec.dataset.ids=d.ids.join(',');sec.innerHTML='<div class="measure143-head"><div class="measure143-head-left"><div class="measure143-icon">'+d.icon+'</div><div><h3>'+d.title+'</h3><p>'+d.sub+'</p></div></div><div class="measure143-check">✓</div></div><div class="measure143-grid"></div>';const g=sec.querySelector('.measure143-grid');d.ids.forEach(id=>{const el=document.getElementById(id);const f=el&&el.closest('.field');if(f)g.appendChild(f)});sections.appendChild(sec)});
-  // Mantener datos personales en su grid original.
-  oldGrid.classList.add('measure143-personal');
-  const imc=document.getElementById('imc-display-container'); if(imc)shell.insertBefore(imc,shell.querySelector('#measure143-result'));
-  const life=document.getElementById('lifestyle-results'); if(life)life.style.display='none';
-  ids.forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',update143);el.addEventListener('change',update143)}});
-  update143();
- }
- function valid143(el){if(!el)return false;const v=String(el.value||'').trim();if(v==='')return false;const n=Number(v);return Number.isFinite(n)}
- function update143(){
-  let done=0; ids.forEach(id=>{const el=document.getElementById(id);const ok=valid143(el);if(ok)done++;if(el)el.classList.toggle('m143-filled',ok)});
-  const pct=Math.round(done/ids.length*100), ring=document.getElementById('measure143-ring');if(ring)ring.style.setProperty('--p',pct);const p=document.getElementById('measure143-pct');if(p)p.textContent=pct+'%';const c=document.getElementById('measure143-count');if(c)c.textContent=done+' de '+ids.length+' listas';
-  document.querySelectorAll('.measure143-section').forEach(sec=>{const complete=sec.dataset.ids.split(',').every(id=>valid143(document.getElementById(id)));sec.classList.toggle('complete',complete)});
-  const result=document.getElementById('measure143-result');if(result)result.classList.toggle('show',done===ids.length);
- }
- window.updateMeasurementProgress143=update143;
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init143,{once:true});else init143();
- // La selección médica rellena valores programáticamente: refrescar la UI justo después.
- const old=window.selectDoctorPatient;if(typeof old==='function'){window.selectDoctorPatient=function(){const r=old.apply(this,arguments);setTimeout(update143,0);return r}}
-})();
-</script>
 </body>
 </html>
-
-<script id="numed-v141-entregable-premium">
-(function(){
-'use strict';
-const N=[6,47,87], B=[39,76,113], G=[126,190,24], O=[235,166,38], R=[204,76,72], INK=[22,53,79], MUT=[103,124,143], LINE=[221,230,235], SOFT=[246,249,250], MINT=[244,249,235], W=[255,255,255];
-const n=v=>{const x=Number(v);return Number.isFinite(x)?x:null};
-const clean=v=>String(v||'paciente').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'');
-function font(d){let f='helvetica';try{if(window._montserratBase64Normal){d.addFileToVFS('Montserrat-Regular.ttf',window._montserratBase64Normal);d.addFont('Montserrat-Regular.ttf','Montserrat','normal');if(window._montserratBase64Bold){d.addFileToVFS('Montserrat-Bold.ttf',window._montserratBase64Bold);d.addFont('Montserrat-Bold.ttf','Montserrat','bold')}f='Montserrat'}}catch(_){}return f}
-function tx(d,f,t,x,y,o={}){d.setFont(f,o.bold?'bold':'normal');d.setFontSize(o.size||8);d.setTextColor(...(o.color||INK));d.text(String(t??''),x,y,o.opts||{})}
-function lines(d,t,w){return d.splitTextToSize(String(t??''),w)}
-function logo(d){const el=document.querySelector('#welcome-screen .wc-logo')||document.querySelector('.admin-logo img')||document.querySelector('img.wc-logo');if(!el?.src)return;try{d.addImage(el.src,'PNG',14,10,29,10,undefined,'FAST')}catch(_){}}
-function head(d,f,kicker,title){d.setFillColor(...N);d.rect(0,0,210,7,'F');logo(d);tx(d,f,kicker,196,14,{bold:true,size:6.2,color:G,opts:{align:'right'}});tx(d,f,title,196,20,{size:4.5,color:MUT,opts:{align:'right'}});d.setDrawColor(...LINE);d.line(14,29,196,29)}
-function foot(d,f,p,total){d.setDrawColor(...LINE);d.line(14,282,196,282);tx(d,f,'NUMED · Administración Médica',14,290,{bold:true,size:4.2,color:B});tx(d,f,'Documento individual y confidencial',105,290,{size:4,color:MUT,opts:{align:'center'}});tx(d,f,`Página ${p} de ${total}`,196,290,{size:4,color:MUT,opts:{align:'right'}})}
-function color(k){return k==='favorable'?G:k==='observacion'?O:R}
-function label(k){return k==='favorable'?'FAVORABLE':k==='observacion'?'OBSERVACIÓN':'ATENCIÓN'}
-function areas(r,m){return typeof window.numedAreasFHT==='function'?window.numedAreasFHT(r,m):{}}
-function pill(d,f,x,y,text,k){const c=color(k);d.setFillColor(...c);d.roundedRect(x,y,31,7,3.5,3.5,'F');tx(d,f,text,x+15.5,y+4.8,{bold:true,size:3.5,color:W,opts:{align:'center'}})}
-function metric(d,f,x,y,w,name,value,k,ratio){d.setFillColor(...SOFT);d.roundedRect(x,y,w,25,3,3,'F');tx(d,f,name.toUpperCase(),x+5,y+6,{bold:true,size:3.3,color:MUT});tx(d,f,value,x+5,y+14,{bold:true,size:7,color:B});d.setFillColor(228,235,239);d.roundedRect(x+5,y+19,w-10,2.2,1.1,1.1,'F');d.setFillColor(...color(k));d.roundedRect(x+5,y+19,Math.max(5,(w-10)*Math.max(.08,Math.min(1,ratio||.5))),2.2,1.1,1.1,'F')}
-function findingText(A,m,r){const out=[];const order=[['cardio','Cardiovascular'],['metabolic','Metabólico'],['functional','Funcional'],['psycho','Psicosocial']];const attention=order.filter(([k])=>A[k]?.key==='atencion');const watch=order.filter(([k])=>A[k]?.key==='observacion');const good=order.filter(([k])=>A[k]?.key==='favorable');if(attention.length)out.push(`Prioridad de seguimiento: ${attention.map(x=>x[1]).join(', ')}.`);else if(watch.length)out.push(`Indicadores para seguimiento: ${watch.map(x=>x[1]).join(', ')}.`);else out.push('Los cuatro dominios evaluados se encuentran en condición favorable.');if(good.length)out.push(`Fortalezas actuales: ${good.map(x=>x[1]).join(', ')}.`);const ps=n(r.pss?.score);if(ps!=null)out.push(`Estrés percibido: ${r.pss?.level||'resultado disponible'} (${ps}/40).`);return out.slice(0,3)}
-function statusCard(d,f,x,y,w,title,a){d.setFillColor(255,255,255);d.setDrawColor(...LINE);d.roundedRect(x,y,w,32,4,4,'FD');d.setFillColor(...color(a.key));d.roundedRect(x,y,2.2,32,1,1,'F');tx(d,f,title,x+7,y+9,{bold:true,size:5.4,color:B});pill(d,f,x+w-37,y+5,label(a.key),a.key);const detail=lines(d,a.detail||'Resultado disponible',w-14);detail.slice(0,2).forEach((z,i)=>tx(d,f,z,x+7,y+20+i*5,{size:4.5,color:MUT}))}
-window.downloadBioReport=async function(){
- const r=window.adminCurrentPatient;if(!r?.measured&&!r?.measurements?.edadBiologica)return alert('Completa las mediciones antes de generar el informe.');if(!window.jspdf)return alert('No se pudo cargar el generador PDF.');
- const m=r.measurements||{},A=areas(r,m),{jsPDF}=window.jspdf,d=new jsPDF({unit:'mm',format:'a4'}),f=font(d),age=n(r.age)||0,bio=n(m.edadBiologica)??age,diff=bio-age,abs=Math.abs(diff),total=3;
- const rec=typeof window.NUMED_dynamicRecommendations==='function'?window.NUMED_dynamicRecommendations(r,m,A):{};
- // PAGE 1 - premium summary
- head(d,f,'RESULTADOS','EVALUACIÓN INTEGRAL NUMED');
- tx(d,f,'Tu evaluación integral',14,43,{bold:true,size:16,color:N});tx(d,f,`${r.first||''} ${r.last||''}`.trim(),14,51,{bold:true,size:7,color:B});tx(d,f,'Una lectura clara de tus principales indicadores y próximos pasos.',14,58,{size:5.2,color:MUT});
- d.setFillColor(...N);d.roundedRect(14,68,182,43,6,6,'F');tx(d,f,'RESUMEN GENERAL',22,80,{bold:true,size:4.2,color:[194,211,222]});tx(d,f,'4 áreas evaluadas',22,91,{bold:true,size:12,color:W});const counts={f:0,o:0,a:0};Object.values(A).forEach(x=>{if(x?.key==='favorable')counts.f++;else if(x?.key==='observacion')counts.o++;else if(x?.key==='atencion')counts.a++});
- [['Favorable',counts.f,G],['Observación',counts.o,O],['Atención',counts.a,R]].forEach((z,i)=>{const xx=111+i*27;d.setFillColor(...z[2]);d.circle(xx,87,7,'F');tx(d,f,String(z[1]),xx,89.3,{bold:true,size:7,color:W,opts:{align:'center'}});tx(d,f,z[0],xx,101,{size:3.2,color:[210,222,230],opts:{align:'center'}})});
- tx(d,f,'Tus principales hallazgos',14,126,{bold:true,size:10.5,color:N});const fs=findingText(A,m,r);fs.forEach((z,i)=>{const yy=135+i*16;d.setFillColor(...SOFT);d.roundedRect(14,yy,182,12,3,3,'F');d.setFillColor(...G);d.circle(21,yy+6,2.2,'F');tx(d,f,lines(d,z,164),27,yy+7.5,{size:4.8,color:INK})});
- tx(d,f,'Vista rápida por condición',14,190,{bold:true,size:10.5,color:N});statusCard(d,f,14,198,87,'Cardiovascular',A.cardio||{key:'observacion',detail:'—'});statusCard(d,f,109,198,87,'Metabólica',A.metabolic||{key:'observacion',detail:'—'});statusCard(d,f,14,236,87,'Funcional',A.functional||{key:'observacion',detail:'—'});statusCard(d,f,109,236,87,'Psicosocial',A.psycho||{key:'observacion',detail:'—'});foot(d,f,1,total);
- // PAGE 2 - visual indicators and recommendations
- d.addPage();head(d,f,'INDICADORES','RESULTADOS INDIVIDUALES');tx(d,f,'Tus indicadores',14,43,{bold:true,size:14,color:N});tx(d,f,'Los colores facilitan identificar qué está favorable, qué conviene observar y qué requiere atención.',14,51,{size:5,color:MUT});
- metric(d,f,14,63,87,'Presión arterial',`${m.presionSistolica??'—'}/${m.presionDiastolica??'—'} mmHg`,A.cardio?.key,.68);metric(d,f,109,63,87,'Frecuencia cardíaca',`${m.frecuenciaCardiaca??'—'} lpm`,A.cardio?.key,.55);metric(d,f,14,94,87,'IMC',`${m.imc??'—'} kg/m²`,A.metabolic?.key,.72);metric(d,f,109,94,87,'Perímetro abdominal',`${m.abdomen??'—'} cm`,A.metabolic?.key,.62);metric(d,f,14,125,87,'Fuerza prensil',`${m.fuerza??'—'} kg`,A.functional?.key,.58);metric(d,f,109,125,87,'Flexibilidad',`${m.flexibilidad??'—'} cm`,A.functional?.key,.52);metric(d,f,14,156,182,'PSS-10',`${r.pss?.score??'—'}/40 · ${r.pss?.level??'—'}`,A.psycho?.key,.45);
- tx(d,f,'Recomendaciones',14,197,{bold:true,size:10.5,color:N});[['Cardiovascular','cardio',A.cardio],['Metabólica','metabolic',A.metabolic],['Funcional','functional',A.functional],['Psicosocial','psycho',A.psycho]].forEach((z,i)=>{const yy=205+i*18,c=color(z[2]?.key||'observacion');d.setFillColor(...SOFT);d.roundedRect(14,yy,182,14,3,3,'F');d.setFillColor(...c);d.roundedRect(14,yy,2,14,1,1,'F');tx(d,f,z[0],21,yy+5.5,{bold:true,size:4.7,color:B});const t=(rec[z[1]]||[]).join(' ')||'Mantener seguimiento según criterio profesional.';const ll=lines(d,t,164);tx(d,f,ll.slice(0,2),21,yy+10.5,{size:3.9,color:MUT})});foot(d,f,2,total);
- // PAGE 3 - biological age hero
- d.addPage();head(d,f,'EDAD BIOLÓGICA','RESULTADO');tx(d,f,'Tu edad biológica',14,43,{bold:true,size:15,color:N});tx(d,f,'Comparación entre tu edad cronológica y la estimación funcional actual.',14,51,{size:5,color:MUT});
- d.setFillColor(...N);d.roundedRect(14,65,182,96,7,7,'F');tx(d,f,'EDAD CRONOLÓGICA',57,83,{bold:true,size:4.5,color:[196,210,221],opts:{align:'center'}});tx(d,f,String(age),57,119,{bold:true,size:32,color:W,opts:{align:'center'}});tx(d,f,'AÑOS',57,131,{size:4,color:[196,210,221],opts:{align:'center'}});d.setDrawColor(...G);d.setLineWidth(1.4);d.line(88,111,122,111);d.setFillColor(...G);d.triangle(122,111,116,107.5,116,114.5,'F');tx(d,f,'EDAD BIOLÓGICA',153,83,{bold:true,size:4.5,color:[196,210,221],opts:{align:'center'}});tx(d,f,String(bio),153,119,{bold:true,size:32,color:[202,231,101],opts:{align:'center'}});tx(d,f,'AÑOS',153,131,{size:4,color:[196,210,221],opts:{align:'center'}});
- const meaning=diff<0?`Tu edad biológica es ${abs} año${abs===1?'':'s'} menor que tu edad cronológica.`:diff>0?`Tu edad biológica es ${abs} año${abs===1?'':'s'} mayor que tu edad cronológica.`:'Tu edad biológica es igual a tu edad cronológica.';d.setFillColor(...MINT);d.roundedRect(14,172,182,30,4,4,'F');tx(d,f,meaning,105,185,{bold:true,size:7,color:B,opts:{align:'center'}});tx(d,f,'Resultado orientativo basado en el algoritmo NUMED actual.',105,194,{size:4.4,color:MUT,opts:{align:'center'}});
- tx(d,f,'Qué significa este resultado',14,220,{bold:true,size:10.5,color:N});const expl='La edad biológica resume de forma orientativa los indicadores funcionales, clínicos y de estilo de vida incluidos en esta evaluación. El PSS-10 se interpreta de manera independiente y no modifica este cálculo.';tx(d,f,lines(d,expl,172),14,230,{size:5,color:MUT});d.setFillColor(...SOFT);d.roundedRect(14,251,182,23,4,4,'F');tx(d,f,'Siguiente paso',21,260,{bold:true,size:5.5,color:B});tx(d,f,lines(d,'Revisa estos resultados con el equipo de salud y utiliza futuras evaluaciones para comparar tu evolución.',164),21,268,{size:4.6,color:MUT});foot(d,f,3,total);
- d.save(`NUMED_Resultados_${clean(r.first)}_${clean(r.last)}.pdf`);
-};
-window.NUMED_RUNTIME_VERSION='141-ENTREGABLE-PREMIUM';
-})();
-</script>
