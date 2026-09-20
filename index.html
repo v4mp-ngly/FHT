@@ -6002,49 +6002,29 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
 })();
 </script>
 
-<style id="numed-v138-consent-daily-style">
-#consent138-daily{margin-top:14px;border:1px solid #e1eaf0;border-radius:18px;background:linear-gradient(145deg,#fff,#f8fbfd);padding:18px;overflow:hidden}
-#consent138-daily .c138-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
-#consent138-daily h4{margin:0;color:#274C71;font-size:15px}#consent138-daily p{margin:4px 0 0;color:#7890a5;font-size:11px}
-#consent138-daily .c138-today{border-radius:14px;background:#f2f8df;padding:10px 14px;text-align:center;min-width:90px}#consent138-daily .c138-today small{display:block;color:#718448;font-size:9px;text-transform:uppercase;font-weight:800;letter-spacing:.08em}#consent138-daily .c138-today strong{font-size:25px;color:#274C71}
-#consent138-daily .c138-bars{display:flex;align-items:flex-end;gap:8px;min-height:130px;overflow-x:auto;padding:10px 2px 2px}
-#consent138-daily .c138-day{min-width:54px;flex:1;text-align:center}.c138-track{height:86px;display:flex;align-items:flex-end;justify-content:center;background:#f2f6f8;border-radius:10px;padding:4px}.c138-bar{width:100%;min-height:3px;border-radius:7px;background:linear-gradient(180deg,#ABC942,#7da02b);transform-origin:bottom;animation:c138Grow .75s cubic-bezier(.2,.8,.2,1) both}.c138-day b{display:block;color:#274C71;font-size:11px;margin-top:6px}.c138-day span{display:block;color:#8aa0b1;font-size:9px;white-space:nowrap}.c138-empty{color:#8aa0b1;font-size:11px;padding:30px 0;text-align:center;width:100%}
-@keyframes c138Grow{from{transform:scaleY(0);opacity:.25}to{transform:scaleY(1);opacity:1}}
-@media(max-width:650px){#consent138-daily .c138-bars{gap:6px}#consent138-daily .c138-day{min-width:48px}}
+<style id="numed-v139-eval-daily-varied-style">
+#eval139-daily{margin-top:14px;border:1px solid #e1eaf0;border-radius:20px;background:linear-gradient(145deg,#fff,#f8fbfd);padding:20px;overflow:hidden;box-shadow:0 12px 34px rgba(39,76,113,.06)}
+#eval139-daily .e139-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:16px}#eval139-daily h4{margin:0;color:#274C71;font-size:16px}#eval139-daily p{margin:5px 0 0;color:#7890a5;font-size:11px}
+#eval139-daily .e139-today{border-radius:16px;background:linear-gradient(145deg,#f4f9e7,#edf6d1);padding:11px 16px;text-align:center;min-width:100px;box-shadow:inset 0 0 0 1px rgba(171,201,66,.25)}#eval139-daily .e139-today small{display:block;color:#718448;font-size:9px;text-transform:uppercase;font-weight:850;letter-spacing:.09em}#eval139-daily .e139-today strong{display:block;color:#274C71;font-size:27px;line-height:1.05;margin-top:3px}
+#eval139-daily .e139-chart{display:flex;align-items:flex-end;gap:10px;min-height:165px;overflow-x:auto;padding:18px 4px 2px;border-top:1px solid #edf2f5}.e139-day{min-width:62px;flex:1;text-align:center}.e139-track{height:105px;display:flex;align-items:flex-end;justify-content:center;position:relative}.e139-track:after{content:"";position:absolute;left:50%;bottom:0;width:1px;height:100%;background:#edf2f5;z-index:0}.e139-bar{position:relative;z-index:1;width:min(34px,70%);height:0;border-radius:12px 12px 5px 5px;background:linear-gradient(180deg,#ABC942 0%,#7ca733 100%);box-shadow:0 8px 18px rgba(124,167,51,.18);transition:height .85s cubic-bezier(.2,.8,.2,1)}.e139-day.today .e139-bar{background:linear-gradient(180deg,#4d7ba3,#274C71)}.e139-day b{display:block;color:#274C71;font-size:13px;margin-top:6px}.e139-day span{display:block;color:#7b91a4;font-size:9px;margin-top:3px;white-space:nowrap}.e139-empty{padding:22px;text-align:center;color:#7890a5;font-size:12px}
+/* Gráfica circular para edad biológica: un tipo visual distinto a las barras */
+#pop136-bio .bio139-donut-wrap{grid-column:1/-1;display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center;background:#fff;border:1px solid #e1eaf0;border-radius:18px;padding:18px}.bio139-donut{width:132px;aspect-ratio:1;border-radius:50%;position:relative;transform:scale(.88);opacity:.3;transition:transform .65s ease,opacity .65s ease}.bio139-donut.on{transform:scale(1);opacity:1}.bio139-donut:after{content:"";position:absolute;inset:22px;border-radius:50%;background:#fff}.bio139-center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center;color:#274C71}.bio139-center strong{font-size:24px;line-height:1}.bio139-center small{font-size:9px;color:#7890a5;margin-top:4px}.bio139-legend{display:grid;gap:9px}.bio139-legend div{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;color:#536e86}.bio139-legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:7px}.bio139-legend b{color:#274C71}
+@media(max-width:650px){#eval139-daily .e139-chart{gap:6px}.e139-day{min-width:52px}#pop136-bio .bio139-donut-wrap{grid-template-columns:1fr;justify-items:center}.bio139-legend{width:100%}}
 </style>
-<script id="numed-v138-consent-daily">
-(()=>{
- let rows138=[],loaded138=false;
- const dayKey=v=>{if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime()))return'';return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santo_Domingo',year:'numeric',month:'2-digit',day:'2-digit'}).format(d)};
- const pretty=k=>{if(!k)return'';const d=new Date(k+'T12:00:00-04:00');return new Intl.DateTimeFormat('es-DO',{day:'2-digit',month:'short'}).format(d).replace('.','')};
- const todayKey=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santo_Domingo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
- async function fetchDaily138(){
-  try{
-   if(typeof window.ensureSbSession==='function')await window.ensureSbSession();
-   const token=sessionStorage.getItem('numedSbAccessToken')||localStorage.getItem('numedSbAccessToken');if(!token)throw new Error('Sesión médica no disponible');
-   const r=await fetch(NUMED_SB_URL+'/rest/v1/consentimientos_programa?select=id,paciente_id,aceptado,fecha_consentimiento,created_at&aceptado=eq.true&order=created_at.asc',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+token}});
-   const data=await r.json();if(!r.ok)throw new Error(JSON.stringify(data));
-   rows138=Array.isArray(data)?data:[];loaded138=true;renderDaily138();return rows138.length;
-  }catch(e){console.warn('NUMED v138 consentimiento diario:',e);loaded138=false;renderDaily138();return null}
- }
- function counts138(){
-  const map=new Map();rows138.forEach(x=>{const k=dayKey(x.fecha_consentimiento||x.created_at);if(k)map.set(k,(map.get(k)||0)+1)});return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
- }
- function renderDaily138(){
-  const host=document.getElementById('measure134-card')||document.getElementById('measurement134-card')||document.getElementById('measure134-wrap')||document.getElementById('measure134-section');
-  const fallback=document.getElementById('measure134-summary')?.parentElement;if(!host&&!fallback)return;const parent=host||fallback;
-  let box=document.getElementById('consent138-daily');if(!box){box=document.createElement('section');box.id='consent138-daily';parent.appendChild(box)}
-  if(!loaded138){box.innerHTML='<div class="c138-empty">Sincronizando consentimientos por día con Supabase…</div>';return}
-  const all=counts138(), last=all.slice(-10), max=Math.max(1,...last.map(x=>x[1])), tk=todayKey(), today=(all.find(x=>x[0]===tk)||[null,0])[1];
-  const bars=last.length?last.map(([k,n])=>`<div class="c138-day" title="${pretty(k)}: ${n} consentimiento${n===1?'':'s'}"><div class="c138-track"><div class="c138-bar" style="height:${Math.max(5,n/max*100)}%"></div></div><b>${n}</b><span>${k===tk?'Hoy':pretty(k)}</span></div>`).join(''):'<div class="c138-empty">Todavía no hay consentimientos aceptados.</div>';
-  box.innerHTML=`<div class="c138-head"><div><h4>Consentimientos por día</h4><p>Conteo diario según fecha registrada en Supabase · últimos ${last.length||0} días con actividad</p></div><div class="c138-today"><small>Hoy</small><strong>${today}</strong></div></div><div class="c138-bars">${bars}</div>`;
- }
- const oldRefresh=window.refreshConsentCount137;if(typeof oldRefresh==='function')window.refreshConsentCount137=async function(){const r=await oldRefresh.apply(this,arguments);await fetchDaily138();return r};
- const oldAll=window.renderAdminAll;if(typeof oldAll==='function')window.renderAdminAll=function(){const r=oldAll.apply(this,arguments);renderDaily138();return r};
- const prevRefresh=window.refreshMeasurementStatsFromSupabase;if(typeof prevRefresh==='function')window.refreshMeasurementStatsFromSupabase=async function(){const r=await prevRefresh.apply(this,arguments);await fetchDaily138();return r};
- window.refreshConsentDaily138=fetchDaily138;
- setTimeout(()=>{if(document.getElementById('doctor-admin')?.style.display!=='none')fetchDaily138()},650);
- window.NUMED_RUNTIME_VERSION='138-CONSENTIMIENTOS-POR-DIA';
+<script id="numed-v139-eval-daily-varied">
+(function(){'use strict';
+ let rows139=[],loaded139=false;
+ function token139(){return sessionStorage.getItem('numedSbAccessToken')||localStorage.getItem('numedSbAccessToken')||''}
+ function dayKey139(v){if(!v)return'';const d=new Date(v);if(Number.isNaN(d.getTime()))return'';return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Santo_Domingo',year:'numeric',month:'2-digit',day:'2-digit'}).format(d)}
+ function pretty139(k){if(!k)return'';const [y,m,d]=k.split('-').map(Number);return new Intl.DateTimeFormat('es-DO',{day:'numeric',month:'short',timeZone:'America/Santo_Domingo'}).format(new Date(Date.UTC(y,m-1,d,12)))}
+ async function fetchDaily139(){try{if(typeof ensureSbSession==='function')await ensureSbSession();const token=token139();if(!token)throw new Error('Sesión médica no disponible');const r=await fetch(NUMED_SB_URL+'/rest/v1/evaluaciones_pss10?select=id,paciente_id,created_at&order=created_at.asc',{headers:{apikey:NUMED_SB_ANON,Authorization:'Bearer '+token}});const a=await r.json();if(!r.ok)throw new Error(JSON.stringify(a));rows139=Array.isArray(a)?a:[];loaded139=true;renderDaily139();return rows139}catch(e){console.warn('NUMED v139 evaluaciones por día:',e);loaded139=false;renderDaily139();return null}}
+ function series139(){const map=new Map();rows139.forEach(x=>{const k=dayKey139(x.created_at);if(k)map.set(k,(map.get(k)||0)+1)});return [...map.entries()].sort((a,b)=>a[0].localeCompare(b[0]))}
+ function renderDaily139(){const parent=document.querySelector('.measure134-card')||document.getElementById('admin-dashboard');if(!parent)return;let box=document.getElementById('eval139-daily');if(!box){box=document.createElement('section');box.id='eval139-daily';parent.appendChild(box)}if(!loaded139){box.innerHTML='<div class="e139-empty">Sincronizando evaluaciones por día con Supabase…</div>';return}const all=series139(),last=all.slice(-10),tk=dayKey139(new Date()),today=all.find(x=>x[0]===tk)?.[1]||0,max=Math.max(1,...last.map(x=>x[1]));const bars=last.length?last.map(([k,n])=>`<div class="e139-day ${k===tk?'today':''}" title="${pretty139(k)}: ${n} evaluación${n===1?'':'es'}"><div class="e139-track"><div class="e139-bar" data-h="${Math.max(5,n/max*100)}"></div></div><b>${n}</b><span>${k===tk?'Hoy':pretty139(k)}</span></div>`).join(''):'<div class="e139-empty">Aún no hay evaluaciones registradas.</div>';box.innerHTML=`<div class="e139-head"><div><h4>Evaluaciones por día</h4><p>Evaluaciones completadas según registros PSS-10 en Supabase · últimos ${last.length||0} días con actividad</p></div><div class="e139-today"><small>Evaluaciones hoy</small><strong>${today}</strong></div></div><div class="e139-chart">${bars}</div>`;requestAnimationFrame(()=>requestAnimationFrame(()=>box.querySelectorAll('.e139-bar').forEach((el,i)=>setTimeout(()=>el.style.height=el.dataset.h+'%',i*55))))}
+ function addBioDonut139(){const bio=document.getElementById('pop136-bio');if(!bio||bio.querySelector('.bio139-donut-wrap'))return;const cards=[...bio.querySelectorAll('.pop136-bio-card')];if(cards.length<4)return;const base=parseFloat(cards[0].querySelector('strong')?.textContent)||0,lo=parseFloat(cards[1].querySelector('span')?.textContent)||0,eq=parseFloat(cards[2].querySelector('span')?.textContent)||0,hi=parseFloat(cards[3].querySelector('span')?.textContent)||0;if(!base)return;const p1=lo/base*100,p2=eq/base*100,p3=hi/base*100;const wrap=document.createElement('div');wrap.className='bio139-donut-wrap';wrap.innerHTML=`<div class="bio139-donut" style="background:conic-gradient(#ABC942 0 ${p1}%,#6aa6c8 ${p1}% ${p1+p2}%,#274C71 ${p1+p2}% 100%)"><div class="bio139-center"><strong>${base}</strong><small>personas</small></div></div><div class="bio139-legend"><div><span><i style="background:#ABC942"></i>Biológica menor</span><b>${lo} · ${p1.toFixed(1)}%</b></div><div><span><i style="background:#6aa6c8"></i>Igual</span><b>${eq} · ${p2.toFixed(1)}%</b></div><div><span><i style="background:#274C71"></i>Biológica mayor</span><b>${hi} · ${p3.toFixed(1)}%</b></div></div>`;bio.appendChild(wrap);requestAnimationFrame(()=>wrap.querySelector('.bio139-donut')?.classList.add('on'))}
+ const oldStats=window.renderMeasurementLocalityStats;if(typeof oldStats==='function')window.renderMeasurementLocalityStats=function(){const r=oldStats.apply(this,arguments);setTimeout(addBioDonut139,0);renderDaily139();return r};
+ const oldRefresh=window.refreshMeasurementStatsFromSupabase;if(typeof oldRefresh==='function')window.refreshMeasurementStatsFromSupabase=async function(){const r=await oldRefresh.apply(this,arguments);await fetchDaily139();setTimeout(addBioDonut139,0);return r};
+ setTimeout(()=>{if(document.getElementById('doctor-admin')?.style.display!=='none')fetchDaily139()},500);
+ window.refreshEvaluationsDaily139=fetchDaily139;window.NUMED_RUNTIME_VERSION='139-GRAFICAS-VARIADAS-EVALUACIONES-POR-DIA';
 })();
 </script>
 
