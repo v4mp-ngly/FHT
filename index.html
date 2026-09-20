@@ -6050,25 +6050,5 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
 })();
 </script>
 
-
-<style id="numed-v141-edit-measurements-css">
-.v141-editbar{display:flex;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(135deg,#f6faed,#fff);border:1px solid #dfe9c3;border-radius:16px;padding:15px 17px;margin:0 0 16px}.v141-editbar div{min-width:0}.v141-editbar b{display:block;color:#173f65;font-size:13px}.v141-editbar span{display:block;color:#72859a;font-size:10px;margin-top:4px;line-height:1.45}.v141-editbar button{white-space:nowrap}@media(max-width:620px){.v141-editbar{align-items:stretch;flex-direction:column}.v141-editbar button{width:100%}}
-</style>
-<script id="numed-v141-edit-measurements-js">
-(function(){
- const prior=window.detailTab;
- if(typeof prior!=='function')return;
- window.detailTab=function(tab,btn){
-   const out=prior.apply(this,arguments);
-   if(tab!=='measurements')return out;
-   const host=document.getElementById('detail-content'),r=window.adminCurrentPatient;
-   if(!host||!r||host.querySelector('.v141-editbar'))return out;
-   const id=String(r.id||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-   host.insertAdjacentHTML('afterbegin',`<div class="v141-editbar"><div><b>Mediciones editables</b><span>Puedes corregir presión arterial, frecuencia cardíaca, fuerza, peso, talla, perímetro abdominal y flexibilidad. Al guardar se recalculan IMC, clasificaciones y Edad Biológica.</span></div><button class="admin-action primary" type="button" onclick="evaluateFromAdmin('${id}')">✎ Editar mediciones</button></div>`);
-   return out;
- };
-})();
-</script>
-
 </body>
 </html>
