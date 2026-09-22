@@ -6535,3 +6535,78 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
  window.NUMED_RUNTIME_VERSION='167-FC-CLASIFICACION-USUARIO';
 })();
 </script>
+
+<!-- NUMED V168: Clasificacion de flexibilidad - Test de Wells -->
+<script id="numed-v168-flexibilidad-wells">
+(function(){
+  function n(v){var x=Number(v);return Number.isFinite(x)?x:null;}
+  function sex(v){var s=String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');return s.includes('fem')||s==='mujer'||s==='female'?'femenino':s.includes('mas')||s==='hombre'||s==='male'?'masculino':'';}
+  function ageOf(r){
+    var a=n(r&&r.age); if(a!=null)return a;
+    var d=r&&(r.birthDate||r.fechaNacimiento||r.fecha_nacimiento); if(!d)return null;
+    var b=new Date(d), now=new Date(); if(isNaN(b))return null;
+    a=now.getFullYear()-b.getFullYear(); var m=now.getMonth()-b.getMonth(); if(m<0||(m===0&&now.getDate()<b.getDate()))a--; return a;
+  }
+  function band(age){if(age<18)return null;if(age<=25)return 0;if(age<=35)return 1;if(age<=45)return 2;if(age<=55)return 3;if(age<=65)return 4;return 5;}
+  var H={
+    'Excelente':[[20,26],[20,25],[19,24],[19,23],[17,21],[17,20]],
+    'Buena':[[18,19],[18,19],[17,18],[16,18],[15,16],[13,16]],
+    'Promedio':[[13,17],[12,17],[11,16],[10,15],[9,14],[8,12]],
+    'Pobre':[[10,12],[10,11],[9,10],[7,9],[5,8],[5,7]],
+    'Muy pobre':[[2,9],[2,9],[1,8],[1,6],[1,4],[0,4]]
+  };
+  var M={
+    'Excelente':[[24,27],[23,26],[22,25],[21,24],[20,23],[20,22]],
+    'Buena':[[21,23],[20,22],[19,21],[18,20],[18,19],[18,19]],
+    'Promedio':[[17,20],[16,19],[14,18],[14,17],[13,17],[12,17]],
+    'Pobre':[[14,16],[14,15],[11,13],[11,13],[10,12],[9,11]],
+    'Muy pobre':[[8,13],[8,13],[6,10],[4,10],[3,9],[2,8]]
+  };
+  function classify(age,gender,value){
+    age=n(age); value=n(value); var g=sex(gender),b=band(age); if(age==null||value==null||!g||b==null)return null;
+    var T=g==='femenino'?M:H;
+    var order=['Excelente','Buena','Promedio','Pobre','Muy pobre'];
+    for(var i=0;i<order.length;i++){var rg=T[order[i]][b];if(value>=rg[0]&&value<=rg[1])return order[i];}
+    /* Los cuadros entregados no asignan categoria fuera de sus intervalos publicados. */
+    return null;
+  }
+  window.numedFlexibilidadWells={classify:classify,source:'Test de Wells',unit:'pulgada'};
+
+  /* Sobrescribe la clasificacion usada por el reporte funcional sin alterar el valor historico guardado en Supabase. */
+  window.numedFlexClass168=function(r){
+    var m=r&&r.measurements||{};
+    var stored=String(m.nivelFlexibilidad||'').trim();
+    if(stored){
+      var s=stored.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if(s.includes('muy pobre'))return 'Muy pobre'; if(s==='pobre'||s.includes(' pobre'))return 'Pobre';
+      if(s.includes('promedio')||s.includes('normal'))return 'Promedio'; if(s.includes('excelente'))return 'Excelente'; if(s.includes('buena'))return 'Buena';
+    }
+    return classify(ageOf(r),r&&r.gender,m.flexibilidad);
+  };
+
+  /* Patch directo de la funcion global/local accesible del reporte V162 cuando sea posible. */
+  try{ window.flexClass=window.numedFlexClass168; }catch(_){ }
+
+  /* Reemplaza el render funcional con la misma seccion existente, pero calculando Wells y agregando Buena. */
+  var oldRender=window.renderFunctional162 || window.renderFunctionalReport162 || null;
+  function patchExisting(){
+    var sec=document.getElementById('cr-fun162'); if(!sec)return;
+    var rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(function(r){
+      return String(r.locality||'').trim()==='Club Banreservas - Santo Domingo' && r.measured && String(r.collaboratorCode||r.codigoColaborador||r.codigo_colaborador||'').trim();
+    });
+    var cats=['Muy pobre','Pobre','Promedio','Buena','Excelente'], counts={}; cats.forEach(function(c){counts[c]=0;}); var valid=0;
+    rows.forEach(function(r){var c=window.numedFlexClass168(r);if(c&&counts[c]!==undefined){counts[c]++;valid++;}});
+    var chart=sec.querySelector('.cr-fun162-variable .cr-fun162-chart');
+    if(chart&&typeof bar==='function') chart.innerHTML=cats.map(function(c){return bar(c,counts[c],valid);}).join('');
+    var insight=sec.querySelector('.cr-fun162-variable .cr-fun162-insight');
+    if(insight){var bad=counts['Muy pobre']+counts['Pobre']; insight.innerHTML='<h3>¿Qué muestran los resultados de flexibilidad?</h3>'+(valid?'<p>En el Club Banreservas, <strong>'+((bad/valid)*100).toFixed(1)+'%</strong> de los colaboradores con clasificación válida se ubicó entre Muy pobre y Pobre. La clasificación se realizó por sexo y edad según la tabla de referencia del <strong>Test de Wells</strong>.</p>':'<p>No hay registros con edad, sexo y flexibilidad suficientes para aplicar la clasificación del Test de Wells.</p>');}
+    var copy=sec.querySelector('.cr-fun162-variable .cr-fun162-copy'); if(copy)copy.innerHTML='La flexibilidad se clasifica según <strong>sexo y grupo de edad</strong> utilizando la referencia del <strong>Test de Wells</strong>. El valor registrado se interpreta en la unidad indicada por la tabla de referencia suministrada (pulgadas).';
+  }
+  var prev=window.refreshClubReport150;
+  if(typeof prev==='function') window.refreshClubReport150=function(){var x=prev.apply(this,arguments);setTimeout(patchExisting,0);return x;};
+  var prevR=window.renderClubReport150;
+  if(typeof prevR==='function') window.renderClubReport150=function(){var x=prevR.apply(this,arguments);setTimeout(patchExisting,0);return x;};
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(patchExisting,250);});
+  window.NUMED_RUNTIME_VERSION='168-FLEXIBILIDAD-WELLS';
+})();
+</script>
