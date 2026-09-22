@@ -6238,3 +6238,41 @@ window.NUMED_RUNTIME_VERSION='149-VISTA-RAPIDA-AJUSTADA';
  window.NUMED_RUNTIME_VERSION='155-BANRESERVAS-PA';
 })();
 </script>
+<style id="numed-v156-pa-findings-style">
+.cr-pa-find156{padding-top:8px}.cr-pa-find156-card{background:#fff;border:1px solid #dce6ed;border-radius:24px;padding:28px 30px;box-shadow:0 10px 28px rgba(6,47,87,.035)}.cr-pa-find156-card h3{margin:0 0 18px;color:#0b3d67;font-size:22px}.cr-pa-find156-card p{margin:0 0 16px;color:#6f8799;font-size:15px;line-height:1.72}.cr-pa-find156-card p:last-child{margin-bottom:0}.cr-pa-find156-card strong{color:#197ca6;font-weight:800}
+</style>
+<script id="numed-v156-pa-findings">
+(()=>{'use strict';
+ const CLUB='Club Banreservas - Santo Domingo';
+ const pct=(n,d)=>d?100*n/d:0;
+ const fmt=n=>`${n.toFixed(1)}%`;
+ const num=v=>{v=Number(v);return Number.isFinite(v)?v:null};
+ const ageOf=r=>num(r.age??r.edad);
+ const sexOf=r=>String(r.gender??r.sex??r.sexo??'').toLowerCase();
+ const isFemale=r=>/fem|mujer/.test(sexOf(r));
+ const isMale=r=>/masc|hombre/.test(sexOf(r));
+ function valid(rows,key){return rows.filter(r=>num(r.measurements?.[key])!=null)}
+ function stat(rows,key,test){const a=valid(rows,key);return{n:a.length,c:a.filter(r=>test(num(r.measurements[key]))).length,get p(){return pct(this.c,this.n)}}}
+ function ageGroup(rows,min,max){return rows.filter(r=>{const a=ageOf(r);return a!=null&&a>=min&&(max==null||a<=max)})}
+ function sexGroup(rows,fn){return rows.filter(fn)}
+ function lineGroup(label,rows){const sh=stat(rows,'presionSistolica',v=>v>=140),dh=stat(rows,'presionDiastolica',v=>v>=90);return `${label}: <strong>${fmt(sh.p)}</strong> con presión sistólica en rango de hipertensión y <strong>${fmt(dh.p)}</strong> con presión diastólica en rango de hipertensión.`}
+ function inject(){
+  const root=document.getElementById('club-report-150'),pa=document.getElementById('cr-pa155');if(!root||!pa)return;
+  document.getElementById('cr-pa-find156')?.remove();
+  const rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(r=>String(r.locality||'').trim()===CLUB&&r.measured);
+  const sh=stat(rows,'presionSistolica',v=>v>=140),se=stat(rows,'presionSistolica',v=>v>=130&&v<140),dh=stat(rows,'presionDiastolica',v=>v>=90),de=stat(rows,'presionDiastolica',v=>v>=85&&v<90);
+  const sysComp=sh.p+se.p,diaComp=dh.p+de.p;
+  const under30=ageGroup(rows,0,29),a30to45=ageGroup(rows,30,45),a46to60=ageGroup(rows,46,60),over60=ageGroup(rows,61,null);
+  const women=sexGroup(rows,isFemale),men=sexGroup(rows,isMale);
+  const groups=[['menores de 30 años',under30],['de 30 a 45 años',a30to45],['de 46 a 60 años',a46to60],['de 61 años o más',over60]].filter(x=>x[1].length);
+  const ageText=groups.length?`El análisis por rango etario muestra cómo se distribuyen estos hallazgos en las distintas etapas de vida. ${groups.map(([l,g])=>lineGroup(`En colaboradores ${l}`,g)).join(' ')}`:'No se dispone de suficientes edades válidas para realizar el análisis por rango etario.';
+  let genderText='No se dispone de suficientes datos de sexo para realizar la comparación por género.';
+  if(women.length||men.length){const whs=stat(women,'presionSistolica',v=>v>=140),whd=stat(women,'presionDiastolica',v=>v>=90),mhs=stat(men,'presionSistolica',v=>v>=140),mhd=stat(men,'presionDiastolica',v=>v>=90),wes=stat(women,'presionSistolica',v=>v>=130&&v<140),wed=stat(women,'presionDiastolica',v=>v>=85&&v<90),mes=stat(men,'presionSistolica',v=>v>=130&&v<140),med=stat(men,'presionDiastolica',v=>v>=85&&v<90);genderText=`Al analizar los resultados por género, en las <strong>mujeres</strong> la proporción con presión sistólica en rango de hipertensión fue de <strong>${fmt(whs.p)}</strong> y la diastólica de <strong>${fmt(whd.p)}</strong>; en los <strong>hombres</strong>, fue de <strong>${fmt(mhs.p)}</strong> y <strong>${fmt(mhd.p)}</strong>, respectivamente. En los rangos elevados previos a hipertensión, la presión sistólica representó <strong>${fmt(wes.p)}</strong> en mujeres y <strong>${fmt(mes.p)}</strong> en hombres, mientras la diastólica representó <strong>${fmt(wed.p)}</strong> y <strong>${fmt(med.p)}</strong>.`;}
+  const sec=document.createElement('section');sec.id='cr-pa-find156';sec.className='cr-sec cr-pa-find156';sec.innerHTML=`<div class="cr-wrap"><article class="cr-pa-find156-card"><h3>Hallazgos de presión arterial</h3><p>Los resultados de la jornada permiten identificar la proporción de colaboradores del <strong>Club Banreservas</strong> con cifras de presión arterial fuera de los rangos favorables y orientar las necesidades de prevención, confirmación y seguimiento.</p><p>En la presión arterial sistólica, <strong>${fmt(sh.p)}</strong> de los colaboradores con medición válida se ubicó en algún grado de hipertensión y un <strong>${fmt(se.p)}</strong> adicional presentó cifras en rango normal alto. En conjunto, <strong>${fmt(sysComp)}</strong> mostró presión sistólica por encima del rango normal. Para la presión arterial diastólica, <strong>${fmt(dh.p)}</strong> se ubicó en algún grado de hipertensión y <strong>${fmt(de.p)}</strong> en rango normal alto, para un total de <strong>${fmt(diaComp)}</strong> con cifras por encima del rango normal.</p><p>${ageText}</p><p>${genderText}</p><p>Estos hallazgos describen la población evaluada durante la jornada y no constituyen por sí solos un diagnóstico de hipertensión. Su lectura permite identificar grupos que pueden beneficiarse de <strong>confirmación clínica, seguimiento y acciones preventivas</strong>, especialmente cuando las cifras elevadas persisten en mediciones posteriores.</p></article></div>`;
+  pa.insertAdjacentElement('afterend',sec);
+ }
+ const old=window.renderClubReport150;if(typeof old==='function')window.renderClubReport150=function(){const r=old.apply(this,arguments);setTimeout(inject,0);return r};
+ const oldRefresh=window.refreshClubReport150;if(typeof oldRefresh==='function')window.refreshClubReport150=async function(){const r=await oldRefresh.apply(this,arguments);setTimeout(inject,0);return r};
+ setTimeout(inject,0);window.NUMED_RUNTIME_VERSION='156-BANRESERVAS-PA-HALLAZGOS';
+})();
+</script>
