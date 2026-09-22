@@ -6610,3 +6610,29 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
   window.NUMED_RUNTIME_VERSION='168-FLEXIBILIDAD-WELLS';
 })();
 </script>
+<script id="numed-v169-flex-visible">
+(function(){
+  function esc(s){return String(s??'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]});}
+  function pct(n,d){return d?100*n/d:0;}
+  function flexBar(label,n,total){var p=pct(n,total);return '<div class="cr-fun162-row"><div class="cr-fun162-label">'+esc(label)+'</div><div class="cr-fun162-track"><div class="cr-fun162-fill" style="width:'+p.toFixed(2)+'%"></div></div><div class="cr-fun162-val"><strong>'+p.toFixed(1)+'%</strong><small>'+n+' colaborador'+(n===1?'':'es')+'</small></div></div>';}
+  function eligible(r){return String(r&&r.locality||'').trim()==='Club Banreservas - Santo Domingo' && r&&r.measured && String(r.collaboratorCode||r.codigoColaborador||r.codigo_colaborador||'').trim()!=='';}
+  function run(){
+    var sec=document.getElementById('cr-fun162'); if(!sec||typeof window.numedFlexClass168!=='function')return;
+    var rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(eligible);
+    var cats=['Muy pobre','Pobre','Promedio','Buena','Excelente'], c={};cats.forEach(function(x){c[x]=0;});var valid=0;
+    rows.forEach(function(r){var k=window.numedFlexClass168(r);if(k&&Object.prototype.hasOwnProperty.call(c,k)){c[k]++;valid++;}});
+    var first=sec.querySelector('.cr-fun162-variable'); if(!first)return;
+    var chart=first.querySelector('.cr-fun162-chart');
+    if(chart) chart.innerHTML=cats.map(function(k){return flexBar(k,c[k],valid);}).join('');
+    var insight=first.querySelector('.cr-fun162-insight');var bad=c['Muy pobre']+c['Pobre'];
+    if(insight) insight.innerHTML='<h3>¿Qué muestran los resultados de flexibilidad?</h3>'+(valid?'<p>Se clasificaron <strong>'+valid+' colaboradores</strong> con edad, sexo y valor de flexibilidad disponibles. El <strong>'+pct(bad,valid).toFixed(1)+'%</strong> se ubicó entre Muy pobre y Pobre; <strong>'+pct(c.Promedio,valid).toFixed(1)+'%</strong> en Promedio; <strong>'+pct(c.Buena,valid).toFixed(1)+'%</strong> en Buena y <strong>'+pct(c.Excelente,valid).toFixed(1)+'%</strong> en Excelente.</p><p>Referencia de clasificación: <strong>Test de Wells</strong>, según sexo y grupo de edad.</p>':'<p>No hay registros con edad, sexo y valor de flexibilidad suficientes para aplicar la tabla de referencia.</p>');
+    var summary=sec.querySelector('.cr-fun162-summary');
+    if(summary && valid===0){summary.insertAdjacentHTML('beforeend','<p><strong>Nota de control:</strong> la flexibilidad no pudo clasificarse porque faltan datos compatibles de edad, sexo o valor registrado.</p>');}
+  }
+  var rr=window.renderClubReport150;if(typeof rr==='function')window.renderClubReport150=function(){var x=rr.apply(this,arguments);requestAnimationFrame(function(){requestAnimationFrame(run)});return x;};
+  var rf=window.refreshClubReport150;if(typeof rf==='function')window.refreshClubReport150=function(){var x=rf.apply(this,arguments);requestAnimationFrame(function(){requestAnimationFrame(run)});return x;};
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(run,350)});
+  setTimeout(run,500);
+  window.NUMED_RUNTIME_VERSION='169-FLEXIBILIDAD-VISIBLE';
+})();
+</script>
