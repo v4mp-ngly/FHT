@@ -6347,3 +6347,20 @@ window.NUMED_RUNTIME_VERSION='149-VISTA-RAPIDA-AJUSTADA';
  setTimeout(inject,0);window.NUMED_RUNTIME_VERSION='160-FRECUENCIA-CARDIACA-CORREGIDA';
 })();
 </script>
+<style id="numed-v161-met2-style">
+.cr-met2-161{background:#fff;border:1px solid #dce6ed;border-radius:26px;padding:30px 34px;margin-top:22px;box-shadow:0 10px 28px rgba(6,47,87,.025)}
+.cr-met2-161 h3{margin:0 0 14px;color:#0b3d67;font-size:24px}.cr-met2-161 p{margin:0 0 14px;color:#6f8799;font-size:15px;line-height:1.72}.cr-met2-161 p:last-child{margin-bottom:0}.cr-met2-161 strong{color:#0b3d67;font-weight:850}
+@media(max-width:760px){.cr-met2-161{padding:24px 20px}}
+</style>
+<script id="numed-v161-met2-club">
+(()=>{'use strict';
+ const CLUB='Club Banreservas - Santo Domingo';
+ const pct=(n,d)=>d?100*n/d:0,fmt=n=>`${n.toFixed(1)}%`;
+ function imcClass(r){const v=Number(r.measurements?.imc);if(!Number.isFinite(v))return null;if(v<18.5)return'Infrapeso';if(v<25)return'Normal';return'Exceso de peso'}
+ function abdClass(r){const v=Number(r.measurements?.abdomen);if(!Number.isFinite(v))return null;try{const x=window.numedFHT?.abdomen?.(r.gender,v),s=String(x?.label||'').toUpperCase();if(s.includes('MUY ELEVADO')||s.includes('ELEVADO'))return'Riesgo';if(s.includes('NORMAL'))return'Normal'}catch(_){}return null}
+ function inject(){const host=document.getElementById('cr-abd159');if(!host)return;document.getElementById('cr-met2-161')?.remove();const rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(r=>String(r.locality||'').trim()===CLUB&&r.measured);let both=0,anyAltered=0,bothNormal=0,imcExcess=0,abdRisk=0,normalImcAbdRisk=0;rows.forEach(r=>{const i=imcClass(r),a=abdClass(r);if(!i||!a)return;both++;const ia=i!=='Normal',aa=a!=='Normal';if(ia||aa)anyAltered++;if(!ia&&!aa)bothNormal++;if(i==='Exceso de peso')imcExcess++;if(a==='Riesgo')abdRisk++;if(i==='Normal'&&a==='Riesgo')normalImcAbdRisk++});const sec=document.createElement('article');sec.id='cr-met2-161';sec.className='cr-met2-161';sec.innerHTML=`<h3>¿Qué revela la estadística de las dos variables?</h3>${both?`<p>El análisis conjunto de la <strong>condición metabólica</strong> se realizó con las dos variables medidas durante la jornada: <strong>IMC y perímetro abdominal</strong>.</p><p>Entre los colaboradores con ambas mediciones válidas, el <strong>${fmt(pct(anyAltered,both))}</strong> presentó al menos una de las dos variables fuera de la categoría Normal, mientras que el <strong>${fmt(pct(bothNormal,both))}</strong> se ubicó simultáneamente en rango Normal para IMC y perímetro abdominal.</p><p>Al analizar cada indicador, el <strong>${fmt(pct(imcExcess,both))}</strong> presentó IMC en Sobrepeso u Obesidad y el <strong>${fmt(pct(abdRisk,both))}</strong> mostró Riesgo elevado o muy elevado según el perímetro abdominal.</p><p>La coincidencia entre ambos indicadores permite identificar a quienes presentan simultáneamente alteraciones relacionadas con el peso y con la distribución abdominal. Asimismo, <strong>${normalImcAbdRisk} colaborador${normalImcAbdRisk===1?'':'es'}</strong> con IMC Normal presentó riesgo abdominal, lo que refuerza que el IMC no debe utilizarse como único criterio para interpretar esta dimensión.</p><p>Estos resultados describen la población evaluada del Club Banreservas y deben interpretarse junto con las condiciones cardiovascular, funcional y psicosocial del Functional Health Test.</p>`:`<p>No hay suficientes colaboradores con ambas mediciones válidas para realizar el análisis conjunto de IMC y perímetro abdominal.</p>`}`;host.appendChild(sec)}
+ const old=window.renderClubReport150;if(typeof old==='function')window.renderClubReport150=function(){const r=old.apply(this,arguments);setTimeout(inject,0);return r};
+ const oldRefresh=window.refreshClubReport150;if(typeof oldRefresh==='function')window.refreshClubReport150=async function(){const r=await oldRefresh.apply(this,arguments);setTimeout(inject,0);return r};
+ setTimeout(inject,0);window.NUMED_RUNTIME_VERSION='161-METABOLICA-DOS-VARIABLES';
+})();
+</script>
