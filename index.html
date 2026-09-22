@@ -6652,3 +6652,59 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
 })();
 </script>
 <script>window.NUMED_RUNTIME_VERSION='171-FILTRO-ESTADO';</script>
+
+<!-- NUMED V172: corrige analisis conjunto Fuerza + Flexibilidad usando Wells -->
+<script id="numed-v172-functional-summary-fix">
+(()=>{
+  const CLUB='Club Banreservas - Santo Domingo';
+  const norm=v=>String(v??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const pct=(n,d)=>d?((n/d)*100).toFixed(1):'0.0';
+  function eligible(r){
+    return String(r?.locality||'').trim()===CLUB && r?.measured && String(r?.collaboratorCode||r?.codigoColaborador||r?.codigo_colaborador||'').trim()!=='';
+  }
+  function strengthClass(r){
+    const m=r?.measurements||{};
+    const s=norm(m.nivelFuerza);
+    if(s.includes('bajo')||s.includes('debil')||s.includes('débil')) return 'Débil';
+    if(s.includes('medio')||s.includes('normal')||s.includes('moderad')||s.includes('promedio')) return 'Normal';
+    if(s.includes('alto')||s.includes('fuerte')) return 'Fuerte';
+    return null;
+  }
+  function fix(){
+    const sec=document.getElementById('cr-fun162');
+    const summary=sec?.querySelector('.cr-fun162-summary');
+    if(!summary || typeof window.numedFlexClass168!=='function') return;
+    const rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(eligible);
+    let both=0, anyOpportunity=0, bothUnfavorable=0, bothFavorable=0;
+    const pairs=[];
+    rows.forEach(r=>{
+      const f=window.numedFlexClass168(r);
+      const s=strengthClass(r);
+      if(!f||!s) return;
+      both++;
+      const flexBad=f==='Muy pobre'||f==='Pobre';
+      const strengthBad=s==='Débil';
+      if(flexBad||strengthBad) anyOpportunity++;
+      if(flexBad&&strengthBad) bothUnfavorable++;
+      if(!flexBad&&!strengthBad) bothFavorable++;
+      pairs.push({f,s});
+    });
+    summary.innerHTML='<h3>¿Qué revela la estadística de las dos variables?</h3>' + (both ?
+      '<p>El análisis conjunto de la <strong>condición funcional</strong> se realizó con los colaboradores que cuentan simultáneamente con clasificación válida de <strong>fuerza y flexibilidad</strong>. La flexibilidad se clasifica con la referencia del <strong>Test de Wells</strong> según sexo y edad.</p>'+
+      '<div class="cr-fun162-kpis">'+
+        '<div class="cr-fun162-kpi"><strong>'+pct(anyOpportunity,both)+'%</strong><span>Al menos una de las dos variables con oportunidad de mejora</span></div>'+
+        '<div class="cr-fun162-kpi"><strong>'+pct(bothUnfavorable,both)+'%</strong><span>Flexibilidad Muy pobre/Pobre y fuerza Débil simultáneamente</span></div>'+
+        '<div class="cr-fun162-kpi"><strong>'+pct(bothFavorable,both)+'%</strong><span>Sin clasificación desfavorable en ninguna de las dos variables</span></div>'+
+      '</div>'+
+      '<p>La base del análisis conjunto es de <strong>'+both+' colaboradores</strong>. De ellos, el <strong>'+pct(anyOpportunity,both)+'%</strong> presentó al menos una oportunidad de mejora funcional y el <strong>'+pct(bothUnfavorable,both)+'%</strong> presentó simultáneamente flexibilidad Muy pobre/Pobre y fuerza Débil.</p>'+
+      '<p>Estos resultados permiten interpretar fuerza y movilidad de manera complementaria y orientar acciones de seguimiento funcional de forma progresiva.</p>'
+      : '<p>No hay suficientes colaboradores con ambas clasificaciones válidas para realizar el análisis conjunto.</p>');
+  }
+  const wrap=name=>{const old=window[name];if(typeof old==='function')window[name]=function(){const x=old.apply(this,arguments);requestAnimationFrame(()=>requestAnimationFrame(fix));return x;};};
+  wrap('renderClubReport150');
+  wrap('refreshClubReport150');
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(fix,500));
+  setTimeout(fix,650);
+  window.NUMED_RUNTIME_VERSION='172-ANALISIS-FUNCIONAL-CORREGIDO';
+})();
+</script>
