@@ -6110,6 +6110,36 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
  if(typeof oldNav==='function')window.adminNav=function(section,btn){if(section==='clubreport'){document.querySelectorAll('#doctor-admin .admin-section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#doctor-admin .admin-nav button').forEach(x=>x.classList.remove('active'));document.getElementById('admin-clubreport')?.classList.add('active');btn?.classList.add('active');render();return}return oldNav.apply(this,arguments)};
 })();
 </script>
+
+<style id="numed-v152-gender-dashboard-style">
+#dash152-gender{background:#fff;border:1px solid #e2eaf0;border-radius:20px;padding:18px;box-shadow:0 10px 30px rgba(39,76,113,.055);display:grid;grid-template-columns:150px 1fr;gap:22px;align-items:center}
+#dash152-gender h4{margin:0;color:#274C71;font-size:15px}#dash152-gender .g152-sub{margin:5px 0 15px;color:#8195a7;font-size:10px}
+.g152-donut{width:138px;height:138px;border-radius:50%;position:relative;margin:auto;transform:scale(.92);opacity:.35;transition:.65s ease}
+.g152-donut.on{transform:scale(1);opacity:1}.g152-donut:after{content:"";position:absolute;inset:25px;background:#fff;border-radius:50%}
+.g152-center{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center;color:#274C71}.g152-center strong{font-size:25px;line-height:1}.g152-center small{font-size:8px;color:#8195a7;margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.g152-legend{display:grid;gap:10px}.g152-item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;border:1px solid #edf1f4;background:#f8fafb;border-radius:14px;padding:12px 13px}.g152-label{display:flex;align-items:center;gap:9px;color:#365a79;font-size:11px;font-weight:750}.g152-dot{width:10px;height:10px;border-radius:50%;display:inline-block}.g152-dot.f{background:#ABC942}.g152-dot.m{background:#274C71}.g152-item b{font-size:16px;color:#274C71}.g152-item em{font-style:normal;font-size:9px;color:#8195a7;margin-left:4px}
+.g152-note{grid-column:1/-1;margin-top:-5px;color:#8a9cab;font-size:8px}
+@media(max-width:720px){#dash152-gender{grid-template-columns:1fr}.g152-legend{width:100%}}
+</style>
+<script id="numed-v152-gender-dashboard">
+(function(){'use strict';
+ function normSex(v){v=String(v||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(v.includes('fem')||v==='f'||v==='mujer')return'f';if(v.includes('masc')||v==='m'||v==='hombre')return'm';return''}
+ function selectedLocality(){return document.getElementById('d140-locality')?.value||'all'}
+ function renderGender152(){
+  const host=document.getElementById('dash140');if(!host)return;
+  const rows=typeof getPendingPatients==='function'?getPendingPatients():[];
+  const loc=selectedLocality();const scoped=loc==='all'?rows:rows.filter(r=>String(r.locality||'')===loc);
+  const female=scoped.filter(r=>normSex(r.gender)==='f').length, male=scoped.filter(r=>normSex(r.gender)==='m').length, total=female+male;
+  const pf=total?female*100/total:0, pm=total?male*100/total:0;
+  let box=document.getElementById('dash152-gender');if(!box){box=document.createElement('section');box.id='dash152-gender';host.appendChild(box)}
+  box.innerHTML=`<div class="g152-donut" style="background:conic-gradient(#ABC942 0 ${pf}%,#274C71 ${pf}% 100%)"><div class="g152-center"><strong>${total}</strong><small>personas</small></div></div><div><h4>Distribución por sexo</h4><p class="g152-sub">Porcentaje de femenino y masculino${loc==='all'?' en la población registrada':' en '+String(loc).replace(/[<>&]/g,'')}.</p><div class="g152-legend"><div class="g152-item"><span class="g152-label"><i class="g152-dot f"></i>Femenino</span><span><b>${pf.toFixed(1)}%</b><em>${female} persona${female===1?'':'s'}</em></span></div><div class="g152-item"><span class="g152-label"><i class="g152-dot m"></i>Masculino</span><span><b>${pm.toFixed(1)}%</b><em>${male} persona${male===1?'':'s'}</em></span></div></div></div><div class="g152-note">Base: ${total} registros con sexo femenino o masculino identificado.</div>`;
+  requestAnimationFrame(()=>box.querySelector('.g152-donut')?.classList.add('on'));
+ }
+ const old=window.renderDashboard140;if(typeof old==='function')window.renderDashboard140=function(){const r=old.apply(this,arguments);setTimeout(renderGender152,0);return r};
+ const oldLoad=window.loadPatientsFromSupabase;if(typeof oldLoad==='function')window.loadPatientsFromSupabase=async function(){const r=await oldLoad.apply(this,arguments);setTimeout(renderGender152,0);return r};
+ setTimeout(renderGender152,700);window.renderGenderDashboard152=renderGender152;window.NUMED_RUNTIME_VERSION='152-DASHBOARD-GENERO';
+})();
+</script>
 </body>
 </html>
 
