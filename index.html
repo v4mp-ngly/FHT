@@ -6477,3 +6477,61 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
   window.NUMED_RUNTIME_VERSION='166-REPORTE-ESTABLE-SIN-PARPADEO';
 })();
 </script>
+
+<!-- NUMED V167: remove legacy report summary + official HR reference supplied by user -->
+<script id="numed-v167-fc-reference-report">
+(()=>{'use strict';
+ const CLUB='Club Banreservas - Santo Domingo';
+ const n=v=>{v=Number(v);return Number.isFinite(v)?v:null};
+ const pct=(a,b)=>b?100*a/b:0;
+ const sex=r=>String(r.gender??r.sex??r.sexo??'').trim().toLowerCase();
+ const age=r=>n(r.age??r.edad);
+ const hr=r=>n(r.measurements?.frecuenciaCardiaca);
+ function classify(r){
+  const a=age(r),v=hr(r),s=sex(r); if(a==null||v==null)return null;
+  const female=/fem|mujer/.test(s),male=/masc|hombre/.test(s); if(!female&&!male)return null;
+  let defMin,normMin,normMax,goodMin,goodMax,supMax;
+  if(male){
+   if(a<=29)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[86,70,85,61,69,60];
+   else if(a<=39)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[86,71,85,63,70,62];
+   else if(a<=49)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[90,75,89,65,74,64];
+   else if(a<=59)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[90,75,89,67,74,66];
+   else [defMin,normMin,normMax,goodMin,goodMax,supMax]=[94,76,93,69,75,68];
+  }else{
+   if(a<=29)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[96,77,95,71,76,70];
+   else if(a<=39)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[98,80,97,71,79,70];
+   else if(a<=49)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[100,80,99,73,79,72];
+   else if(a<=59)[defMin,normMin,normMax,goodMin,goodMax,supMax]=[104,84,103,75,83,74];
+   else [defMin,normMin,normMax,goodMin,goodMax,supMax]=[108,89,107,79,88,78];
+  }
+  if(v>=defMin)return'Deficiente';
+  if(v>=normMin&&v<=normMax)return'Normal';
+  if(v>=goodMin&&v<=goodMax)return'Buena';
+  if(v<=supMax)return'Superior';
+  return null;
+ }
+ function removeLegacy(){
+  document.querySelectorAll('#club-report-150 section').forEach(sec=>{
+   const t=(sec.textContent||'').replace(/\s+/g,' ').trim();
+   if(t.includes('Resultados por condición')||t.includes('Indicadores promedio'))sec.remove();
+  });
+ }
+ function bar(label,count,total){const p=pct(count,total);return `<div class="cr-fc157-row"><div class="cr-fc157-label">${label}</div><div class="cr-fc157-track"><div class="cr-fc157-fill" style="width:${p.toFixed(2)}%"></div></div><div class="cr-fc157-val"><strong>${p.toFixed(1)}%</strong><small>${count} colaborador${count===1?'':'es'}</small></div></div>`}
+ function inject(){
+  removeLegacy();
+  const after=document.getElementById('cr-pa-find156'); if(!after)return;
+  document.getElementById('cr-fc157')?.remove();
+  const rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(r=>String(r.locality||'').trim()===CLUB&&(r.hasCollaboratorCode===true||String(r.collaboratorCode||'').trim()!=='')&&r.measured&&classify(r));
+  const c={Deficiente:0,Normal:0,Buena:0,Superior:0}; rows.forEach(r=>c[classify(r)]++); const total=rows.length;
+  const sec=document.createElement('section'); sec.id='cr-fc157'; sec.className='cr-sec cr-fc157';
+  sec.innerHTML=`<div class="cr-wrap"><article class="cr-fc157-card"><h3>La frecuencia cardíaca</h3><p>La frecuencia cardíaca en reposo representa el número de latidos por minuto registrado durante el estado de reposo. En este reporte se interpreta de acuerdo con rangos específicos por <strong>sexo y grupo de edad</strong>.</p><p>La clasificación utilizada distingue cuatro categorías: <strong>Deficiente, Normal, Buena y Superior</strong>. Los resultados corresponden a la medición realizada durante la jornada y deben interpretarse junto con los demás indicadores cardiovasculares.</p></article><article class="cr-fc157-card"><h3>Frecuencia cardíaca</h3>${bar('Deficiente',c.Deficiente,total)}${bar('Normal',c.Normal,total)}${bar('Buena',c.Buena,total)}${bar('Superior',c.Superior,total)}<div class="cr-fc157-note">Base: ${total} colaborador${total===1?'':'es'} con frecuencia cardíaca, edad y sexo válidos. Clasificación aplicada por sexo y edad según la referencia suministrada para el reporte.</div></article><article class="cr-fc157-card"><h3>Lectura de los resultados de frecuencia cardíaca</h3><p>De los <strong>${total}</strong> colaboradores con datos válidos, <strong>${pct(c.Deficiente,total).toFixed(1)}%</strong> se clasificó como Deficiente, <strong>${pct(c.Normal,total).toFixed(1)}%</strong> como Normal, <strong>${pct(c.Buena,total).toFixed(1)}%</strong> como Buena y <strong>${pct(c.Superior,total).toFixed(1)}%</strong> como Superior.</p><p>Esta distribución utiliza los rangos diferenciados para hombres y mujeres y sus respectivos grupos etarios. Una medición aislada de frecuencia cardíaca no constituye por sí sola un diagnóstico clínico.</p><div class="cr-fc157-note">Fuente de referencia indicada: Gilmore, Hack H. &amp; Costill, David L. <em>Fisiología del esfuerzo del deporte</em>.</div></article></div>`;
+  after.insertAdjacentElement('afterend',sec);
+ }
+ const oldRender=window.renderClubReport150;
+ if(typeof oldRender==='function')window.renderClubReport150=function(){const x=oldRender.apply(this,arguments);setTimeout(inject,0);return x};
+ const oldRefresh=window.refreshClubReport150;
+ if(typeof oldRefresh==='function')window.refreshClubReport150=async function(){const x=await oldRefresh.apply(this,arguments);setTimeout(inject,0);return x};
+ setTimeout(inject,0);
+ window.NUMED_RUNTIME_VERSION='167-FC-CLASIFICACION-USUARIO';
+})();
+</script>
