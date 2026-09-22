@@ -6410,3 +6410,70 @@ window.NUMED_RUNTIME_VERSION='164-REPORTE-BANRESERVAS-SQL-MEDICIONES-ALINEADO';
 </script>
 
 <script>window.NUMED_RUNTIME_VERSION='165-FAVICON-POBLACION-CODIGO-89';</script>
+
+<!-- NUMED v166 - Reporte Banreservas estable: evita refresco recursivo/parpadeo -->
+<style id="numed-v166-report-stability-style">
+#club-report-150{min-height:70vh;contain:layout style;}
+#club-report-150 .cr150,#club-report-150 .cr-sec,#club-report-150 [id^="cr-"]{animation:none!important;}
+#club-report-150 .cr-fun162-fill{transition:width .35s ease!important;}
+body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:visible!important;}
+</style>
+<script id="numed-v166-report-stability">
+(function(){
+  if(window.__NUMED_V166_REPORT_STABILITY__) return;
+  window.__NUMED_V166_REPORT_STABILITY__=true;
+
+  // v163 wrapped loadPatientsFromSupabase and called refreshClubReport150 again.
+  // refreshClubReport150 itself calls loadPatientsFromSupabase, producing a refresh loop.
+  // Keep the current loader but prevent report refresh from recursively syncing Supabase.
+  const currentLoad=window.loadPatientsFromSupabase;
+  const currentRender=window.renderClubReport150;
+
+  let syncing=false;
+  let rendering=false;
+
+  if(typeof currentRender==='function'){
+    window.renderClubReport150=function(){
+      if(rendering) return;
+      rendering=true;
+      try{return currentRender.apply(this,arguments)}
+      finally{rendering=false}
+    };
+  }
+
+  // Replace report refresh with one controlled sync + one render.
+  window.refreshClubReport150=async function(){
+    if(syncing) return;
+    syncing=true;
+    document.body.classList.add('numed-report-refreshing');
+    try{
+      if(typeof currentLoad==='function') await currentLoad.apply(window,arguments);
+      if(typeof window.renderClubReport150==='function') window.renderClubReport150();
+    }catch(e){
+      console.warn('Reporte Banreservas: no se pudo actualizar Supabase',e);
+      if(typeof window.renderClubReport150==='function') window.renderClubReport150();
+    }finally{
+      document.body.classList.remove('numed-report-refreshing');
+      syncing=false;
+    }
+  };
+
+  // Stop the loader from triggering refreshClubReport150 recursively.
+  if(typeof currentLoad==='function'){
+    window.loadPatientsFromSupabase=async function(){
+      const savedRefresh=window.refreshClubReport150;
+      window.refreshClubReport150=function(){ return Promise.resolve(); };
+      try{
+        const out=await currentLoad.apply(this,arguments);
+        if(typeof window.renderDashboard140==='function') window.renderDashboard140();
+        if(typeof window.renderClubReport150==='function') window.renderClubReport150();
+        return out;
+      }finally{
+        window.refreshClubReport150=savedRefresh;
+      }
+    };
+  }
+
+  window.NUMED_RUNTIME_VERSION='166-REPORTE-ESTABLE-SIN-PARPADEO';
+})();
+</script>
