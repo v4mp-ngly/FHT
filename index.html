@@ -6222,3 +6222,19 @@ window.downloadBioReport=async function(){
 window.NUMED_RUNTIME_VERSION='149-VISTA-RAPIDA-AJUSTADA';
 })();
 </script>
+<style id="numed-v155-pa-style">
+.cr-pa155{padding-top:8px}.cr-pa155-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.cr-pa155-card{background:#fff;border:1px solid #dce6ed;border-radius:26px;padding:24px;box-shadow:0 10px 28px rgba(6,47,87,.035)}.cr-pa155-card h3{margin:0 0 24px;color:#0b3d67;font-size:21px}.cr-pa155-row{display:grid;grid-template-columns:145px 1fr 100px;gap:14px;align-items:center;margin-bottom:18px}.cr-pa155-label{font-size:14px;color:#274c71}.cr-pa155-track{height:17px;border-radius:99px;background:#edf2f5;overflow:hidden}.cr-pa155-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#2189b1,#50a7b1 56%,#a8ca37);transition:width .8s cubic-bezier(.2,.8,.2,1)}.cr-pa155-val{text-align:right;color:#0b3d67}.cr-pa155-val strong{display:block;font-size:15px}.cr-pa155-val small{display:block;margin-top:4px;color:#6f8799;font-size:10px;font-weight:700}.cr-pa155-note{margin-top:12px;color:#7890a2;font-size:10px}@media(max-width:900px){.cr-pa155-grid{grid-template-columns:1fr}}
+</style>
+<script id="numed-v155-pa-club">
+(()=>{'use strict';
+ const CLUB='Club Banreservas - Santo Domingo';
+ const pct=(n,d)=>d?100*n/d:0;
+ function dist(rows,key){const vals=rows.map(r=>Number(r.measurements?.[key])).filter(Number.isFinite);const defs=key==='presionSistolica'?[['Óptima',v=>v<120],['Normal',v=>v>=120&&v<130],['Normal alta',v=>v>=130&&v<140],['Hipertensión grado 1',v=>v>=140&&v<160],['Hipertensión grado 2',v=>v>=160&&v<180],['Hipertensión grado 3',v=>v>=180]]:[['Óptima',v=>v<80],['Normal',v=>v>=80&&v<85],['Normal alta',v=>v>=85&&v<90],['Hipertensión grado 1',v=>v>=90&&v<100],['Hipertensión grado 2',v=>v>=100&&v<110],['Hipertensión grado 3',v=>v>=110]];return{n:vals.length,items:defs.map(([label,fn])=>[label,vals.filter(fn).length])}}
+ function card(title,d){return `<article class="cr-pa155-card"><h3>${title}</h3>${d.items.map(([label,n])=>{const p=pct(n,d.n);return `<div class="cr-pa155-row"><div class="cr-pa155-label">${label}</div><div class="cr-pa155-track"><div class="cr-pa155-fill" data-w="${p.toFixed(2)}"></div></div><div class="cr-pa155-val"><strong>${p.toFixed(1)}%</strong><small>${n} colaborador${n===1?'':'es'}</small></div></div>`}).join('')}<div class="cr-pa155-note">Base: ${d.n} colaborador${d.n===1?'':'es'} con medición válida.</div></article>`}
+ function inject(){const root=document.getElementById('club-report-150');if(!root||document.getElementById('cr-pa155'))return;const info=root.querySelector('.cr-cardio-info');if(!info)return;const rows=(typeof getPendingPatients==='function'?getPendingPatients():[]).filter(r=>String(r.locality||'').trim()===CLUB&&r.measured);const sys=dist(rows,'presionSistolica'),dia=dist(rows,'presionDiastolica');const sec=document.createElement('section');sec.id='cr-pa155';sec.className='cr-sec cr-pa155';sec.innerHTML=`<div class="cr-wrap"><div class="cr-head"><h2>Resultados de presión arterial</h2><p>Distribución de las mediciones de presión arterial sistólica y diastólica de los colaboradores evaluados del Club Banreservas.</p></div><div class="cr-pa155-grid">${card('Presión arterial sistólica',sys)}${card('Presión arterial diastólica',dia)}</div></div>`;info.insertAdjacentElement('afterend',sec);requestAnimationFrame(()=>requestAnimationFrame(()=>sec.querySelectorAll('.cr-pa155-fill').forEach((el,i)=>setTimeout(()=>el.style.width=el.dataset.w+'%',i*35))))}
+ const old=window.renderClubReport150;if(typeof old==='function')window.renderClubReport150=function(){const r=old.apply(this,arguments);inject();return r};
+ const oldRefresh=window.refreshClubReport150;if(typeof oldRefresh==='function')window.refreshClubReport150=async function(){const r=await oldRefresh.apply(this,arguments);inject();return r};
+ setTimeout(inject,0);
+ window.NUMED_RUNTIME_VERSION='155-BANRESERVAS-PA';
+})();
+</script>
