@@ -6708,3 +6708,53 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
   window.NUMED_RUNTIME_VERSION='172-ANALISIS-FUNCIONAL-CORREGIDO';
 })();
 </script>
+
+<!-- NUMED V173: compartir una copia independiente que contiene solamente el Reporte Banreservas -->
+<style id="numed-v173-share-report-style">
+.cr-share173{background:#a8ca3a!important;color:#0b3558!important}
+@media print{.cr-share173{display:none!important}}
+</style>
+<script id="numed-v173-share-report">
+(function(){
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function reportOnlyHTML(){
+    const source=document.getElementById('club-report-150');
+    if(!source) throw new Error('El reporte todavía no está disponible.');
+    const clone=source.cloneNode(true);
+    clone.querySelectorAll('.cr-actions,.cr-state-filter171,.cr-updated button,.cr-share173').forEach(x=>x.remove());
+    clone.querySelectorAll('[onclick],[onchange]').forEach(x=>{x.removeAttribute('onclick');x.removeAttribute('onchange')});
+    const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
+    const title='Reporte Banreservas · NUMED CARE';
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'</body></html>';
+  }
+  function makeFile(){
+    const blob=new Blob([reportOnlyHTML()],{type:'text/html;charset=utf-8'});
+    return new File([blob],'NUMED_Reporte_Banreservas.html',{type:'text/html'});
+  }
+  window.shareClubReport173=async function(){
+    try{
+      const file=makeFile();
+      if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
+        await navigator.share({title:'Reporte Banreservas · NUMED CARE',text:'Reporte de la Jornada Integral de Salud · Club Banreservas',files:[file]});
+        return;
+      }
+      const url=URL.createObjectURL(file),a=document.createElement('a');
+      a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1500);
+      alert('Se descargó una copia del reporte que contiene únicamente el Reporte Banreservas. Puedes enviar ese archivo directamente.');
+    }catch(e){
+      if(e && e.name==='AbortError') return;
+      console.error('Compartir reporte',e);alert('No se pudo preparar el reporte para compartir.');
+    }
+  };
+  function inject(){
+    const actions=document.querySelector('#club-report-150 .cr-actions');
+    if(!actions || actions.querySelector('.cr-share173')) return;
+    const b=document.createElement('button');b.className='cr-btn cr-share173';b.type='button';b.textContent='Compartir reporte';b.addEventListener('click',window.shareClubReport173);actions.appendChild(b);
+  }
+  const old=window.renderClubReport150;
+  if(typeof old==='function') window.renderClubReport150=function(){const x=old.apply(this,arguments);setTimeout(inject,0);return x};
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(inject,250));
+})();
+window.NUMED_RUNTIME_VERSION='173-COMPARTIR-REPORTE-SOLO';
+</script>
