@@ -6108,7 +6108,7 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
  const ds={pa:dist(ev,'pa',r=>num(r.measurements?.presionSistolica)!=null&&num(r.measurements?.presionDiastolica)!=null),fc:dist(ev,'fc',r=>num(r.measurements?.frecuenciaCardiaca)!=null),imc:dist(ev,'imc',r=>num(r.measurements?.imc)!=null),abd:dist(ev,'abd',r=>num(r.measurements?.abdomen)!=null),fuerza:dist(ev,'fuerza',r=>num(r.measurements?.fuerza)!=null),pss:dist(rows,'pss',r=>num(r.pss?.score)!=null)};
  const complete=ev.filter(r=>['presionSistolica','presionDiastolica','frecuenciaCardiaca','imc','abdomen','fuerza','flexibilidad'].every(k=>num(r.measurements?.[k])!=null)).length;
  const table=rows.map((r,i)=>{const m=r.measurements||{},st=statePill(r);return `<tr data-cr-state="${st[0]}"><td>${i+1}</td><td><b>${esc((r.first||'')+' '+(r.last||''))}</b><br><small>${esc(r.collaboratorCode||'Sin código')}</small></td><td>${esc(r.age??'—')}</td><td>${esc(r.gender||'—')}</td><td>${m.presionSistolica??'—'}/${m.presionDiastolica??'—'}</td><td>${m.imc??'—'}</td><td>${m.abdomen??'—'}</td><td>${m.fuerza??'—'}</td><td>${r.pss?.score??'—'}/40</td><td>${m.edadBiologica??'—'}</td><td><span class="cr-pill ${st[1]}">${st[0]}</span></td></tr>`}).join('');
- box.innerHTML=`<div class="cr150"><div class="cr-hero"><div class="cr-wrap"><span class="cr-kicker">NUMED CARE · Club Banreservas</span><h1>Reporte Banreservas</h1><p>Del 19 al 20 de Septiembre del 2026</p><div class="cr-actions"><button class="cr-btn alt" onclick="window.refreshClubReport150()">↻ Actualizar datos</button><button class="cr-btn" onclick="window.print()">Imprimir / Guardar PDF</button></div></div></div>
+ box.innerHTML=`<div class="cr150"><div class="cr-hero"><div class="cr-wrap"><span class="cr-kicker">NUMED CARE · Club Banreservas</span><h1>Reporte ARS Reservas</h1><p>Del 19 al 20 de Septiembre del 2026</p><div class="cr-actions"><button class="cr-btn alt" onclick="window.refreshClubReport150()">↻ Actualizar datos</button><button class="cr-btn" onclick="window.print()">Imprimir / Guardar PDF</button></div></div></div>
  <section class="cr-sec cr-intro"><div class="cr-wrap"><h2 class="cr-intro-title">INTRODUCCIÓN</h2><div class="cr-intro-line"></div><div class="cr-intro-grid">
  <article class="cr-intro-card"><div class="cr-intro-icon">▦✓</div><div class="cr-intro-text"><p>En el marco de las acciones de bienestar y prevención desarrolladas por <b>NUMED CARE para ARS Reservas en el Club Banreservas</b>, entre el <b>19 y el 20 de septiembre del 2026</b> se realizó una Jornada Integral de Salud dirigida a sus colaboradores. Para este reporte, la población evaluada y contabilizada corresponde exclusivamente a los colaboradores con <b>código de colaborador</b>, para una base definida de <b>89 personas</b>. Su propósito fue obtener una lectura integral del estado de la población evaluada e identificar hallazgos y patrones relacionados con factores de riesgo asociados a las enfermedades no transmisibles.</p></div></article>
  <article class="cr-intro-card"><div class="cr-intro-icon">☑♥</div><div class="cr-intro-text"><p>Durante la jornada se aplicó el <b>Functional Health Test de NUMED</b>, un modelo de evaluación integral que combina mediciones clínicas, antropométricas y funcionales. A través de este modelo se analizaron <b>seis variables</b> que se organizaron en <b>cuatro dimensiones complementarias</b>: condición metabólica, condición cardiovascular, condición funcional y condición psicosocial.</p></div></article>
@@ -6129,7 +6129,7 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
  <section class="cr-sec"><div class="cr-wrap"><div class="cr-head"><small>06 · COLABORADORES</small><h2>Listado de la población del Club</h2><p>${rows.length} colaborador${rows.length===1?'':'es'} incluido${rows.length===1?'':'s'} en este reporte.</p></div><div class="cr-state-filter171"><label for="cr-state-select171">Filtrar por estado</label><select id="cr-state-select171" onchange="window.filterClubState171(this.value)"><option value="Todos">Todos los estados</option><option value="Favorable">Favorable</option><option value="Observación">Observación</option><option value="Atención">Atención</option></select><span id="cr-state-count171">Mostrando ${rows.length} de ${rows.length} colaboradores</span></div><div class="cr-table-wrap"><table id="cr-club-table171"><thead><tr><th>#</th><th>Colaborador</th><th>Edad</th><th>Sexo</th><th>PA</th><th>IMC</th><th>Abdomen</th><th>Fuerza</th><th>PSS-10</th><th>Edad bio.</th><th>Estado</th></tr></thead><tbody>${table}</tbody></table></div><div class="cr-updated">Actualizado: ${new Date().toLocaleString('es-DO')}</div></div></section></div>`;
  }
  window.renderClubReport150=render;
- window.refreshClubReport150=async()=>{try{if(typeof window.loadPatientsFromSupabase==='function')await window.loadPatientsFromSupabase()}catch(e){console.warn('Reporte Banreservas: no se pudo refrescar Supabase',e)}render()};
+ window.refreshClubReport150=async()=>{try{if(typeof window.loadPatientsFromSupabase==='function')await window.loadPatientsFromSupabase()}catch(e){console.warn('Reporte ARS Reservas: no se pudo refrescar Supabase',e)}render()};
  // Make admin navigation robust for the new section without changing the existing flow.
  const oldNav=window.adminNav;
  if(typeof oldNav==='function')window.adminNav=function(section,btn){if(section==='clubreport'){document.querySelectorAll('#doctor-admin .admin-section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('#doctor-admin .admin-nav button').forEach(x=>x.classList.remove('active'));document.getElementById('admin-clubreport')?.classList.add('active');btn?.classList.add('active');render();return}return oldNav.apply(this,arguments)};
@@ -6407,7 +6407,7 @@ window.NUMED_RUNTIME_VERSION='164-REPORTE-BANRESERVAS-SQL-MEDICIONES-ALINEADO';
 
 <script>window.NUMED_RUNTIME_VERSION='165-FAVICON-POBLACION-CODIGO-89';</script>
 
-<!-- NUMED v166 - Reporte Banreservas estable: evita refresco recursivo/parpadeo -->
+<!-- NUMED v166 - Reporte ARS Reservas estable: evita refresco recursivo/parpadeo -->
 <style id="numed-v166-report-stability-style">
 #club-report-150{min-height:70vh;contain:layout style;}
 #club-report-150 .cr150,#club-report-150 .cr-sec,#club-report-150 [id^="cr-"]{animation:none!important;}
@@ -6446,7 +6446,7 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
       if(typeof currentLoad==='function') await currentLoad.apply(window,arguments);
       if(typeof window.renderClubReport150==='function') window.renderClubReport150();
     }catch(e){
-      console.warn('Reporte Banreservas: no se pudo actualizar Supabase',e);
+      console.warn('Reporte ARS Reservas: no se pudo actualizar Supabase',e);
       if(typeof window.renderClubReport150==='function') window.renderClubReport150();
     }finally{
       document.body.classList.remove('numed-report-refreshing');
@@ -6709,7 +6709,7 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
 })();
 </script>
 
-<!-- NUMED V173: compartir una copia independiente que contiene solamente el Reporte Banreservas -->
+<!-- NUMED V173: compartir una copia independiente que contiene solamente el Reporte ARS Reservas -->
 <style id="numed-v173-share-report-style">
 .cr-share173{background:#a8ca3a!important;color:#0b3558!important}
 @media print{.cr-share173{display:none!important}}
@@ -6724,7 +6724,7 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
     clone.querySelectorAll('.cr-actions,.cr-state-filter171,.cr-updated button,.cr-share173').forEach(x=>x.remove());
     clone.querySelectorAll('[onclick],[onchange]').forEach(x=>{x.removeAttribute('onclick');x.removeAttribute('onchange')});
     const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
-    const title='Reporte Banreservas · NUMED CARE';
+    const title='Reporte ARS Reservas · NUMED CARE';
     return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'</body></html>';
   }
   function makeFile(){
@@ -6735,13 +6735,13 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
     try{
       const file=makeFile();
       if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
-        await navigator.share({title:'Reporte Banreservas · NUMED CARE',text:'Reporte de la Jornada Integral de Salud · Club Banreservas',files:[file]});
+        await navigator.share({title:'Reporte ARS Reservas · NUMED CARE',text:'Reporte de la Jornada Integral de Salud · Club Banreservas',files:[file]});
         return;
       }
       const url=URL.createObjectURL(file),a=document.createElement('a');
       a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
       setTimeout(()=>URL.revokeObjectURL(url),1500);
-      alert('Se descargó una copia del reporte que contiene únicamente el Reporte Banreservas. Puedes enviar ese archivo directamente.');
+      alert('Se descargó una copia del reporte que contiene únicamente el Reporte ARS Reservas. Puedes enviar ese archivo directamente.');
     }catch(e){
       if(e && e.name==='AbortError') return;
       console.error('Compartir reporte',e);alert('No se pudo preparar el reporte para compartir.');
