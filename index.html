@@ -6880,7 +6880,7 @@ window.NUMED_RUNTIME_VERSION='174-REPORTE-COMPARTIDO-CON-LOGO';
     const chart=first.querySelector('.cr-fun162-chart');
     if(chart)chart.innerHTML=CATS.map(k=>bar(k,counts[k],valid)).join('');
     const copy=first.querySelector('.cr-fun162-copy');
-    if(copy)copy.innerHTML='La flexibilidad se registró en <strong>centímetros (flexibilidad_cm)</strong>. Para aplicar la referencia del <strong>Test de Wells</strong>, el sistema convierte automáticamente cada medición a pulgadas (<strong>cm ÷ 2.54</strong>) y la clasifica según <strong>sexo y grupo de edad</strong>.';
+    if(copy)copy.innerHTML='La flexibilidad se clasifica según <strong>sexo y grupo de edad</strong> utilizando la referencia del <strong>Test de Wells</strong>. El valor registrado se interpreta en la unidad indicada por la tabla de referencia.';
     const insight=first.querySelector('.cr-fun162-insight');
     if(insight){
       const parts=[];
