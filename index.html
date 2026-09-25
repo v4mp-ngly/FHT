@@ -6872,3 +6872,71 @@ window.NUMED_RUNTIME_VERSION='174-REPORTE-COMPARTIDO-CON-LOGO';
 window.NUMED_RUNTIME_VERSION='177-REPORTE-SIN-CEROS-FIX-SINTAXIS';
 </script>
 
+
+<!-- NUMED V178: reconstruye textos funcionales después de ocultar categorías en cero -->
+<script id="numed-v178-functional-narrative-fix">
+(function(){
+  function metricRows(variable){
+    return [...variable.querySelectorAll('.cr-fun162-row')]
+      .filter(r=>!r.classList.contains('numed-zero-hidden'))
+      .map(r=>({
+        label:String(r.querySelector('.cr-fun162-label')?.textContent||'').trim(),
+        pct:Number(String(r.querySelector('.cr-fun162-val strong')?.textContent||'').replace('%','').replace(',','.').trim())
+      }))
+      .filter(x=>x.label && Number.isFinite(x.pct) && x.pct>0);
+  }
+  function fmt(n){return n.toFixed(1)+'%';}
+  function joinParts(parts){
+    if(parts.length===0)return '';
+    if(parts.length===1)return parts[0];
+    if(parts.length===2)return parts[0]+' y '+parts[1];
+    return parts.slice(0,-1).join(', ')+' y '+parts[parts.length-1];
+  }
+  function repair(){
+    const sec=document.querySelector('#club-report-150 #cr-fun162');
+    if(!sec)return;
+    const vars=[...sec.querySelectorAll('.cr-fun162-variable')];
+    vars.forEach(variable=>{
+      const title=String(variable.querySelector('h3')?.textContent||'').trim().toLowerCase();
+      const insight=variable.querySelector('.cr-fun162-insight');
+      const p=insight?.querySelector('p');
+      if(!p)return;
+      const rows=metricRows(variable);
+      if(title.includes('fuerza')){
+        if(!rows.length){
+          p.textContent='No hay clasificaciones válidas de fuerza con valores mayores que cero para generar esta lectura.';
+          return;
+        }
+        const first=rows[0];
+        const rest=rows.slice(1).map(x=>'el <strong>'+fmt(x.pct)+'</strong> en '+x.label);
+        p.innerHTML='El <strong>'+fmt(first.pct)+'</strong> de los colaboradores con clasificación válida se ubicó en '+first.label+(rest.length?', '+joinParts(rest):'')+'.';
+      }
+      if(title.includes('flexibilidad')){
+        const map=Object.fromEntries(rows.map(x=>[x.label,x.pct]));
+        const bad=(map['Muy pobre']||0)+(map['Pobre']||0);
+        const parts=[];
+        if(bad>0) parts.push('<strong>'+fmt(bad)+'</strong> se ubicó entre Muy pobre y Pobre');
+        if((map['Promedio']||0)>0) parts.push('<strong>'+fmt(map['Promedio'])+'</strong> obtuvo una clasificación Promedio');
+        if((map['Excelente']||0)>0) parts.push('<strong>'+fmt(map['Excelente'])+'</strong> se ubicó en Excelente');
+        if(parts.length) p.innerHTML='En el Club Banreservas, '+joinParts(parts)+'.';
+      }
+    });
+  }
+  let timer;
+  function schedule(){clearTimeout(timer);timer=setTimeout(repair,80);}
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(repair,900));
+  const root=document.querySelector('#club-report-150');
+  if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class']});
+  ['renderClubReport150','refreshClubReport150'].forEach(name=>{
+    const old=window[name];
+    if(typeof old==='function') window[name]=function(){
+      const result=old.apply(this,arguments);
+      if(result&&typeof result.then==='function') return result.finally(()=>setTimeout(repair,150));
+      setTimeout(repair,150);
+      return result;
+    };
+  });
+  window.repairFunctionalNarrative178=repair;
+})();
+window.NUMED_RUNTIME_VERSION='178-SIN-CEROS-TEXTO-FUNCIONAL-CORREGIDO';
+</script>
