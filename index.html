@@ -6897,7 +6897,7 @@ window.NUMED_RUNTIME_VERSION='174-REPORTE-COMPARTIDO-CON-LOGO';
         note='<p><strong>Control de base:</strong> '+excluded+' evaluación'+(excluded===1?'':'es')+' completada'+(excluded===1?'':'s')+' no entr'+(excluded===1?'ó':'aron')+' en la clasificación'+(why.length?' ('+why.join(', ')+')':'')+'.</p>';
       }
       insight.innerHTML='<h3>¿Qué muestran los resultados de flexibilidad?</h3>'+
-        (valid?'<p>De los <strong>'+completed.length+' colaboradores que completaron la evaluación</strong>, <strong>'+valid+'</strong> contaron con los datos necesarios para una clasificación válida de flexibilidad. '+joinParts(parts)+'.</p><p>Referencia de clasificación: <strong>Test de Wells</strong>, con conversión automática de centímetros a pulgadas antes de aplicar los rangos por sexo y grupo de edad.</p>'+note:'<p>No hay registros suficientes para aplicar la clasificación de flexibilidad.</p>');
+        (valid?'<p>En el Club Banreservas, se clasificaron <strong>'+valid+' colaboradores</strong>, de los cuales el <strong>'+pct(counts['Muy pobre'],valid).toFixed(1)+'%</strong> se ubicó en <strong>Muy pobre</strong>'+(counts['Pobre']>0?' y el <strong>'+pct(counts['Pobre'],valid).toFixed(1)+'%</strong> en <strong>Pobre</strong>':'')+'.</p>':'<p>No hay registros suficientes para aplicar la clasificación de flexibilidad.</p>');
     }
 
     // Completa la introducción general con registrados y evaluaciones completadas.
