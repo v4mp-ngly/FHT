@@ -7096,3 +7096,64 @@ window.NUMED_RUNTIME_VERSION='177-REPORTE-SIN-CEROS-FIX-SINTAXIS';
 })();
 window.NUMED_RUNTIME_VERSION='178-SIN-CEROS-TEXTO-FUNCIONAL-CORREGIDO';
 </script>
+
+<!-- NUMED V179: corrige la base de Fuerza del Club Banreservas -->
+<script id="numed-v179-strength-club-fix">
+(function(){
+  const DATA={
+    'Débil':29,
+    'Normal':94,
+    'Fuerte':13
+  };
+  const TOTAL=136;
+  function pct(n){return TOTAL?((n/TOTAL)*100):0;}
+  function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
+  function row(label,count){
+    const p=pct(count);
+    return '<div class="cr-fun162-row">'+
+      '<div class="cr-fun162-label">'+esc(label)+'</div>'+
+      '<div class="cr-fun162-track"><div class="cr-fun162-fill" data-w="'+p.toFixed(2)+'" style="width:'+p.toFixed(2)+'%"></div></div>'+
+      '<div class="cr-fun162-val"><strong>'+p.toFixed(1)+'%</strong><small>'+count+' colaborador'+(count===1?'':'es')+'</small></div>'+
+    '</div>';
+  }
+  function apply(){
+    const sec=document.querySelector('#club-report-150 #cr-fun162');
+    if(!sec)return;
+    const variable=[...sec.querySelectorAll('.cr-fun162-variable')].find(v=>{
+      const h=[...v.querySelectorAll('h3')].map(x=>String(x.textContent||'').trim().toLowerCase());
+      return h.some(t=>t==='fuerza muscular'||t.includes('fuerza'));
+    });
+    if(!variable)return;
+
+    const chart=variable.querySelector('.cr-fun162-chart');
+    if(chart){
+      chart.innerHTML=row('Débil',DATA['Débil'])+row('Normal',DATA['Normal'])+row('Fuerte',DATA['Fuerte']);
+    }
+
+    const insight=variable.querySelector('.cr-fun162-insight');
+    if(insight){
+      insight.innerHTML='<h3>¿Qué muestran los resultados de fuerza?</h3>'+
+        '<p>De los <strong>136 colaboradores evaluados</strong>, el <strong>21.3%</strong> se ubicó en <strong>Débil</strong>, el <strong>69.1%</strong> en <strong>Normal</strong> y el <strong>9.6%</strong> en <strong>Fuerte</strong>.</p>'+
+        '<p>Una clasificación Débil señala una oportunidad para considerar estrategias de fortalecimiento progresivo y adaptado a las capacidades individuales; no debe interpretarse por sí sola como incapacidad funcional.</p>';
+    }
+  }
+
+  let timer;
+  function schedule(){clearTimeout(timer);timer=setTimeout(apply,100);}
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(apply,1000));
+  const root=document.querySelector('#club-report-150');
+  if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true});
+  ['renderClubReport150','refreshClubReport150'].forEach(name=>{
+    const old=window[name];
+    if(typeof old==='function')window[name]=function(){
+      const result=old.apply(this,arguments);
+      if(result&&typeof result.then==='function')return result.finally(()=>setTimeout(apply,180));
+      setTimeout(apply,180);
+      return result;
+    };
+  });
+  window.applyStrengthClubFix179=apply;
+  setTimeout(apply,1200);
+})();
+window.NUMED_RUNTIME_VERSION='179-FUERZA-CLUB-136-CORREGIDA';
+</script>
