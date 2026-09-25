@@ -6734,11 +6734,11 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
       logo.className='cr-share-logo174';logo.alt='NUMED';logo.src=logoSrc;
       heroWrap.prepend(logo);
     }
-    clone.querySelectorAll('.cr-actions,.cr-state-filter171,.cr-updated button,.cr-share173').forEach(x=>x.remove());
+    clone.querySelectorAll('.cr-actions,.cr-updated button,.cr-share173').forEach(x=>x.remove());
     clone.querySelectorAll('[onclick],[onchange]').forEach(x=>{x.removeAttribute('onclick');x.removeAttribute('onchange')});
     const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
     const title='Reporte ARS Reservas · NUMED CARE';
-    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'</body></html>';
+    const sharedFilterScript='<script>(function(){function f(v){var t=document.getElementById(\"cr-club-table171\");if(!t)return;var rows=[].slice.call(t.querySelectorAll(\"tbody tr\")),visible=0;rows.forEach(function(tr){var show=v===\"Todos\"||tr.dataset.crState===v;tr.style.display=show?\"\":\"none\";if(show)visible++});var c=document.getElementById(\"cr-state-count171\");if(c)c.textContent=\"Mostrando \"+visible+\" de \"+rows.length+\" colaboradores\"}var s=document.getElementById(\"cr-state-select171\");if(s){s.addEventListener(\"change\",function(){f(this.value)});f(s.value||\"Todos\")}})();<'+'/script>'; return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}.cr-state-filter171{display:none!important}}</style></head><body>'+clone.outerHTML+sharedFilterScript+'</body></html>';
   }
 
   function makeFile(){
