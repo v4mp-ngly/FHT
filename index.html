@@ -6738,7 +6738,165 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
     clone.querySelectorAll('[onclick],[onchange]').forEach(x=>{x.removeAttribute('onclick');x.removeAttribute('onchange')});
     const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
     const title='Reporte ARS Reservas · NUMED CARE';
-    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'</body></html>';
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'
+
+<!-- NUMED V179: Flexibilidad correcta desde flexibilidad_cm (cm -> pulgadas) + base completada -->
+<script id="numed-v179-flexibilidad-cm-correcta">
+(function(){
+  'use strict';
+  const CLUB='Club Banreservas - Santo Domingo';
+  const CATS=['Muy pobre','Pobre','Promedio','Buena','Excelente'];
+  const pct=(n,d)=>d?100*n/d:0;
+  const num=v=>{const x=Number(v);return Number.isFinite(x)?x:null};
+  const norm=v=>String(v??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  function sex(v){
+    const s=norm(v);
+    if(s.includes('fem')||s==='mujer'||s==='female')return'femenino';
+    if(s.includes('mas')||s==='hombre'||s==='male')return'masculino';
+    return'';
+  }
+  function ageOf(r){
+    let a=num(r?.age);if(a!=null)return a;
+    const d=r?.birthDate||r?.fechaNacimiento||r?.fecha_nacimiento||r?.birth;
+    if(!d)return null;
+    const b=new Date(d);if(Number.isNaN(b.getTime()))return null;
+    const now=new Date();a=now.getFullYear()-b.getFullYear();
+    const m=now.getMonth()-b.getMonth();if(m<0||(m===0&&now.getDate()<b.getDate()))a--;
+    return a;
+  }
+  function band(age){
+    if(age==null||age<18)return null;
+    if(age<=25)return 0;if(age<=35)return 1;if(age<=45)return 2;
+    if(age<=55)return 3;if(age<=65)return 4;return 5;
+  }
+  const H={
+    'Excelente':[[20,26],[20,25],[19,24],[19,23],[17,21],[17,20]],
+    'Buena':[[18,19],[18,19],[17,18],[16,18],[15,16],[13,16]],
+    'Promedio':[[13,17],[12,17],[11,16],[10,15],[9,14],[8,12]],
+    'Pobre':[[10,12],[10,11],[9,10],[7,9],[5,8],[5,7]],
+    'Muy pobre':[[2,9],[2,9],[1,8],[1,6],[1,4],[0,4]]
+  };
+  const M={
+    'Excelente':[[24,27],[23,26],[22,25],[21,24],[20,23],[20,22]],
+    'Buena':[[21,23],[20,22],[19,21],[18,20],[18,19],[18,19]],
+    'Promedio':[[17,20],[16,19],[14,18],[14,17],[13,17],[12,17]],
+    'Pobre':[[14,16],[14,15],[11,13],[11,13],[10,12],[9,11]],
+    'Muy pobre':[[8,13],[8,13],[6,10],[4,10],[3,9],[2,8]]
+  };
+  function classifyInches(age,gender,inches){
+    const a=num(age),v=num(inches),g=sex(gender),b=band(a);
+    if(a==null||v==null||!g||b==null)return null;
+    const T=g==='femenino'?M:H;
+    for(const cat of ['Excelente','Buena','Promedio','Pobre','Muy pobre']){
+      const rg=T[cat][b];if(v>=rg[0]&&v<=rg[1])return cat;
+    }
+    // La medición puede superar los extremos publicados de la tabla.
+    // Para no perder evaluaciones válidas: por encima del máximo = Excelente;
+    // por debajo del mínimo = Muy pobre.
+    const top=T['Excelente'][b],bottom=T['Muy pobre'][b];
+    if(v>top[1])return'Excelente';
+    if(v<bottom[0])return'Muy pobre';
+    return null;
+  }
+  function flexCm(r){
+    const m=r?.measurements||{};
+    // mapSbPatient mapea Supabase.flexibilidad_cm -> measurements.flexibilidad
+    return num(m.flexibilidad ?? m.flexibilidad_cm);
+  }
+  function classifyRow(r){
+    const cm=flexCm(r);if(cm==null)return null;
+    return classifyInches(ageOf(r),r?.gender,cm/2.54);
+  }
+  window.numedFlexibilidadWells={
+    classify:(age,gender,valueCm)=>classifyInches(age,gender,num(valueCm)/2.54),
+    classifyInches,
+    source:'Test de Wells',
+    inputUnit:'cm',
+    referenceUnit:'pulgada',
+    conversion:'cm / 2.54'
+  };
+  window.numedFlexClass168=classifyRow;
+  try{window.flexClass=classifyRow}catch(_){ }
+
+  function bar(label,n,total){
+    if(!(n>0))return'';
+    const p=pct(n,total);
+    return '<div class="cr-fun162-row"><div class="cr-fun162-label">'+label+'</div><div class="cr-fun162-track"><div class="cr-fun162-fill" style="width:'+p.toFixed(2)+'%"></div></div><div class="cr-fun162-val"><strong>'+p.toFixed(1)+'%</strong><small>'+n+' colaborador'+(n===1?'':'es')+'</small></div></div>';
+  }
+  function joinParts(parts){
+    if(parts.length===0)return'';if(parts.length===1)return parts[0];
+    if(parts.length===2)return parts[0]+' y '+parts[1];
+    return parts.slice(0,-1).join(', ')+' y '+parts[parts.length-1];
+  }
+  function renderFlex(){
+    const sec=document.querySelector('#club-report-150 #cr-fun162');
+    if(!sec)return;
+    const all=typeof getPendingPatients==='function'?getPendingPatients():[];
+    const club=all.filter(r=>String(r?.locality||'').trim()===CLUB);
+    const completed=club.filter(r=>r?.measured);
+    const counts=Object.fromEntries(CATS.map(c=>[c,0]));
+    let valid=0,missingFlex=0,missingDemographics=0,under18=0;
+    completed.forEach(r=>{
+      const cm=flexCm(r),a=ageOf(r),g=sex(r?.gender);
+      if(cm==null){missingFlex++;return;}
+      if(a==null||!g){missingDemographics++;return;}
+      if(a<18){under18++;return;}
+      const k=classifyRow(r);if(k&&Object.prototype.hasOwnProperty.call(counts,k)){counts[k]++;valid++;}
+    });
+    const first=sec.querySelector('.cr-fun162-variable');if(!first)return;
+    const chart=first.querySelector('.cr-fun162-chart');
+    if(chart)chart.innerHTML=CATS.map(k=>bar(k,counts[k],valid)).join('');
+    const copy=first.querySelector('.cr-fun162-copy');
+    if(copy)copy.innerHTML='La flexibilidad se registró en <strong>centímetros (flexibilidad_cm)</strong>. Para aplicar la referencia del <strong>Test de Wells</strong>, el sistema convierte automáticamente cada medición a pulgadas (<strong>cm ÷ 2.54</strong>) y la clasifica según <strong>sexo y grupo de edad</strong>.';
+    const insight=first.querySelector('.cr-fun162-insight');
+    if(insight){
+      const parts=[];
+      const bad=counts['Muy pobre']+counts['Pobre'];
+      if(bad>0)parts.push('<strong>'+pct(bad,valid).toFixed(1)+'%</strong> se ubicó entre Muy pobre y Pobre');
+      for(const k of ['Promedio','Buena','Excelente'])if(counts[k]>0)parts.push('<strong>'+pct(counts[k],valid).toFixed(1)+'%</strong> en '+k);
+      let note='';
+      const excluded=completed.length-valid;
+      if(excluded>0){
+        const why=[];
+        if(missingFlex)why.push(missingFlex+' sin flexibilidad registrada');
+        if(missingDemographics)why.push(missingDemographics+' sin edad o sexo suficiente');
+        if(under18)why.push(under18+' menores de 18 años fuera de la tabla adulta utilizada');
+        note='<p><strong>Control de base:</strong> '+excluded+' evaluación'+(excluded===1?'':'es')+' completada'+(excluded===1?'':'s')+' no entr'+(excluded===1?'ó':'aron')+' en la clasificación'+(why.length?' ('+why.join(', ')+')':'')+'.</p>';
+      }
+      insight.innerHTML='<h3>¿Qué muestran los resultados de flexibilidad?</h3>'+
+        (valid?'<p>De los <strong>'+completed.length+' colaboradores que completaron la evaluación</strong>, <strong>'+valid+'</strong> contaron con los datos necesarios para una clasificación válida de flexibilidad. '+joinParts(parts)+'.</p><p>Referencia de clasificación: <strong>Test de Wells</strong>, con conversión automática de centímetros a pulgadas antes de aplicar los rangos por sexo y grupo de edad.</p>'+note:'<p>No hay registros suficientes para aplicar la clasificación de flexibilidad.</p>');
+    }
+
+    // Completa la introducción general con registrados y evaluaciones completadas.
+    const report=document.querySelector('#club-report-150');
+    if(report){
+      const paras=[...report.querySelectorAll('p')];
+      const intro=paras.find(p=>/142 participantes registrados/i.test(p.textContent||''));
+      if(intro){
+        const base='En el marco de las acciones de bienestar y prevención desarrolladas por <strong>NUMED CARE para ARS Reservas en el Club Banreservas</strong>, entre el <strong>19 y el 20 de septiembre del 2026</strong> se realizó una Jornada Integral de Salud dirigida a sus colaboradores. Para este reporte, la población registrada corresponde a <strong>'+club.length+' participantes del Club Banreservas</strong>, de los cuales <strong>'+completed.length+' completaron la evaluación</strong>. Del total registrado, <strong>89 cuentan con código de afiliado y 53 no cuentan con código</strong>. Su propósito fue obtener una lectura integral del estado de la población evaluada e identificar hallazgos y patrones relacionados con factores de riesgo asociados a las enfermedades no transmisibles.';
+        intro.innerHTML=base;
+      }
+    }
+  }
+  let timer;
+  function schedule(){clearTimeout(timer);timer=setTimeout(renderFlex,120);}
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(renderFlex,950));
+  const root=document.querySelector('#club-report-150');
+  if(root)new MutationObserver(schedule).observe(root,{childList:true,subtree:true,characterData:true});
+  ['renderClubReport150','refreshClubReport150'].forEach(name=>{
+    const old=window[name];
+    if(typeof old==='function')window[name]=function(){
+      const r=old.apply(this,arguments);
+      if(r&&typeof r.then==='function')return r.finally(()=>setTimeout(renderFlex,180));
+      setTimeout(renderFlex,180);return r;
+    };
+  });
+  window.renderFlexibilidadCm179=renderFlex;
+})();
+window.NUMED_RUNTIME_VERSION='179-FLEXIBILIDAD-CM-CORREGIDA';
+</script>
+
+</body></html>';
   }
 
   function makeFile(){
