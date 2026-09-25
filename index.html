@@ -6738,123 +6738,9 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
     clone.querySelectorAll('[onclick],[onchange]').forEach(x=>{x.removeAttribute('onclick');x.removeAttribute('onchange')});
     const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
     const title='Reporte ARS Reservas · NUMED CARE';
-    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'
-
-<!-- NUMED V177: ocultar del reporte categorias y referencias cuyo valor sea cero -->
-<style id="numed-v177-hide-zero-values">
-#club-report-150 .numed-zero-hidden{display:none!important}
-</style>
-<script id="numed-v177-hide-zero-values-script">
-(function(){
-  const ROOT='#club-report-150';
-  const ZERO_PERCENT=/^0(?:\.0+)?%$/;
-  const ZERO_COUNT=/^0\s+(?:colaboradores?|personas?|registros?)$/i;
-
-  function text(el){ return String(el?.textContent||'').replace(/\s+/g,' ').trim(); }
-  function numFrom(s){
-    const m=String(s||'').replace(',','.').match(/-?\d+(?:\.\d+)?/);
-    return m?Number(m[0]):NaN;
-  }
-  function isZeroMetric(el){
-    const t=text(el);
-    if(ZERO_PERCENT.test(t)||ZERO_COUNT.test(t)) return true;
-    const n=numFrom(t);
-    return Number.isFinite(n) && n===0 && (/^0(?:\.0+)?$/.test(t)||/^0(?:\.0+)?\s*%$/.test(t));
-  }
-  function mark(el){ if(el) el.classList.add('numed-zero-hidden'); }
-
-  function hideZeroRows(root){
-    const rowSelectors=[
-      '.cr-pa155-row','.cr-fc157-row','.cr-met158-row','.cr-abd159-row',
-      '.cr-fun162-row','.cr-row','.cr-bar-row','.cr-stat-row','.cr-chart-row',
-      '[class*="distribution-row"]','[class*="chart-row"]','[class*="bar-row"]'
-    ];
-    root.querySelectorAll(rowSelectors.join(',')).forEach(row=>{
-      const t=text(row);
-      const hasZeroPct=/(?:^|\s)0(?:\.0+)?%\b/.test(t);
-      const hasZeroCount=/\b0\s+(?:colaboradores?|personas?|registros?)\b/i.test(t);
-      const hasPositive=/(?:^|\s)(?:[1-9]\d*(?:\.\d+)?|0\.\d*[1-9]\d*)%\b/.test(t) || /\b[1-9]\d*\s+(?:colaboradores?|personas?|registros?)\b/i.test(t);
-      if((hasZeroPct||hasZeroCount) && !hasPositive) mark(row);
-    });
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'</body></html>';
   }
 
-  function hideZeroCards(root){
-    const selectors=['.cr-kpi','.cr-fun162-kpi','.cr-stat','.cr-card-stat','.metric-card','.stat-card'];
-    root.querySelectorAll(selectors.join(',')).forEach(card=>{
-      const values=[...card.querySelectorAll('strong,.value,[class*="value"]')].map(text).filter(Boolean);
-      if(values.length && values.every(v=>isZeroMetric({textContent:v}))) mark(card);
-    });
-  }
-
-  function cleanFunctionalNarrative(root){
-    root.querySelectorAll('.cr-fun162-insight').forEach(box=>{
-      const h=text(box.querySelector('h3')).toLowerCase();
-      if(!h.includes('resultados de fuerza') && !h.includes('resultados de flexibilidad')) return;
-      const p=box.querySelector('p'); if(!p) return;
-      let html=p.innerHTML;
-      // Casos como: "el 0.0% en Normal" / "y el 0.0% se ubicó en Excelente".
-      html=html.replace(/(?:,\s*|\s+y\s+)?(?:el\s+)?<strong>0(?:\.0+)?%<\/strong>\s+(?:de\s+los\s+colaboradores\s+con\s+clasificaci[oó]n\s+v[aá]lida\s+)?(?:se\s+ubic[oó]\s+)?en\s+[^,.;]+[,.]?/gi,'');
-      html=html.replace(/(?:,\s*|\s+y\s+)?(?:el\s+)?<strong>0(?:\.0+)?%<\/strong>\s+obtuvo\s+una\s+clasificaci[oó]n\s+[^,.;]+[,.]?/gi,'');
-      html=html.replace(/\s+,/g,',').replace(/,\s*\./g,'.').replace(/\s{2,}/g,' ').replace(/,\s*y\s+/gi,' y ');
-      p.innerHTML=html.trim();
-    });
-  }
-
-  function cleanGenericZeroPhrases(root){
-    root.querySelectorAll('p').forEach(p=>{
-      if(!/0(?:\.0+)?%/.test(text(p))) return;
-      let html=p.innerHTML;
-      // Quita frases autónomas del tipo "el 0.0% en X" o "0.0% con X" cuando están separadas por coma/punto y coma.
-      html=html.replace(/(?:,\s*|;\s*)(?:y\s+)?(?:el|la|los|las)?\s*<strong>0(?:\.0+)?%<\/strong>\s+(?:en|con|present[oó]|obtuvo|se\s+ubic[oó])\s+[^,;.]+/gi,'');
-      html=html.replace(/\s+,/g,',').replace(/,\s*\./g,'.').replace(/;\s*\./g,'.').replace(/\s{2,}/g,' ');
-      p.innerHTML=html.trim();
-    });
-  }
-
-  function hideLooseZeroBlocks(root){
-    root.querySelectorAll('strong').forEach(s=>{
-      const t=text(s);
-      if(!ZERO_PERCENT.test(t) && !ZERO_COUNT.test(t)) return;
-      const candidate=s.closest('.cr-fun162-row,.cr-pa155-row,.cr-fc157-row,.cr-met158-row,.cr-abd159-row,.cr-kpi,.cr-fun162-kpi,.metric-card,.stat-card');
-      if(candidate) mark(candidate);
-    });
-  }
-
-  function clean(){
-    const root=document.querySelector(ROOT); if(!root) return;
-    root.querySelectorAll('.numed-zero-hidden').forEach(el=>el.classList.remove('numed-zero-hidden'));
-    hideZeroRows(root);
-    hideZeroCards(root);
-    hideLooseZeroBlocks(root);
-    cleanFunctionalNarrative(root);
-    cleanGenericZeroPhrases(root);
-  }
-
-  let queued=false;
-  function schedule(){
-    if(queued) return; queued=true;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{queued=false;clean();}));
-  }
-  document.addEventListener('DOMContentLoaded',()=>{
-    const root=document.querySelector(ROOT);
-    if(root) new MutationObserver(schedule).observe(root,{childList:true,subtree:true,characterData:true});
-    setTimeout(clean,300);
-  });
-  ['renderClubReport150','refreshClubReport150'].forEach(name=>{
-    const old=window[name];
-    if(typeof old==='function') window[name]=function(){
-      const result=old.apply(this,arguments);
-      if(result && typeof result.then==='function') return result.finally(()=>setTimeout(clean,30));
-      setTimeout(clean,30); return result;
-    };
-  });
-  window.cleanClubReportZeroValues177=clean;
-  setTimeout(clean,700);
-})();
-window.NUMED_RUNTIME_VERSION='177-REPORTE-SIN-CEROS-CORREGIDO';
-</script>
-</body></html>';
-  }
   function makeFile(){
     const blob=new Blob([reportOnlyHTML()],{type:'text/html;charset=utf-8'});
     return new File([blob],'NUMED_Reporte_Banreservas.html',{type:'text/html'});
@@ -6886,3 +6772,103 @@ window.NUMED_RUNTIME_VERSION='177-REPORTE-SIN-CEROS-CORREGIDO';
 })();
 window.NUMED_RUNTIME_VERSION='174-REPORTE-COMPARTIDO-CON-LOGO';
 </script>
+
+<!-- NUMED V177: ocultar del reporte categorias y referencias cuyo valor sea cero -->
+<style id="numed-v177-hide-zero-values">
+#club-report-150 .numed-zero-hidden{display:none!important}
+</style>
+<script id="numed-v177-hide-zero-values-script">
+(function(){
+  const ROOT='#club-report-150';
+  const ZERO_PERCENT=/^0(?:\.0+)?%$/;
+  const ZERO_COUNT=/^0\s+(?:colaboradores?|personas?|registros?)$/i;
+
+  function text(el){ return String(el?.textContent||'').replace(/\s+/g,' ').trim(); }
+  function numFrom(s){
+    const m=String(s||'').replace(',','.').match(/-?\d+(?:\.\d+)?/);
+    return m?Number(m[0]):NaN;
+  }
+  function isZeroMetricText(t){
+    t=String(t||'').trim();
+    if(ZERO_PERCENT.test(t)||ZERO_COUNT.test(t)) return true;
+    const n=numFrom(t);
+    return Number.isFinite(n) && n===0 && (/^0(?:\.0+)?$/.test(t)||/^0(?:\.0+)?\s*%$/.test(t));
+  }
+  function mark(el){ if(el) el.classList.add('numed-zero-hidden'); }
+
+  function hideZeroRows(root){
+    const rowSelectors=[
+      '.cr-pa155-row','.cr-fc157-row','.cr-met158-row','.cr-abd159-row',
+      '.cr-fun162-row','.cr-row','.cr-bar-row','.cr-stat-row','.cr-chart-row',
+      '[class*="distribution-row"]','[class*="chart-row"]','[class*="bar-row"]'
+    ];
+    root.querySelectorAll(rowSelectors.join(',')).forEach(row=>{
+      const t=text(row);
+      const hasZeroPct=/(?:^|\s)0(?:\.0+)?%\b/.test(t);
+      const hasZeroCount=/\b0\s+(?:colaboradores?|personas?|registros?)\b/i.test(t);
+      const hasPositive=/(?:^|\s)(?:[1-9]\d*(?:\.\d+)?|0\.\d*[1-9]\d*)%\b/.test(t) || /\b[1-9]\d*\s+(?:colaboradores?|personas?|registros?)\b/i.test(t);
+      if((hasZeroPct||hasZeroCount) && !hasPositive) mark(row);
+    });
+  }
+
+  function hideZeroCards(root){
+    const selectors=['.cr-kpi','.cr-fun162-kpi','.cr-stat','.cr-card-stat','.metric-card','.stat-card'];
+    root.querySelectorAll(selectors.join(',')).forEach(card=>{
+      const values=[...card.querySelectorAll('strong,.value,[class*="value"]')].map(text).filter(Boolean);
+      if(values.length && values.every(isZeroMetricText)) mark(card);
+    });
+  }
+
+  function cleanNarrative(root){
+    root.querySelectorAll('p').forEach(p=>{
+      if(!/0(?:\.0+)?%/.test(text(p))) return;
+      let html=p.innerHTML;
+      html=html.replace(/(?:,\s*|;\s*|\s+y\s+)?(?:el|la|los|las)?\s*<strong>0(?:\.0+)?%<\/strong>\s+(?:de\s+los\s+colaboradores\s+con\s+clasificaci[oó]n\s+v[aá]lida\s+)?(?:se\s+ubic[oó]\s+)?(?:en|con)\s+[^,.;]+[,.]?/gi,'');
+      html=html.replace(/(?:,\s*|;\s*|\s+y\s+)?(?:el|la|los|las)?\s*<strong>0(?:\.0+)?%<\/strong>\s+(?:present[oó]|obtuvo)\s+[^,.;]+[,.]?/gi,'');
+      html=html.replace(/\s+,/g,',').replace(/,\s*\./g,'.').replace(/;\s*\./g,'.').replace(/\s{2,}/g,' ').replace(/,\s*y\s+/gi,' y ');
+      p.innerHTML=html.trim();
+    });
+  }
+
+  function hideLooseZeroBlocks(root){
+    root.querySelectorAll('strong').forEach(s=>{
+      const t=text(s);
+      if(!ZERO_PERCENT.test(t) && !ZERO_COUNT.test(t)) return;
+      const candidate=s.closest('.cr-fun162-row,.cr-pa155-row,.cr-fc157-row,.cr-met158-row,.cr-abd159-row,.cr-kpi,.cr-fun162-kpi,.metric-card,.stat-card');
+      if(candidate) mark(candidate);
+    });
+  }
+
+  function clean(){
+    const root=document.querySelector(ROOT); if(!root) return;
+    root.querySelectorAll('.numed-zero-hidden').forEach(el=>el.classList.remove('numed-zero-hidden'));
+    hideZeroRows(root);
+    hideZeroCards(root);
+    hideLooseZeroBlocks(root);
+    cleanNarrative(root);
+  }
+
+  let queued=false;
+  function schedule(){
+    if(queued) return; queued=true;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{queued=false;clean();}));
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    const root=document.querySelector(ROOT);
+    if(root) new MutationObserver(schedule).observe(root,{childList:true,subtree:true,characterData:true});
+    setTimeout(clean,300);
+  });
+  ['renderClubReport150','refreshClubReport150'].forEach(name=>{
+    const old=window[name];
+    if(typeof old==='function') window[name]=function(){
+      const result=old.apply(this,arguments);
+      if(result && typeof result.then==='function') return result.finally(()=>setTimeout(clean,30));
+      setTimeout(clean,30); return result;
+    };
+  });
+  window.cleanClubReportZeroValues177=clean;
+  setTimeout(clean,700);
+})();
+window.NUMED_RUNTIME_VERSION='177-REPORTE-SIN-CEROS-FIX-SINTAXIS';
+</script>
+
