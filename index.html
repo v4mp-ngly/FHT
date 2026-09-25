@@ -6739,76 +6739,119 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
     const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
     const title='Reporte ARS Reservas · NUMED CARE';
     return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'
-<script id="numed-v176-report-hide-zero-values">
+
+<!-- NUMED V177: ocultar del reporte categorias y referencias cuyo valor sea cero -->
+<style id="numed-v177-hide-zero-values">
+#club-report-150 .numed-zero-hidden{display:none!important}
+</style>
+<script id="numed-v177-hide-zero-values-script">
 (function(){
-  function numericValue(text){
-    const t=String(text||'').replace(/\s+/g,' ').trim();
-    const m=t.match(/-?\d+(?:[.,]\d+)?/);
-    return m ? Number(m[0].replace(',','.')) : null;
+  const ROOT='#club-report-150';
+  const ZERO_PERCENT=/^0(?:\.0+)?%$/;
+  const ZERO_COUNT=/^0\s+(?:colaboradores?|personas?|registros?)$/i;
+
+  function text(el){ return String(el?.textContent||'').replace(/\s+/g,' ').trim(); }
+  function numFrom(s){
+    const m=String(s||'').replace(',','.').match(/-?\d+(?:\.\d+)?/);
+    return m?Number(m[0]):NaN;
   }
-  function isZeroDisplay(text){
-    const t=String(text||'').replace(/\s+/g,' ').trim();
-    return /^(?:0+(?:[.,]0+)?)(?:\s*%|\s*colaboradores?|\s*personas?|\s*registros?)?$/i.test(t);
+  function isZeroMetric(el){
+    const t=text(el);
+    if(ZERO_PERCENT.test(t)||ZERO_COUNT.test(t)) return true;
+    const n=numFrom(t);
+    return Number.isFinite(n) && n===0 && (/^0(?:\.0+)?$/.test(t)||/^0(?:\.0+)?\s*%$/.test(t));
   }
-  function clean(){
-    const root=document.getElementById('club-report-150');
-    if(!root) return;
+  function mark(el){ if(el) el.classList.add('numed-zero-hidden'); }
 
-    // Oculta categorías/opciones de gráficas cuyo resultado sea 0.
-    root.querySelectorAll('.cr-bar,.cr-pa155-row,.cr-fc157-row,.cr-met158-row,.cr-abd159-row,.cr-fun162-row').forEach(row=>{
-      const value=row.querySelector('b,.cr-pa155-val,.cr-fc157-val,.cr-met158-val,.cr-abd159-val,.cr-fun162-val');
-      if(!value) return;
-      const strong=value.querySelector('strong');
-      const n=numericValue(strong ? strong.textContent : value.textContent);
-      if(n===0) row.style.display='none';
+  function hideZeroRows(root){
+    const rowSelectors=[
+      '.cr-pa155-row','.cr-fc157-row','.cr-met158-row','.cr-abd159-row',
+      '.cr-fun162-row','.cr-row','.cr-bar-row','.cr-stat-row','.cr-chart-row',
+      '[class*="distribution-row"]','[class*="chart-row"]','[class*="bar-row"]'
+    ];
+    root.querySelectorAll(rowSelectors.join(',')).forEach(row=>{
+      const t=text(row);
+      const hasZeroPct=/(?:^|\s)0(?:\.0+)?%\b/.test(t);
+      const hasZeroCount=/\b0\s+(?:colaboradores?|personas?|registros?)\b/i.test(t);
+      const hasPositive=/(?:^|\s)(?:[1-9]\d*(?:\.\d+)?|0\.\d*[1-9]\d*)%\b/.test(t) || /\b[1-9]\d*\s+(?:colaboradores?|personas?|registros?)\b/i.test(t);
+      if((hasZeroPct||hasZeroCount) && !hasPositive) mark(row);
     });
+  }
 
-    // Oculta tarjetas KPI cuando su valor principal es 0.
-    root.querySelectorAll('.cr-kpi,.cr-fun162-kpi').forEach(card=>{
-      const strong=card.querySelector('strong');
-      if(strong && numericValue(strong.textContent)===0) card.style.display='none';
+  function hideZeroCards(root){
+    const selectors=['.cr-kpi','.cr-fun162-kpi','.cr-stat','.cr-card-stat','.metric-card','.stat-card'];
+    root.querySelectorAll(selectors.join(',')).forEach(card=>{
+      const values=[...card.querySelectorAll('strong,.value,[class*="value"]')].map(text).filter(Boolean);
+      if(values.length && values.every(v=>isZeroMetric({textContent:v}))) mark(card);
     });
+  }
 
-    // En el listado, un valor numérico exactamente igual a 0 se deja vacío.
-    root.querySelectorAll('table td').forEach(td=>{
-      if(isZeroDisplay(td.textContent)) td.textContent='';
+  function cleanFunctionalNarrative(root){
+    root.querySelectorAll('.cr-fun162-insight').forEach(box=>{
+      const h=text(box.querySelector('h3')).toLowerCase();
+      if(!h.includes('resultados de fuerza') && !h.includes('resultados de flexibilidad')) return;
+      const p=box.querySelector('p'); if(!p) return;
+      let html=p.innerHTML;
+      // Casos como: "el 0.0% en Normal" / "y el 0.0% se ubicó en Excelente".
+      html=html.replace(/(?:,\s*|\s+y\s+)?(?:el\s+)?<strong>0(?:\.0+)?%<\/strong>\s+(?:de\s+los\s+colaboradores\s+con\s+clasificaci[oó]n\s+v[aá]lida\s+)?(?:se\s+ubic[oó]\s+)?en\s+[^,.;]+[,.]?/gi,'');
+      html=html.replace(/(?:,\s*|\s+y\s+)?(?:el\s+)?<strong>0(?:\.0+)?%<\/strong>\s+obtuvo\s+una\s+clasificaci[oó]n\s+[^,.;]+[,.]?/gi,'');
+      html=html.replace(/\s+,/g,',').replace(/,\s*\./g,'.').replace(/\s{2,}/g,' ').replace(/,\s*y\s+/gi,' y ');
+      p.innerHTML=html.trim();
     });
+  }
 
-    // Si un párrafo informativo contiene únicamente resultados destacados en cero,
-    // no aporta información y se oculta completo.
+  function cleanGenericZeroPhrases(root){
     root.querySelectorAll('p').forEach(p=>{
-      const vals=[...p.querySelectorAll('strong')]
-        .map(el=>String(el.textContent||'').trim())
-        .filter(t=>/\d/.test(t) && (/%|colaborador|persona|registro/i.test(t)));
-      if(vals.length && vals.every(t=>numericValue(t)===0)) p.style.display='none';
+      if(!/0(?:\.0+)?%/.test(text(p))) return;
+      let html=p.innerHTML;
+      // Quita frases autónomas del tipo "el 0.0% en X" o "0.0% con X" cuando están separadas por coma/punto y coma.
+      html=html.replace(/(?:,\s*|;\s*)(?:y\s+)?(?:el|la|los|las)?\s*<strong>0(?:\.0+)?%<\/strong>\s+(?:en|con|present[oó]|obtuvo|se\s+ubic[oó])\s+[^,;.]+/gi,'');
+      html=html.replace(/\s+,/g,',').replace(/,\s*\./g,'.').replace(/;\s*\./g,'.').replace(/\s{2,}/g,' ');
+      p.innerHTML=html.trim();
     });
+  }
 
-    // Oculta notas de base cuando la base válida es 0.
-    root.querySelectorAll('.cr-note,.cr-pa155-note,.cr-fc157-note,.cr-met158-note,.cr-abd159-note').forEach(note=>{
-      if(/\bBase:\s*0\b/i.test(note.textContent||'')) note.style.display='none';
+  function hideLooseZeroBlocks(root){
+    root.querySelectorAll('strong').forEach(s=>{
+      const t=text(s);
+      if(!ZERO_PERCENT.test(t) && !ZERO_COUNT.test(t)) return;
+      const candidate=s.closest('.cr-fun162-row,.cr-pa155-row,.cr-fc157-row,.cr-met158-row,.cr-abd159-row,.cr-kpi,.cr-fun162-kpi,.metric-card,.stat-card');
+      if(candidate) mark(candidate);
     });
+  }
+
+  function clean(){
+    const root=document.querySelector(ROOT); if(!root) return;
+    root.querySelectorAll('.numed-zero-hidden').forEach(el=>el.classList.remove('numed-zero-hidden'));
+    hideZeroRows(root);
+    hideZeroCards(root);
+    hideLooseZeroBlocks(root);
+    cleanFunctionalNarrative(root);
+    cleanGenericZeroPhrases(root);
   }
 
   let queued=false;
   function schedule(){
-    if(queued) return;
-    queued=true;
+    if(queued) return; queued=true;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{queued=false;clean();}));
   }
-  const observer=new MutationObserver(schedule);
   document.addEventListener('DOMContentLoaded',()=>{
-    const root=document.getElementById('club-report-150');
-    if(root) observer.observe(root,{childList:true,subtree:true,characterData:true});
-    setTimeout(clean,250);
+    const root=document.querySelector(ROOT);
+    if(root) new MutationObserver(schedule).observe(root,{childList:true,subtree:true,characterData:true});
+    setTimeout(clean,300);
   });
-  const oldRender=window.renderClubReport150;
-  if(typeof oldRender==='function') window.renderClubReport150=function(){const x=oldRender.apply(this,arguments);setTimeout(clean,30);return x;};
-  const oldRefresh=window.refreshClubReport150;
-  if(typeof oldRefresh==='function') window.refreshClubReport150=async function(){const x=await oldRefresh.apply(this,arguments);setTimeout(clean,30);return x;};
-  window.cleanClubReportZeroValues176=clean;
-  setTimeout(clean,500);
+  ['renderClubReport150','refreshClubReport150'].forEach(name=>{
+    const old=window[name];
+    if(typeof old==='function') window[name]=function(){
+      const result=old.apply(this,arguments);
+      if(result && typeof result.then==='function') return result.finally(()=>setTimeout(clean,30));
+      setTimeout(clean,30); return result;
+    };
+  });
+  window.cleanClubReportZeroValues177=clean;
+  setTimeout(clean,700);
 })();
-window.NUMED_RUNTIME_VERSION='176-REPORTE-SIN-VALORES-CERO';
+window.NUMED_RUNTIME_VERSION='177-REPORTE-SIN-CEROS-CORREGIDO';
 </script>
 </body></html>';
   }
