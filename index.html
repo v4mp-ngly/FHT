@@ -1262,7 +1262,13 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 #doctor-admin #detail-content .questionnaire126-stat.ok{background:#f7faee;border-color:#dfeab8}
 @media(max-width:900px){#doctor-admin #detail-content .bio-patient-answers{grid-template-columns:1fr}}
 @media(max-width:620px){#doctor-admin #detail-content .questionnaire126-summary{grid-template-columns:1fr}#doctor-admin #detail-content .bio-patient-answers .answer-row{grid-template-columns:1fr;gap:9px;padding:13px}#doctor-admin #detail-content .bio-patient-answers .answer-row>span:last-child{max-width:none;text-align:left;width:fit-content}#doctor-admin #detail-content .bio-patient-answers .answer-row>span:first-child{font-size:12px}}
-</style></head>
+</style>
+<!-- NUMED v176 · Oculta el resumen conjunto de fuerza + flexibilidad solicitado -->
+<style id="numed-v176-hide-functional-joint-summary">
+#club-report-150 .cr-fun162-summary,
+.cr-fun162-summary{display:none!important;}
+</style>
+</head>
 <body>
 <div id="access-portal">
  <div class="portal-shell">
@@ -6732,7 +6738,79 @@ body.numed-report-refreshing #club-report-150{opacity:1!important;visibility:vis
     clone.querySelectorAll('[onclick],[onchange]').forEach(x=>{x.removeAttribute('onclick');x.removeAttribute('onchange')});
     const styles=[...document.querySelectorAll('style')].map(s=>s.textContent).join('\n');
     const title='Reporte ARS Reservas · NUMED CARE';
-    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'</body></html>';
+    return '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+esc(title)+'</title><style>html,body{margin:0;background:#f4f7f8}body>*{box-sizing:border-box}'+styles+' .cr-actions,.cr-state-filter171{display:none!important} #club-report-150{display:block!important;min-height:100vh!important} .cr-share-logo174{display:block;width:170px;max-width:42vw;height:auto;object-fit:contain;margin:0 0 24px 0} @media print{body{background:#fff}}</style></head><body>'+clone.outerHTML+'
+<script id="numed-v176-report-hide-zero-values">
+(function(){
+  function numericValue(text){
+    const t=String(text||'').replace(/\s+/g,' ').trim();
+    const m=t.match(/-?\d+(?:[.,]\d+)?/);
+    return m ? Number(m[0].replace(',','.')) : null;
+  }
+  function isZeroDisplay(text){
+    const t=String(text||'').replace(/\s+/g,' ').trim();
+    return /^(?:0+(?:[.,]0+)?)(?:\s*%|\s*colaboradores?|\s*personas?|\s*registros?)?$/i.test(t);
+  }
+  function clean(){
+    const root=document.getElementById('club-report-150');
+    if(!root) return;
+
+    // Oculta categorías/opciones de gráficas cuyo resultado sea 0.
+    root.querySelectorAll('.cr-bar,.cr-pa155-row,.cr-fc157-row,.cr-met158-row,.cr-abd159-row,.cr-fun162-row').forEach(row=>{
+      const value=row.querySelector('b,.cr-pa155-val,.cr-fc157-val,.cr-met158-val,.cr-abd159-val,.cr-fun162-val');
+      if(!value) return;
+      const strong=value.querySelector('strong');
+      const n=numericValue(strong ? strong.textContent : value.textContent);
+      if(n===0) row.style.display='none';
+    });
+
+    // Oculta tarjetas KPI cuando su valor principal es 0.
+    root.querySelectorAll('.cr-kpi,.cr-fun162-kpi').forEach(card=>{
+      const strong=card.querySelector('strong');
+      if(strong && numericValue(strong.textContent)===0) card.style.display='none';
+    });
+
+    // En el listado, un valor numérico exactamente igual a 0 se deja vacío.
+    root.querySelectorAll('table td').forEach(td=>{
+      if(isZeroDisplay(td.textContent)) td.textContent='';
+    });
+
+    // Si un párrafo informativo contiene únicamente resultados destacados en cero,
+    // no aporta información y se oculta completo.
+    root.querySelectorAll('p').forEach(p=>{
+      const vals=[...p.querySelectorAll('strong')]
+        .map(el=>String(el.textContent||'').trim())
+        .filter(t=>/\d/.test(t) && (/%|colaborador|persona|registro/i.test(t)));
+      if(vals.length && vals.every(t=>numericValue(t)===0)) p.style.display='none';
+    });
+
+    // Oculta notas de base cuando la base válida es 0.
+    root.querySelectorAll('.cr-note,.cr-pa155-note,.cr-fc157-note,.cr-met158-note,.cr-abd159-note').forEach(note=>{
+      if(/\bBase:\s*0\b/i.test(note.textContent||'')) note.style.display='none';
+    });
+  }
+
+  let queued=false;
+  function schedule(){
+    if(queued) return;
+    queued=true;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{queued=false;clean();}));
+  }
+  const observer=new MutationObserver(schedule);
+  document.addEventListener('DOMContentLoaded',()=>{
+    const root=document.getElementById('club-report-150');
+    if(root) observer.observe(root,{childList:true,subtree:true,characterData:true});
+    setTimeout(clean,250);
+  });
+  const oldRender=window.renderClubReport150;
+  if(typeof oldRender==='function') window.renderClubReport150=function(){const x=oldRender.apply(this,arguments);setTimeout(clean,30);return x;};
+  const oldRefresh=window.refreshClubReport150;
+  if(typeof oldRefresh==='function') window.refreshClubReport150=async function(){const x=await oldRefresh.apply(this,arguments);setTimeout(clean,30);return x;};
+  window.cleanClubReportZeroValues176=clean;
+  setTimeout(clean,500);
+})();
+window.NUMED_RUNTIME_VERSION='176-REPORTE-SIN-VALORES-CERO';
+</script>
+</body></html>';
   }
   function makeFile(){
     const blob=new Blob([reportOnlyHTML()],{type:'text/html;charset=utf-8'});
