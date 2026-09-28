@@ -7157,3 +7157,27 @@ window.NUMED_RUNTIME_VERSION='178-SIN-CEROS-TEXTO-FUNCIONAL-CORREGIDO';
 })();
 window.NUMED_RUNTIME_VERSION='179-FUERZA-CLUB-136-CORREGIDA';
 </script>
+
+
+<!-- NUMED V176: sincronizacion robusta de consentimientos por paciente_id o cedula -->
+<script id="numed-v176-consent-sync">
+(()=>{
+'use strict';
+const normId=v=>String(v??'').replace(/\D/g,'');
+const token=()=>sessionStorage.getItem('numedSbAccessToken')||localStorage.getItem('numedSbAccessToken')||'';
+const headers=()=>({apikey:NUMED_SB_ANON,Authorization:'Bearer '+token()});
+function patientFor(pid){const rows=typeof getPendingPatients==='function'?getPendingPatients():[];const cur=window.adminCurrentPatient;if(cur&&(!pid||String(cur.supabaseId||'')===String(pid)))return cur;return rows.find(x=>String(x.supabaseId||'')===String(pid))||null}
+async function query(url,opts={}){if(typeof window.ensureSbSession==='function')await window.ensureSbSession();const h={...headers(),...(opts.headers||{})};const r=await fetch(NUMED_SB_URL+'/rest/v1/'+url,{...opts,headers:h});const txt=await r.text();let data=null;try{data=txt?JSON.parse(txt):null}catch(_){data=txt}if(!r.ok)throw new Error((data&&data.message)||JSON.stringify(data)||('HTTP '+r.status));return data}
+function rowCedula(x){return normId(x?.cedula??x?.numero_cedula??x?.documento??x?.numero_documento??x?.identificacion??'')}
+async function relink(row,pid){if(!row?.id||!pid||String(row.paciente_id||'')===String(pid))return;try{await query('consentimientos_programa?id=eq.'+encodeURIComponent(row.id),{method:'PATCH',headers:{'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({paciente_id:pid})});row.paciente_id=pid}catch(e){console.warn('NUMED consentimiento: no se pudo enlazar paciente_id automáticamente',e)}}
+window.consentRow=async function(pid){try{const p=patientFor(pid),ced=normId(p?.id);if(pid){const direct=await query('consentimientos_programa?select=*&paciente_id=eq.'+encodeURIComponent(pid)+'&order=created_at.desc&limit=1');if(Array.isArray(direct)&&direct[0])return direct[0]}if(!ced)return null;const all=await query('consentimientos_programa?select=*&aceptado=eq.true&order=created_at.desc');const found=(Array.isArray(all)?all:[]).find(x=>rowCedula(x)===ced)||null;if(found){await relink(found,pid);return found}return null}catch(e){console.warn('Consentimiento status v176',e);return null}};
+async function loadAccepted(){try{const all=await query('consentimientos_programa?select=*&aceptado=eq.true&order=created_at.desc');return Array.isArray(all)?all:[]}catch(e){console.warn('NUMED v176 consentimientos',e);return []}}
+function matchConsent(row,patients){const pid=String(row?.paciente_id||'');if(pid){const p=patients.find(x=>String(x.supabaseId||'')===pid);if(p)return p}const c=rowCedula(row);if(!c)return null;return patients.find(x=>normId(x.id)===c)||null}
+window.refreshConsentSync176=async function(){const patients=typeof getPendingPatients==='function'?getPendingPatients():[];const cons=await loadAccepted();const matched=new Map();for(const row of cons){const p=matchConsent(row,patients);if(!p)continue;matched.set(String(p.supabaseId||p.id),row);p.hasConsent=true;if(!row.paciente_id&&p.supabaseId)relink(row,p.supabaseId)}const kpi=document.getElementById('consent137-kpi');if(kpi)kpi.innerHTML=`<small>Consentimientos</small><strong>${matched.size}<em>firmados</em></strong><span>Personas con consentimiento aceptado</span>`;const sum=document.getElementById('measure134-summary');if(sum){const locality=document.getElementById('measure134-locality')?.value||'all';const scoped=patients.filter(x=>locality==='all'||String(x.locality||'')===locality);const keys=new Set(scoped.map(x=>String(x.supabaseId||x.id)));let n=0;matched.forEach((_,k)=>{if(keys.has(k))n++});let card=document.getElementById('consent137-locality');if(!card){card=document.createElement('div');card.id='consent137-locality';card.className='measure134-stat';sum.appendChild(card)}const pct=scoped.length?n*100/scoped.length:0;card.innerHTML=`<small>Consentimientos firmados</small><strong>${n}</strong><span>${pct.toFixed(1)}% de ${scoped.length} paciente${scoped.length===1?'':'s'} en la selección</span>`}return matched.size};
+const oldRender=window.renderAdminAll;if(typeof oldRender==='function')window.renderAdminAll=function(){const r=oldRender.apply(this,arguments);setTimeout(()=>window.refreshConsentSync176?.(),0);return r};
+const oldStats=window.renderMeasurementLocalityStats;if(typeof oldStats==='function')window.renderMeasurementLocalityStats=function(){const r=oldStats.apply(this,arguments);setTimeout(()=>window.refreshConsentSync176?.(),0);return r};
+const oldRefresh=window.refreshMeasurementStatsFromSupabase;if(typeof oldRefresh==='function')window.refreshMeasurementStatsFromSupabase=async function(){const r=await oldRefresh.apply(this,arguments);await window.refreshConsentSync176?.();return r};
+const oldOpen=window.openAdminPatient;if(typeof oldOpen==='function')window.openAdminPatient=function(){const r=oldOpen.apply(this,arguments);setTimeout(()=>{const p=window.adminCurrentPatient;if(p?.supabaseId)window.consentRow(p.supabaseId).then(x=>{window.__numedCurrentConsent=x||null})},0);return r};
+document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>window.refreshConsentSync176?.(),700));setTimeout(()=>window.refreshConsentSync176?.(),1200);window.NUMED_RUNTIME_VERSION='176-CONSENTIMIENTO-SINCRONIZADO';
+})();
+</script>
