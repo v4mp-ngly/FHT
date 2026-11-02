@@ -1268,7 +1268,10 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 #club-report-150 .cr-fun162-summary,
 .cr-fun162-summary{display:none!important;}
 </style>
-</head>
+<style id="numed-v180-dual-mode-css">
+#numed-mode-selector{position:fixed;inset:0;z-index:11000;display:none;align-items:center;justify-content:center;padding:22px;background:rgba(7,25,50,.76);backdrop-filter:blur(12px);overflow-y:auto;font-family:Montserrat,Arial,sans-serif}
+.mode-shell{position:relative;background:#fff;width:min(860px,100%);max-height:94vh;overflow:auto;padding:clamp(24px,5vw,50px);border-radius:26px;box-shadow:0 28px 100px rgba(0,0,0,.27)}.mode-close{position:absolute;top:18px;right:20px;border:0;background:#edf3f6;color:#264c71;width:38px;height:38px;border-radius:50%;font-size:23px;cursor:pointer}.mode-eyebrow{color:#779d19;letter-spacing:.15em;font-weight:850;font-size:10px}.mode-shell h2{font-size:clamp(24px,4vw,35px);margin:13px 0;color:#153d66}.mode-intro,.mode-note{color:#657b8b;font-size:12px;line-height:1.6}.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0 18px}.mode-option{border:1px solid #dfe8ed;border-radius:20px;padding:26px;background:#fff;text-align:left;display:flex;flex-direction:column;gap:12px;cursor:pointer;box-shadow:0 8px 26px rgba(18,55,89,.06);transition:transform .2s,border-color .2s,box-shadow .2s;min-height:270px}.mode-option:hover,.mode-option:focus-visible{transform:translateY(-4px);border-color:#a1c94b;box-shadow:0 18px 36px rgba(18,55,89,.12)}.mode-option:last-child{background:linear-gradient(145deg,#f7fbed,#fff)}.mode-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#edf4dd;color:#6c9616;font-size:25px}.mode-tag{color:#7ba12f;letter-spacing:.12em;font-weight:800;font-size:9px}.mode-option strong{font-size:22px;color:#173e67}.mode-option>span:not(.mode-icon):not(.mode-tag){color:#657b8b;font-size:12px;line-height:1.6}.mode-option em{margin-top:auto;font-style:normal;font-weight:800;color:#2a5b75;font-size:12px}.mode-indicator,.mode-result-note{background:#f3f8e8;border:1px solid #dceabf;color:#4c7519;padding:12px 16px;border-radius:12px;font-size:12px;font-weight:800;letter-spacing:.035em;margin-bottom:16px}.mode-field-hidden{display:none!important}#results[data-numed-mode="corta"] .card:has(#result-flexibility),#results[data-numed-mode="corta"] .card:has(#result-pressure){display:none!important}@media(max-width:680px){.mode-grid{grid-template-columns:1fr}.mode-shell{padding:26px 20px}.mode-option{min-height:225px;padding:20px}}
+</style></head>
 <body>
 <div id="access-portal">
  <div class="portal-shell">
@@ -1295,8 +1298,8 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
     <div class="portal-grid">
      <article class="portal-card patient">
       <div class="portal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-4.1 3-6.2 7-6.2s6.4 2.1 7 6.2"/></svg></div>
-      <div class="portal-card-copy"><h3>Evaluación del paciente</h3><p>Completa tus datos, PSS-10 y cuestionario de Edad Biológica.</p><button class="portal-qr-link" onclick="event.stopPropagation();openPatientQR()">Ver QR de la evaluación</button></div>
-      <button class="portal-card-action" aria-label="Comenzar evaluación" onclick="openPatientQuestionnaires()">→</button>
+      <div class="portal-card-copy"><h3>Elige tu evaluación</h3><p>FHT completo o Edad Biológica Corta.</p><button class="portal-qr-link" onclick="event.stopPropagation();openPatientQR()">Ver QR de la evaluación</button></div>
+      <button class="portal-card-action" aria-label="Comenzar evaluación" onclick="openModeSelector()">→</button>
      </article>
      <article class="portal-card doctor">
       <div class="portal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4v5a4 4 0 0 0 8 0V4"/><path d="M6 4h4M14 4h4M12 13v2a5 5 0 0 0 5 5h1"/><circle cx="19" cy="19" r="2"/></svg></div>
@@ -1308,6 +1311,12 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
   </main>
   <footer class="portal-footer"><div><strong>NUMED</strong> · Evaluación Integral de Salud</div><div class="portal-footer-right"><span>Paciente</span><span>Profesional de salud</span></div></footer>
  </div>
+</div>
+
+<div id="numed-mode-selector" role="dialog" aria-modal="true" aria-labelledby="mode-title" style="display:none">
+ <div class="mode-shell"><button type="button" class="mode-close" onclick="closeModeSelector()" aria-label="Cerrar selector">×</button><div class="mode-eyebrow">NUMED CARE · EVALUACIONES</div><h2 id="mode-title">Selecciona tu evaluación</h2><p class="mode-intro">Dos recorridos clínicos con el mismo seguimiento digital. Selecciona el protocolo antes de comenzar.</p>
+ <div class="mode-grid"><button type="button" class="mode-option" onclick="chooseNumedMode('fht')"><span class="mode-icon">✦</span><span class="mode-tag">EVALUACIÓN COMPLETA</span><strong>FHT · Integral</strong><span>Incluye fuerza, flexibilidad, presión arterial, frecuencia cardíaca, IMC, perímetro abdominal y cuestionarios.</span><em>Comenzar FHT →</em></button>
+ <button type="button" class="mode-option" onclick="chooseNumedMode('corta')"><span class="mode-icon">◈</span><span class="mode-tag">PROTOCOLO ÁGIL</span><strong>Edad Biológica Corta</strong><span>Fuerza, peso, talla, perímetro abdominal, estilo de vida y PSS-10. Sin flexibilidad ni presión arterial.</span><em>Comenzar evaluación corta →</em></button></div><p class="mode-note">El PSS-10 se informa por separado y no modifica la edad biológica. La modalidad elegida queda identificada en el resultado.</p></div>
 </div>
 <div id="patient-qr-modal" class="qr-modal" onclick="if(event.target===this)closePatientQR()"><div class="qr-card qr-card-premium"><button class="qr-close-x" onclick="closePatientQR()" aria-label="Cerrar">×</button><img class="qr-numed-logo" src="" alt="NUMED"><div class="qr-kicker">EVALUACIÓN INTEGRAL</div><h2>Escanea y comienza</h2><p class="qr-lead">Abre la cámara de tu celular y escanea el código para iniciar tu evaluación de salud.</p><div class="qr-frame"><div id="patient-qr" class="qr-box"></div></div><div class="qr-scan-hint"><span class="qr-phone-icon">⌁</span><div><strong>Escanea con la cámara de tu celular</strong><small>Datos → PSS-10 → Edad Biológica</small></div></div><div class="qr-secure">✓ Enlace seguro · No requiere iniciar sesión</div><div id="patient-qr-url" class="qr-url qr-url-hidden"></div><div class="qr-actions"><button class="portal-primary qr-btn" onclick="copyPatientLink()">Copiar enlace</button><button class="portal-secondary qr-btn" onclick="sharePatientEvaluation()">Compartir</button><button class="portal-secondary qr-btn qr-full" onclick="togglePatientQRFullscreen()">Pantalla completa</button></div></div></div>
     <!-- ══════════════════════════════════════════════
@@ -1375,7 +1384,7 @@ h2{font-size:clamp(1.25rem,2.6vw,2rem)}
 
     <!-- FORMULARIO -->
     <div class="card">
-        <div class="card-title">Mediciones clínicas · Área médica</div>
+        <div class="card-title">Mediciones clínicas · Área médica</div><div id="numed-mode-indicator" class="mode-indicator">FHT · Evaluación completa</div>
         <div class="integral-stepper"><div class="integral-step done"><b>1</b> Datos</div><div class="integral-step done"><b>2</b> PSS-10</div><div class="integral-step active"><b>3</b> Mediciones</div><div class="integral-step"><b>4</b> Resultado</div></div>
         <div class="integral-summary" id="identity-summary" style="margin-bottom:18px"></div>
         <div class="form-grid">
@@ -2033,28 +2042,29 @@ document.getElementById('lifestyle-results').style.display = 'none';
         return;
     }
 
-    const flexibilityValue = parseFloat(document.getElementById('flexibility-value').value);
-    if (isNaN(flexibilityValue)) {
+    const isShortNumed = window.NUMED_EVAL_MODE === 'corta';
+    const flexibilityValue = isShortNumed ? null : parseFloat(document.getElementById('flexibility-value').value);
+    if (!isShortNumed && isNaN(flexibilityValue)) {
         alert('Por favor, ingrese el resultado de flexibilidad.');
         return;
     }
 
-    const systolicPressure = parseFloat(document.getElementById('systolic-pressure').value);
-    const diastolicPressure = parseFloat(document.getElementById('diastolic-pressure').value);
-    if (isNaN(systolicPressure) || systolicPressure < 50 || systolicPressure > 260) {
+    const systolicPressure = isShortNumed ? null : parseFloat(document.getElementById('systolic-pressure').value);
+    const diastolicPressure = isShortNumed ? null : parseFloat(document.getElementById('diastolic-pressure').value);
+    if (!isShortNumed && (isNaN(systolicPressure) || systolicPressure < 50 || systolicPressure > 260)) {
         alert('Por favor, ingrese una presión sistólica válida.');
         return;
     }
-    if (isNaN(diastolicPressure) || diastolicPressure < 30 || diastolicPressure > 160) {
+    if (!isShortNumed && (isNaN(diastolicPressure) || diastolicPressure < 30 || diastolicPressure > 160)) {
         alert('Por favor, ingrese una presión diastólica válida.');
         return;
     }
-    if (systolicPressure <= diastolicPressure) {
+    if (!isShortNumed && systolicPressure <= diastolicPressure) {
         alert('Revisa la presión arterial: la sistólica debe ser mayor que la diastólica. Ejemplo: 119/65 mmHg.');
         return;
     }
-    const heartRate = parseFloat(document.getElementById('heart-rate')?.value);
-    if (isNaN(heartRate) || heartRate < 30 || heartRate > 220) {
+    const heartRate = isShortNumed ? null : parseFloat(document.getElementById('heart-rate')?.value);
+    if (!isShortNumed && (isNaN(heartRate) || heartRate < 30 || heartRate > 220)) {
         alert('Por favor, ingrese una frecuencia cardíaca válida (30-220 lpm).');
         return;
     }
@@ -2193,6 +2203,7 @@ displayResults(adjustedLevel, strength);
 
 // 🔹 Guardar evaluación en historial (localStorage)
 const evaluationData = {
+  modalidad: isShortNumed ? 'corta' : 'fht',
   fecha: today.toISOString().split('T')[0],  // Formato YYYY-MM-DD para Supabase
   nombre: name,
   telefono: phone,
@@ -2228,6 +2239,9 @@ const evaluationData = {
 
 saveEvaluation(evaluationData);
 markCurrentPatientMeasured(evaluationData);
+window.NUMED_LAST_EVALUATION = evaluationData;
+const resultSection=document.getElementById('results');
+if(resultSection){resultSection.dataset.numedMode=evaluationData.modalidad;let note=resultSection.querySelector('.mode-result-note');if(!note){note=document.createElement('div');note.className='mode-result-note';resultSection.prepend(note)}note.textContent=isShortNumed?'EDAD BIOLÓGICA CORTA · Sin presión arterial, frecuencia cardíaca ni flexibilidad':'FHT · EVALUACIÓN COMPLETA';}
 
 }
 
@@ -6169,7 +6183,36 @@ html.numed-photobooth-route.pb117-patient-ok #pb114-booth{display:block!importan
  setTimeout(renderGender152,700);window.renderGenderDashboard152=renderGender152;window.NUMED_RUNTIME_VERSION='152-DASHBOARD-GENERO';
 })();
 </script>
-</body>
+<script id="numed-v180-dual-mode">
+(function(){
+ const setMode=(mode)=>{
+  const value=mode==='corta'?'corta':'fht';window.NUMED_EVAL_MODE=value;
+  document.documentElement.dataset.numedMode=value;
+  const title=document.getElementById('numed-mode-indicator');if(title)title.textContent=value==='corta'?'EDAD BIOLÓGICA CORTA · Protocolo sin flexibilidad ni presión arterial':'FHT · EVALUACIÓN COMPLETA';
+  ['flexibility-value','systolic-pressure','diastolic-pressure','heart-rate'].forEach(id=>{
+   const el=document.getElementById(id);if(!el)return;
+   const field=el.closest('.field');if(field)field.classList.toggle('mode-field-hidden',value==='corta');
+   el.disabled=value==='corta';el.required=false;
+   if(value==='corta')el.value='';
+  });
+ };
+ window.chooseNumedMode=function(mode){setMode(mode);window.closeModeSelector();if(typeof window.openPatientQuestionnaires==='function')window.openPatientQuestionnaires();};
+ window.openModeSelector=function(){const p=document.getElementById('numed-mode-selector');if(p){p.style.display='flex';p.querySelector('button.mode-option')?.focus();}};
+ window.closeModeSelector=function(){const p=document.getElementById('numed-mode-selector');if(p)p.style.display='none';};
+ const oldSelect=window.selectDoctorPatient;
+ if(typeof oldSelect==='function')window.selectDoctorPatient=function(id){let r;try{r=typeof getPendingPatients==='function'?getPendingPatients().find(x=>String(x.id)===String(id)):null}catch(e){}
+  setMode(r?.modalidad||r?.mode||r?.measurements?.modalidad||'fht');return oldSelect.apply(this,arguments);};
+ const oldPortal=window.showAccessPortal;
+ if(typeof oldPortal==='function')window.showAccessPortal=function(){window.closeModeSelector();return oldPortal.apply(this,arguments);};
+ document.addEventListener('DOMContentLoaded',()=>{
+  setMode('fht');
+  const header=document.querySelector('#doctor-panel .doctor-hero');
+  if(header&&!document.getElementById('staff-mode-switch')){const btn=document.createElement('button');btn.id='staff-mode-switch';btn.className='btn btn-outline';btn.textContent='Iniciar nueva evaluación';btn.type='button';btn.onclick=window.openModeSelector;header.appendChild(btn)}
+  const selector=document.getElementById('numed-mode-selector');selector?.addEventListener('click',e=>{if(e.target===selector)window.closeModeSelector()});
+  if(new URLSearchParams(location.search).get('eval')==='corta')setMode('corta');
+ });
+})();
+</script></body>
 </html>
 
 <script id="numed-v141-entregable-premium">
@@ -7181,7 +7224,7 @@ const oldOpen=window.openAdminPatient;if(typeof oldOpen==='function')window.open
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>window.refreshConsentSync176?.(),700));setTimeout(()=>window.refreshConsentSync176?.(),1200);window.NUMED_RUNTIME_VERSION='176-CONSENTIMIENTO-SINCRONIZADO';
 })();
 </script>
-<!-- NUMED v177: evento 18 noviembre / dashboard actualizado -->
+<!-- NUMED v178: evento 18 noviembre / dashboard premium actualizado -->
 
 <style id="numed-v177-event-upgrade">
 :root{--evt-ink:#16365a;--evt-green:#a8c73d}
@@ -7220,31 +7263,98 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>window.refreshCo
 @media(prefers-reduced-motion:reduce){#numed-event177 *{transition:none!important;animation:none!important}}
 </style>
 
-<script id="numed-v177-event-dashboard">
+<script id="numed-v178-dashboard">
 (function(){'use strict';
- const EVENT_DAY='2026-11-18',EVENT_TITLE='Encuentro Nacional de Mujeres en Exportación',ZONE='America/Santo_Domingo';
- const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const dateKey=v=>{if(!v)return'';let d=new Date(v);if(Number.isNaN(+d))return'';return new Intl.DateTimeFormat('en-CA',{timeZone:ZONE,year:'numeric',month:'2-digit',day:'2-digit'}).format(d)};
- const num=v=>v!==''&&v!==null&&v!==undefined&&Number.isFinite(Number(v));
- function rows(){try{return typeof window.getPendingPatients==='function'?window.getPendingPatients():[]}catch(e){console.warn('NUMED dashboard: lectura no disponible',e);return []}}
- function timeFor(r){return r.pss?.createdAt||r.completedAt||r.createdAt||r.created_at||r.fecha||r.registeredAt||''}
- function isEvent(r){const tag=String(r.eventName||r.event_name||r.evento||'').toLowerCase();return tag.includes('exportaci')||dateKey(timeFor(r))===EVENT_DAY}
- function metrics(){const all=rows(),data=all.filter(isEvent),measured=data.filter(r=>r.measured===true),finished=data.filter(r=>!!r.measured&&!!(r.pss||r.bio||r.lifestyle||r.questionnaireCompleted));return{all,data,measured,finished,pending:data.length-measured.length,pss:data.filter(r=>r.pss?.score!=null||r.pss?.total!=null),bio:data.filter(r=>r.bio?.biologicalAge!=null||r.biologicalAge!=null)}}
- function draw(){const dash=document.getElementById('admin-dashboard');if(!dash)return;let root=document.getElementById('numed-event177');if(!root){root=document.createElement('section');root.id='numed-event177';root.setAttribute('aria-label','Dashboard del evento 18 de noviembre');const anchor=dash.querySelector('#admin-kpis');if(anchor)anchor.before(root);else dash.prepend(root)}
- const m=metrics(),total=m.data.length,done=m.measured.length,pct=total?Math.round(done/total*100):0;
- const currentDay=dateKey(new Date()),isBefore=currentDay<EVENT_DAY;
- const outcome=total===0?(isBefore?'La jornada aún no comienza. Los indicadores del 18 de noviembre aparecerán aquí cuando se registren participantes en Supabase.':'No aparecen participantes vinculadas a la jornada del 18 de noviembre. Revisa la sincronización y las fechas de registro.'):`Hay ${m.pending} participante${m.pending===1?'':'s'} pendiente${m.pending===1?'':'s'} de medición clínica. Los indicadores se calculan únicamente con datos registrados.`;
- const kpi=(name,v,desc)=>`<article class="e177-kpi"><small>${name}</small><strong>${v}</strong><span>${desc}</span></article>`;
- const bar=(name,n)=>`<div class="e177-split-row"><span>${name}</span><div class="e177-split-track"><i style="width:${total?Math.round(n/total*100):0}%"></i></div><b>${n}</b></div>`;
- root.innerHTML=`<div class="e177-hero"><div class="e177-top"><div><span class="e177-kicker">NUMED CARE · Dashboard de jornada</span><h2>${EVENT_TITLE}</h2><p>18 de noviembre de 2026 · Seguimiento clínico y registro en vivo</p></div><div class="e177-tools"><button id="e177-refresh" type="button">↻ Actualizar</button><button id="e177-export" type="button">↓ CSV jornada</button></div></div></div><div class="e177-kpis">${kpi('Participantes registradas',total,'Jornada · 18 de noviembre')}${kpi('Mediciones realizadas',done,'Con registro clínico')}${kpi('Pendientes',m.pending,'Esperando mediciones')}${kpi('Cobertura de evaluación',pct+'%','Sobre las registradas')}</div><div class="e177-panels"><article class="e177-panel"><h3>Progreso de la jornada</h3><p>Actualización desde los registros disponibles en el sistema.</p><div class="e177-progress"><div class="e177-fill" style="width:${pct}%"></div></div><div class="e177-progress-label"><span>${done} evaluadas</span><span>${pct}% completado</span></div><div class="e177-split">${bar('Mediciones',done)}${bar('PSS-10',m.pss.length)}${bar('Edad biológica',m.bio.length)}${bar('Pendientes',m.pending)}</div><p class="e177-note">El conteo del evento usa la fecha local de registro del 18/11/2026 o una etiqueta explícita del evento. Las estadísticas históricas permanecen más abajo y no se mezclan en estos indicadores.</p></article><article class="e177-panel"><h3>Estado operativo</h3><p>Lectura automática de la jornada</p><div class="e177-alert">${esc(outcome)}</div><div class="e177-note"><span class="e177-pill">Sin filtro de localidades</span><p class="e177-note">Para consultar registros antiguos, utiliza las tablas y reportes históricos existentes. No se generan datos simulados.</p></div></article></div>`;
- root.querySelector('#e177-refresh').addEventListener('click',async()=>{const btn=root.querySelector('#e177-refresh');btn.disabled=true;try{if(typeof window.loadAdminPatients==='function')await window.loadAdminPatients();else if(typeof window.refreshAdminData==='function')await window.refreshAdminData();if(typeof window.renderAdminAll==='function')window.renderAdminAll()}catch(e){console.warn(e)}finally{btn.disabled=false;draw()}});
- root.querySelector('#e177-export').addEventListener('click',()=>{const columns=['Nombre','Apellido','Cedula','Fecha registro','Mediciones','PSS-10','Edad biologica'];const value=(r)=>[r.nombre||r.name||'',r.apellido||r.lastName||'',r.cedula||r.id||'',timeFor(r),r.measured?'Si':'No',r.pss?.score??r.pss?.total??'',r.bio?.biologicalAge??r.biologicalAge??''];const csv='\uFEFF'+[columns,...m.data.map(value)].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='NUMED_Jornada_2026-11-18.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)});
- const note=dash.querySelector('.measure134-head h2');if(note)note.textContent='Indicadores clínicos del histórico';
+ const EVENT_DAY='2026-11-18', ZONE='America/Santo_Domingo';
+ const $=(s,r=document)=>r.querySelector(s);
+ const escapeHTML=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const dateKey=v=>{if(!v)return '';const d=new Date(v);if(!Number.isFinite(+d))return '';return new Intl.DateTimeFormat('en-CA',{timeZone:ZONE,year:'numeric',month:'2-digit',day:'2-digit'}).format(d)};
+ const stamp=r=>r.created_at||r.createdAt||r.registeredAt||r.fecha_registro||r.fecha||r.completedAt||r.pss?.createdAt||'';
+ const name=r=>[r.nombre||r.name||r.first_name||'',r.apellido||r.lastName||r.last_name||''].join(' ').trim()||'Participante sin nombre';
+ const hasPSS=r=>r.pss?.score!=null||r.pss?.total!=null||r.pss_score!=null;
+ const hasBio=r=>r.bio?.biologicalAge!=null||r.biologicalAge!=null||r.edad_biologica!=null;
+ const hasMeasurement=r=>r.measured===true||r.medicion_completada===true||r.measurementsCompleted===true;
+ const isEvent=r=>{const tag=String(r.eventName||r.event_name||r.evento||r.jornada||'').toLowerCase();return tag.includes('exportaci')||dateKey(stamp(r))===EVENT_DAY};
+ const records=()=>{try{const v=window.getPendingPatients?.();return Array.isArray(v)?v:[]}catch(e){console.warn('NUMED V178: lectura de registros',e);return []}};
+ let filter='',lastSignature='',lastUpdate=null,refreshing=false;
+ const status=r=>hasMeasurement(r)&&hasPSS(r)&&hasBio(r)?'Completa':hasMeasurement(r)||hasPSS(r)||hasBio(r)?'En proceso':'Pendiente';
+ function data(){const all=records(), list=all.filter(isEvent);return{all,list,total:list.length,measured:list.filter(hasMeasurement).length,pss:list.filter(hasPSS).length,bio:list.filter(hasBio).length,complete:list.filter(r=>status(r)==='Completa').length};}
+ function kpi(label,value,hint){return `<article class="e177-kpi"><small>${label}</small><strong>${value}</strong><span>${hint}</span></article>`}
+ function bar(label,n,total){let pct=total?Math.round(n/total*100):0;return `<div class="e177-split-row"><span>${label}</span><div class="e177-split-track"><i style="width:${pct}%"></i></div><b>${n}</b></div>`}
+ function journey(label,n,total,i){const pct=total?Math.round(100*n/total):0;return `<div class="e178-step"><span class="e178-number">${i}</span><div class="e178-step-main"><div class="e178-step-top"><span>${label}</span><strong>${n} <span style="color:#8497a6;font-weight:600">· ${pct}%</span></strong></div><div class="e178-step-track"><i style="width:${pct}%"></i></div></div></div>`}
+ function renderList(list){const el=$('#e178-list');if(!el)return;const q=filter.trim().toLocaleLowerCase('es');const people=list.filter(r=>name(r).toLocaleLowerCase('es').includes(q));$('#e178-list-count').textContent=`${people.length} de ${list.length}`;el.innerHTML=people.length?people.slice(0,60).map(r=>{const n=name(r),s=status(r);return `<div class="e178-person"><div class="e178-avatar" aria-hidden="true">${escapeHTML(n.split(/\s+/).slice(0,2).map(t=>t[0]||'').join('').toUpperCase())}</div><div><strong>${escapeHTML(n)}</strong><small>${escapeHTML(dateKey(stamp(r))||'Fecha no registrada')} · ${hasPSS(r)?'PSS-10 ✓':'PSS-10 —'} · ${hasBio(r)?'Edad biológica ✓':'Edad biológica —'}</small></div><span class="e178-status ${s==='Completa'?'ok':''}">${s}</span></div>`}).join('')+(people.length>60?'<p class="e178-footer">Mostrando 60 registros. Usa la búsqueda para encontrar otras participantes.</p>':''):'<div class="e178-empty">No se encontraron participantes con ese nombre.</div>'}
+ function render(force=false){const dash=$('#admin-dashboard');if(!dash)return;let root=$('#numed-event177');if(!root){root=document.createElement('section');root.id='numed-event177';root.setAttribute('aria-label','Resumen de la jornada del 18 de noviembre');const anchor=$('#admin-kpis',dash);anchor?anchor.before(root):dash.prepend(root)}
+ const m=data(),pending=m.total-m.measured,pct=m.total?Math.round(m.complete/m.total*100):0;
+ const signature=JSON.stringify([m.total,m.measured,m.pss,m.bio,m.complete,m.list.map(r=>[r.id||r.cedula||name(r),status(r)])]);
+ if(!force&&signature===lastSignature&&root.querySelector('#e178-search'))return;
+ lastSignature=signature;lastUpdate=new Date();
+ const today=dateKey(new Date()),before=today<EVENT_DAY;
+ const message=m.total?`${m.complete} evaluaciones completas según los indicadores disponibles. ${pending} participantes todavía no tienen medición registrada.`:before?'La jornada está programada para el 18 de noviembre. Todavía no hay registros identificados para este evento.':'No se encontraron registros vinculados al evento. Comprueba que los datos se hayan sincronizado y que incluyan la fecha o nombre de la jornada.';
+ root.innerHTML=`<div class="e177-hero"><div class="e177-top"><div><span class="e177-kicker">NUMED CARE · PANEL EJECUTIVO 2026</span><h2>Encuentro Nacional de Mujeres en Exportación</h2><p>Una visión clara de los registros y el avance de evaluación de la jornada.</p><div class="e178-dateline"><span class="e178-tag">18 NOV · 2026</span><span class="e178-tag"><span class="e178-dot"></span>${before?'Jornada programada':today===EVENT_DAY?'Fecha del evento':'Jornada histórica'}</span><span class="e178-tag">Datos del sistema · sin simulaciones</span></div></div><div class="e177-tools"><button id="e177-refresh" type="button">↻ Sincronizar</button><button id="e177-export" type="button">↓ Exportar CSV</button></div></div></div>
+ <div class="e177-kpis">${kpi('Registradas',m.total,'Participantes de la jornada')}${kpi('Mediciones',m.measured,'Con medición registrada')}${kpi('Evaluaciones completas',m.complete,'Mediciones + PSS-10 + Edad biológica')}${kpi('Avance integral',pct+'%','Evaluación completa / participantes')}</div>
+ <div class="e177-panels"><article class="e177-panel"><h3>Avance por indicador</h3><p>Resumen sobre el total de participantes identificadas en este evento.</p><div class="e177-progress"><div class="e177-fill" style="width:${pct}%"></div></div><div class="e177-progress-label"><span>${m.complete} completas</span><span>${pct}% de avance</span></div><div class="e177-split">${bar('Mediciones',m.measured,m.total)}${bar('PSS-10',m.pss,m.total)}${bar('Edad biológica',m.bio,m.total)}${bar('Completas',m.complete,m.total)}</div></article><article class="e177-panel"><h3>Resumen operativo</h3><p>Indicadores derivados de los datos cargados.</p><div class="e177-alert" role="status">${escapeHTML(message)}</div><div class="e177-note"><span class="e177-pill">Jornada sin localidades</span><p class="e177-note">Los módulos y reportes históricos permanecen disponibles. Esta vista solo incluye registros con etiqueta del evento o fecha local del 18/11/2026.</p></div></article></div>
+ <div class="e178-extra"><article class="e177-panel"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><h3>Participantes de la jornada</h3><span id="e178-list-count" class="e177-pill">0</span></div><p>Estado de los registros identificados para este evento.</p><label class="e178-sr" for="e178-search">Buscar participante por nombre</label><input id="e178-search" class="e178-search" type="search" placeholder="Buscar por nombre o apellido…" autocomplete="off"><div id="e178-list" class="e178-list" aria-live="polite"></div></article><article class="e177-panel"><h3>Ruta de evaluación</h3><p>Cobertura acumulada de cada etapa clínica.</p>${journey('Registro',m.total,m.total,'01')}${journey('PSS-10',m.pss,m.total,'02')}${journey('Medición clínica',m.measured,m.total,'03')}${journey('Edad biológica',m.bio,m.total,'04')}<div class="e178-footer">Último cálculo: ${lastUpdate.toLocaleString('es-DO',{dateStyle:'medium',timeStyle:'short'})}. Los indicadores no prueban por sí solos que la sincronización esté al día. Las etapas son coberturas independientes, no una secuencia obligatoria de realización.</div></article></div>`;
+ const input=$('#e178-search',root);input.value=filter;input.addEventListener('input',()=>{filter=input.value;renderList(m.list)});renderList(m.list);
+ $('#e177-refresh',root).addEventListener('click',async()=>{if(refreshing)return;refreshing=true;const button=$('#e177-refresh',root);button.disabled=true;button.textContent='Sincronizando…';try{if(typeof window.loadAdminPatients==='function')await window.loadAdminPatients();else if(typeof window.refreshAdminData==='function')await window.refreshAdminData();if(typeof window.renderAdminAll==='function')await window.renderAdminAll();lastSignature='';render(true)}catch(error){console.error('Sincronización NUMED',error);button.textContent='Error · reintentar';button.title=String(error?.message||error)}finally{refreshing=false;button.disabled=false;if(button.textContent==='Sincronizando…')button.textContent='↻ Sincronizar'}});
+ $('#e177-export',root).addEventListener('click',()=>{const head=['Nombre','Apellido','Cedula','Fecha registro','Estado','Mediciones','PSS-10','Edad biologica'];const values=m.list.map(r=>[r.nombre||r.name||r.first_name||'',r.apellido||r.lastName||r.last_name||'',r.cedula||'',stamp(r),status(r),hasMeasurement(r)?'Si':'No',r.pss?.score??r.pss?.total??r.pss_score??'',r.bio?.biologicalAge??r.biologicalAge??r.edad_biologica??'']);const csv='\uFEFF'+[head,...values].map(line=>line.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const u=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=u;a.download='NUMED_Exportacion_18_Nov_2026.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)})
  }
- function init(){draw();const fn=window.renderAdminAll;if(typeof fn==='function'&&!fn.__v177){const wrap=function(...args){const out=fn.apply(this,args);requestAnimationFrame(draw);return out};wrap.__v177=true;window.renderAdminAll=wrap}setInterval(()=>{if(document.getElementById('admin-dashboard')?.classList.contains('active'))draw()},12000)}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,200));else setTimeout(init,200);
+ function start(){render(true);const original=window.renderAdminAll;if(typeof original==='function'&&!original.__v178){const wrapped=function(...args){const result=original.apply(this,args);requestAnimationFrame(()=>render());return result};wrapped.__v178=true;window.renderAdminAll=wrapped}setInterval(()=>{if($('#admin-dashboard')?.classList.contains('active'))render()},12000)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(start,200));else setTimeout(start,200);
 })();
 </script>
 
+<style id="numed-v178-premium">
+/* V178: capa visual cohesiva; mantiene estructura y funcionalidad histórica */
+#doctor-admin{--premium-ink:#123653;--premium-green:#a6cb3f;--premium-border:#e5ecf0}
+#doctor-admin .admin-main{background:linear-gradient(160deg,#f5f9fb,#fbfdfd 46%,#f3f8f5);}
+#doctor-admin .admin-side{background:linear-gradient(180deg,#102f52,#174d69)!important}
+#doctor-admin .admin-nav button.active{background:linear-gradient(100deg,#a6c944,#2a9e9d)!important;color:#092e47!important}
+#doctor-admin .admin-kpi,#doctor-admin .admin-table-card,#doctor-admin .detail-card{box-shadow:0 12px 35px rgba(18,54,83,.055)!important}
+#doctor-admin .admin-kpi:hover{transform:translateY(-3px)}
+#numed-event177{--eink:#143958;--egreen:#a6c944;--eline:#e2ebef;--emuted:#71899a;margin-bottom:28px}
+#numed-event177 .e177-hero{padding:34px;background:linear-gradient(110deg,#102f52 0%,#155a72 60%,#1b7f78 100%);border-radius:26px;box-shadow:0 20px 55px #133a5426}
+#numed-event177 .e177-hero h2{font-size:clamp(25px,2.8vw,37px);max-width:700px;letter-spacing:-.035em}
+#numed-event177 .e177-hero p{font-size:12px}
+#numed-event177 .e178-dateline{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:16px}
+#numed-event177 .e178-tag{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:750;padding:8px 11px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff3b;color:#fff}
+#numed-event177 .e178-dot{width:7px;height:7px;background:#bde26a;border-radius:50%}
+#numed-event177 .e177-kpis{margin:17px 0;gap:13px}
+#numed-event177 .e177-kpi{position:relative;padding:21px 21px 19px;border-radius:19px;min-height:135px;overflow:hidden}
+#numed-event177 .e177-kpi::before{content:'';position:absolute;inset:0 0 auto;height:4px;background:var(--egreen)}
+#numed-event177 .e177-kpi:nth-child(2)::before{background:#249eb2}
+#numed-event177 .e177-kpi:nth-child(3)::before{background:#e7ae4c}
+#numed-event177 .e177-kpi:nth-child(4)::before{background:#468eb6}
+#numed-event177 .e177-kpi strong{letter-spacing:-.055em;font-variant-numeric:tabular-nums;font-size:36px}
+#numed-event177 .e177-panels{grid-template-columns:1.25fr 1fr;gap:14px}
+#numed-event177 .e177-panel{padding:23px;border-radius:20px}
+#numed-event177 .e177-panel h3{font-size:16px;letter-spacing:-.025em}
+#numed-event177 .e178-extra{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-top:14px}
+#numed-event177 .e178-list{display:grid;gap:0;max-height:385px;overflow:auto}
+#numed-event177 .e178-person{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid #edf1f3}
+#numed-event177 .e178-person:last-child{border-bottom:0}
+#numed-event177 .e178-avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#edf5e1;color:#628b20;font-weight:850;font-size:12px}
+#numed-event177 .e178-person strong{display:block;font-size:11px;color:var(--eink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#numed-event177 .e178-person small{display:block;font-size:9px;color:var(--emuted);margin-top:3px}
+#numed-event177 .e178-status{padding:7px 9px;border-radius:999px;background:#fff4dd;color:#9d6a21;font-size:9px;font-weight:800;white-space:nowrap}
+#numed-event177 .e178-status.ok{background:#eff7e4;color:#598124}
+#numed-event177 .e178-search{width:100%;height:43px;border:1px solid #dbe6eb;border-radius:11px;background:#f9fbfc;padding:0 13px;font:inherit;font-size:12px;outline:none;margin:9px 0 6px}
+#numed-event177 .e178-search:focus{border-color:#8fb850;box-shadow:0 0 0 3px #a6c94422}
+#numed-event177 .e178-empty{padding:32px 12px;text-align:center;color:#8799a5;font-size:11px;line-height:1.65}
+#numed-event177 .e178-step{display:flex;align-items:center;gap:12px;margin:17px 0}
+#numed-event177 .e178-number{flex:0 0 auto;width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#eef5e1;color:#638824;font-weight:850;font-size:12px}
+#numed-event177 .e178-step-main{flex:1;min-width:0}
+#numed-event177 .e178-step-top{display:flex;justify-content:space-between;gap:10px;color:#315775;font-size:11px;font-weight:700;margin-bottom:7px}
+#numed-event177 .e178-step-track{height:8px;background:#edf1f3;border-radius:999px;overflow:hidden}
+#numed-event177 .e178-step-track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#a6cb43,#29a5a2);transition:width .4s}
+#numed-event177 .e178-footer{font-size:10px;line-height:1.7;color:#7b8f9d;border-top:1px solid #e9eef0;margin-top:17px;padding-top:13px}
+#numed-event177 .e178-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+#numed-event177 .e177-tools button{transition:background .2s,transform .2s}
+#numed-event177 .e177-tools button:hover{transform:translateY(-1px)}
+#numed-event177 .e177-tools button:disabled{opacity:.5;cursor:wait}
+@media(max-width:1100px){#numed-event177 .e178-extra{grid-template-columns:1fr}}
+@media(max-width:850px){#numed-event177 .e177-panels{grid-template-columns:1fr}}
+@media(max-width:600px){#numed-event177 .e177-hero{padding:23px}#numed-event177 .e177-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}#numed-event177 .e177-kpi{min-height:120px;padding:15px}#numed-event177 .e177-kpi strong{font-size:28px}#numed-event177 .e178-extra{gap:10px}#numed-event177 .e178-person{grid-template-columns:32px minmax(0,1fr) auto;gap:7px}#numed-event177 .e178-avatar{height:32px;width:32px}}
+@media(prefers-reduced-motion:reduce){#numed-event177 *,#doctor-admin .admin-nav button{animation:none!important;transition:none!important}}
+</style>
 </body>
 </html>
