@@ -7974,6 +7974,7 @@ window.NUMED_V184={exportQR,whatsapp,openAccess,enhanceShare,enhanceModal};
       });
     });
   }
+  window.numedV185RenderPremium = renderPremium;
   window.detailTab = function(tab, btn){
     const out = typeof oldDetailTab === 'function' ? oldDetailTab.apply(this, arguments) : undefined;
     if(tab==='result' && window.adminCurrentPatient){ renderPremium(); }
@@ -8012,5 +8013,62 @@ window.NUMED_V184={exportQR,whatsapp,openAccess,enhanceShare,enhanceModal};
  }
  return output;
  };
+})();
+</script>
+
+
+<style id="numed-v187-stable-result-style">
+#doctor-admin #detail-content .v185-result{display:grid!important;gap:20px!important;position:relative;max-width:100%;overflow:visible}
+#doctor-admin #detail-content .v185-bio-card{order:1}
+#doctor-admin #detail-content .v185-hero{order:0}
+#doctor-admin #detail-content .v185-result>section:nth-child(3){order:2}
+#doctor-admin #detail-content .v185-next{order:3}
+#doctor-admin #detail-content .v185-actions{order:4}
+#doctor-admin #detail-content .v185-note{order:5}
+#doctor-admin #detail-content .v185-agebox strong{font-variant-numeric:tabular-nums}
+@media(prefers-reduced-motion:reduce){#doctor-admin #detail-content .v185-card,#doctor-admin #detail-content .v185-anim{opacity:1!important;transform:none!important;animation:none!important}}
+</style>
+<script id="numed-v187-stable-result-script">
+(function(){
+  let currentTab='';
+  let restoring=false;
+  const target=()=>document.getElementById('detail-content');
+  function visibleResult(){
+    const detail=document.getElementById('admin-detail');
+    return currentTab==='result'&&detail&&getComputedStyle(detail).display!=='none' && !!window.adminCurrentPatient;
+  }
+  function ensurePremium(){
+    if(restoring||!visibleResult())return;
+    const host=target();
+    if(!host || host.querySelector(':scope > .v185-result'))return;
+    if(typeof window.numedV185RenderPremium!=='function')return;
+    restoring=true;
+    try{window.numedV185RenderPremium();}
+    catch(error){console.error('NUMED V187: no se pudo recuperar el resultado premium',error);}
+    finally{restoring=false;}
+  }
+  const previous=window.detailTab;
+  window.detailTab=function(tab,btn){
+    currentTab=tab;
+    const result=typeof previous==='function'?previous.apply(this,arguments):undefined;
+    if(tab==='result')queueMicrotask(ensurePremium);
+    return result;
+  };
+  function init(){
+    const host=target();
+    if(!host)return;
+    const observer=new MutationObserver(()=>{
+      if(!visibleResult() || restoring)return;
+      if(!host.querySelector(':scope > .v185-result'))queueMicrotask(ensurePremium);
+    });
+    observer.observe(host,{childList:true});
+    const tabs=document.querySelector('.detail-tabs');
+    tabs?.addEventListener('click',event=>{
+      const b=event.target.closest('button');
+      if(!b)return;
+      if(!/resultado/i.test(b.textContent||'')) currentTab='';
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
 })();
 </script>
