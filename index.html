@@ -7773,3 +7773,204 @@ document.addEventListener('DOMContentLoaded',()=>{enhanceShare();enhanceModal();
 window.NUMED_V184={exportQR,whatsapp,openAccess,enhanceShare,enhanceModal};
 })();
 </script>
+
+<style id="numed-v185-result-style">
+:root{--v185-navy:#0a315c;--v185-blue:#1f6f8c;--v185-blue-soft:#eef6fb;--v185-green:#a6cb3f;--v185-green-2:#7ca320;--v185-mint:#f5fae7;--v185-red:#db5d56;--v185-red-soft:#fff3f1;--v185-amber:#e3a93a;--v185-amber-soft:#fff8e9;--v185-ink:#173b58;--v185-muted:#708496;--v185-line:#dde6ec;--v185-card:#ffffff;--v185-shadow:0 18px 50px rgba(10,49,92,.08);}
+#detail-content .v185-result{display:grid;gap:18px;animation:v185Fade .5s ease both}
+.v185-hero,.v185-bio-card,.v185-next,.v185-actions,.v185-note{background:#fff;border:1px solid var(--v185-line);border-radius:26px;box-shadow:var(--v185-shadow)}
+.v185-hero{position:relative;overflow:hidden;padding:28px;background:radial-gradient(circle at 92% 16%,rgba(166,203,63,.2),transparent 25%),linear-gradient(135deg,#fff,#f8fbfd)}
+.v185-hero:before{content:'';position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,var(--v185-green),#d6e980,var(--v185-blue))}
+.v185-kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:#f1f7e1;color:#5f8615;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.v185-kicker:before{content:'✦';font-size:12px}
+.v185-hero-main{margin-top:16px;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:18px;align-items:start}
+.v185-hero h2{margin:0;font-size:34px;line-height:1.02;color:var(--v185-navy);letter-spacing:-.04em}
+.v185-hero p{margin:8px 0 0;color:var(--v185-muted);font-size:14px;line-height:1.6}
+.v185-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.v185-pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 13px;background:#f7fafc;border:1px solid #e5edf3;font-size:11px;color:#567188;font-weight:700}
+.v185-pill b{color:var(--v185-navy)}
+.v185-overall{padding:18px;border-radius:22px;background:linear-gradient(135deg,#0b315f,#215f73);color:#fff;box-shadow:0 16px 35px rgba(7,47,87,.18)}
+.v185-overall small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#c3d4df;font-weight:800}
+.v185-overall strong{display:block;margin-top:10px;font-size:24px;line-height:1.1}
+.v185-overall span{display:block;margin-top:7px;font-size:12px;line-height:1.55;color:#dbe7ee}
+.v185-overall.favorable{background:linear-gradient(135deg,#0b315f,#2a7f62)}
+.v185-overall.observacion{background:linear-gradient(135deg,#0b315f,#906c1f)}
+.v185-overall.atencion{background:linear-gradient(135deg,#0b315f,#92504a)}
+.v185-bio-card{position:relative;overflow:hidden;padding:24px;background:radial-gradient(circle at 95% 10%,rgba(166,203,63,.22),transparent 22%),linear-gradient(135deg,#0b315f,#1a4d74 58%,#2f6f75)}
+.v185-bio-card h3{margin:0;color:#fff;font-size:27px;letter-spacing:-.03em}
+.v185-bio-card p{margin:6px 0 0;color:#d6e4ec;font-size:13px}
+.v185-bio-grid{display:grid;grid-template-columns:1fr 140px 1fr;gap:18px;align-items:center;margin-top:18px}
+.v185-agebox{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:20px 18px;text-align:center;color:#fff;min-height:130px;display:flex;flex-direction:column;justify-content:center}
+.v185-agebox small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#d2dfe8;font-weight:800}
+.v185-agebox strong{display:block;margin-top:8px;font-size:54px;line-height:.98;letter-spacing:-.04em}
+.v185-agebox em{display:block;margin-top:8px;font-style:normal;font-size:12px;color:#dce8ef}
+.v185-agebox.bio strong{color:#d4ef74}
+.v185-bio-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff}
+.v185-arrow{font-size:34px;font-weight:800;color:#d4ef74;line-height:1}
+.v185-delta{padding:11px 15px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;white-space:nowrap}
+.v185-delta.favorable{background:rgba(36,166,96,.16)} .v185-delta.atencion{background:rgba(219,93,86,.17)} .v185-delta.observacion{background:rgba(227,169,58,.17)}
+.v185-bio-msg{margin-top:16px;background:#fff;border-radius:18px;padding:14px 18px;font-size:15px;font-weight:700;text-align:center;color:#173b58}
+.v185-section-title{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-top:2px}
+.v185-section-title h4{margin:0;color:var(--v185-navy);font-size:22px}
+.v185-section-title p{margin:0;color:var(--v185-muted);font-size:13px}
+.v185-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.v185-card{position:relative;background:var(--v185-card);border:1px solid var(--v185-line);border-radius:24px;padding:20px 20px 18px;box-shadow:var(--v185-shadow);overflow:hidden;transform:translateY(10px);opacity:0;animation:v185Reveal .55s cubic-bezier(.2,.8,.2,1) forwards}
+.v185-card:before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--v185-green),#d5e77b,var(--v185-blue))}
+.v185-card.atencion:before{background:linear-gradient(90deg,#ee8d7d,var(--v185-red))}
+.v185-card.observacion:before{background:linear-gradient(90deg,#f1cd68,var(--v185-amber))}
+.v185-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.v185-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;font-size:24px;background:#f3f7fa;box-shadow:inset 0 0 0 1px #edf2f6}
+.v185-card.atencion .v185-icon{background:var(--v185-red-soft)}
+.v185-card.observacion .v185-icon{background:var(--v185-amber-soft)}
+.v185-card.favorable .v185-icon{background:var(--v185-mint)}
+.v185-head h5{margin:0;font-size:24px;line-height:1.06;color:var(--v185-navy);letter-spacing:-.03em}
+.v185-sub{margin-top:5px;color:var(--v185-muted);font-size:13px;line-height:1.55}
+.v185-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.v185-badge.favorable{background:#eef8da;color:#5d8715}
+.v185-badge.observacion{background:#fff3da;color:#8c6715}
+.v185-badge.atencion{background:#fff0ed;color:#a2473f}
+.v185-chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0 12px}
+.v185-chip{display:inline-flex;align-items:center;gap:7px;padding:10px 12px;border-radius:14px;background:#f7fafc;border:1px solid #e6eef3;font-size:11px;color:#5d7488;font-weight:700}
+.v185-chip b{color:var(--v185-navy);font-size:12px}
+.v185-copy{margin:0;color:#29455d;font-size:13px;line-height:1.6}
+.v185-list{display:grid;gap:9px;margin-top:14px}
+.v185-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;background:#fafcfd;border:1px solid #e9f0f4}
+.v185-item span{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:900;background:#edf7d8;color:#5b8614;flex:0 0 22px;margin-top:1px}
+.v185-card.atencion .v185-item span{background:#fff1ee;color:#a64e45}
+.v185-card.observacion .v185-item span{background:#fff7e6;color:#9b731d}
+.v185-item small{font-size:12px;line-height:1.5;color:#5a7286}
+.v185-next{padding:20px;background:linear-gradient(135deg,#fff,#f8fbfd)}
+.v185-next-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:12px}
+.v185-next-card{border:1px solid var(--v185-line);border-radius:20px;padding:18px;background:#fff;box-shadow:0 10px 28px rgba(10,49,92,.05)}
+.v185-next-card h5{margin:0 0 8px;color:var(--v185-navy);font-size:16px}
+.v185-next-card ul{margin:0;padding-left:18px;color:#5d7285;font-size:13px;line-height:1.7}
+.v185-actions{padding:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.v185-actions .v185-actions-left{display:flex;gap:10px;flex-wrap:wrap}.v185-actions .v185-actions-note{font-size:12px;color:var(--v185-muted)}
+.v185-note{padding:16px 18px;color:#62788c;font-size:12px;line-height:1.65;background:linear-gradient(135deg,#fbfdfb,#f7fafc)}
+.v185-btn{appearance:none;border:0;min-height:46px;padding:0 18px;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;display:inline-flex;align-items:center;gap:9px;justify-content:center}
+.v185-btn:hover{transform:translateY(-1px);filter:brightness(1.01)}
+.v185-btn.primary{background:linear-gradient(135deg,var(--v185-green-2),var(--v185-green));color:#fff;box-shadow:0 13px 28px rgba(124,163,32,.22)}
+.v185-btn.secondary{background:linear-gradient(135deg,var(--v185-navy),#11456d);color:#fff;box-shadow:0 13px 28px rgba(10,49,92,.2)}
+.v185-btn.ghost{background:#f8fbfd;color:var(--v185-navy);border:1px solid #dce7ed}
+.v185-btn[disabled]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.v185-anim{opacity:0;transform:translateY(12px);animation:v185FadeUp .6s cubic-bezier(.2,.8,.2,1) forwards}.v185-delay-1{animation-delay:.08s}.v185-delay-2{animation-delay:.16s}.v185-delay-3{animation-delay:.24s}.v185-delay-4{animation-delay:.32s}
+@keyframes v185Fade{from{opacity:0}to{opacity:1}} @keyframes v185FadeUp{to{opacity:1;transform:none}} @keyframes v185Reveal{to{opacity:1;transform:none}}
+@media(max-width:1120px){.v185-hero-main{grid-template-columns:1fr}.v185-overall{max-width:320px}}
+@media(max-width:900px){.v185-grid,.v185-next-grid{grid-template-columns:1fr}.v185-bio-grid{grid-template-columns:1fr;gap:12px}.v185-arrow{transform:rotate(90deg)}.v185-bio-mid{gap:8px}.v185-agebox{min-height:104px}.v185-agebox strong{font-size:42px}.v185-hero h2{font-size:28px}}
+</style>
+<script id="numed-v185-result-script">
+(function(){
+  const oldDetailTab = window.detailTab;
+  const esc = (v)=>String(v??'—').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const n = (v)=>{const x=Number(v); return Number.isFinite(x)?x:null;};
+  const fmt1=(v,s='')=>v==null?'—':`${v}${s}`;
+  const modeOf=(r,m)=>{ const raw=(m?.modalidad||r?.modalidad||r?.mode||r?.questionnaire?.modalidad||'fht').toString().toLowerCase(); return raw.includes('corta')?'corta':'fht'; };
+  const classifyAbd=(gender,val)=>{ if(typeof window.classifyAbdominalPerimeter==='function'){ try{return window.classifyAbdominalPerimeter(gender,val)}catch(e){} }
+    const g=(gender||'').toString().toLowerCase(); const female=g.startsWith('f'); const normal=female?88:102, moderate=female?95:109; if(val==null) return {level:'No evaluado', interpretation:'Completa la medición abdominal para interpretarla.'}; if(val<normal) return {level:'Normal', interpretation:'El perímetro abdominal se mantiene dentro del rango esperado.'}; if(val<moderate) return {level:'Elevado', interpretation:'Conviene vigilar el perímetro abdominal y reforzar hábitos saludables.'}; return {level:'Muy elevado', interpretation:'Se recomienda seguimiento profesional de la composición corporal y riesgo cardiometabólico.'}; };
+  function lifestyleLevel(r){
+    const q=r?.questionnaire||{};
+    const yes=(...keys)=>keys.map(k=>Number(q[k]??q[k.toLowerCase()]??q[k.toUpperCase()]??0)).reduce((a,b)=>a+b,0);
+    const score=yes('actividad','frutas_verduras','hidratacion','sueno') - yes('tabaco','alcohol','ultraprocesados','sedentarismo');
+    if(score>=2) return {label:'Saludable', key:'favorable', text:'Tus hábitos reportados muestran una base protectora para la salud y el envejecimiento saludable.'};
+    if(score>=0) return {label:'Intermedio', key:'observacion', text:'Hay hábitos positivos, pero conviene reforzar rutina de sueño, movimiento y alimentación.'};
+    return {label:'Necesita refuerzo', key:'atencion', text:'Se recomienda trabajar de forma estructurada en alimentación, actividad física y recuperación.'};
+  }
+  function pssLevel(score){ if(score==null) return {key:'observacion', label:'Pendiente', text:'Completa el PSS-10 para interpretar el componente psicosocial.'}; if(score<=13) return {key:'favorable', label:'Estrés bajo', text:'El nivel de estrés percibido es bajo y favorece la recuperación.'}; if(score<=26) return {key:'observacion', label:'Estrés moderado', text:'Conviene reforzar autocuidado, pausas activas y seguimiento.'}; return {key:'atencion', label:'Estrés alto', text:'Se recomienda atención al manejo del estrés y valoración profesional.'}; }
+  function cardioLevel(sys,dia,fc){ if(sys==null||dia==null) return {key:'observacion', label:'Datos parciales', text:'Completa los signos vitales para interpretar esta condición.'}; if(sys>=140||dia>=90) return {key:'atencion', label:'Requiere atención', text:'Los signos vitales ameritan seguimiento y una nueva toma en condiciones adecuadas.'}; if(sys>=120||dia>=80||((fc??0)>95)) return {key:'observacion', label:'En observación', text:'Alguno de los signos se beneficia de vigilancia y reevaluación.'}; return {key:'favorable', label:'Favorable', text:'La presión arterial y la frecuencia cardíaca lucen favorables.'}; }
+  function functionalLevel(force,flex,mode){ if(force==null) return {key:'observacion', label:'Pendiente', text:'Completa la fuerza para valorar esta condición.'}; if(mode==='corta'){ if(force<18) return {key:'atencion', label:'Requiere atención', text:'La fuerza puede mejorarse con entrenamiento progresivo.'}; if(force<28) return {key:'observacion', label:'En observación', text:'La fuerza es aceptable, pero conviene seguir fortaleciéndola.'}; return {key:'favorable', label:'Favorable', text:'La fuerza muscular es favorable para esta modalidad.'}; }
+    if(force<18 || (flex!=null && flex<5)) return {key:'atencion', label:'Requiere atención', text:'La capacidad funcional necesita refuerzo progresivo.'};
+    if(force<28 || (flex!=null && flex<15)) return {key:'observacion', label:'En observación', text:'Conviene reforzar fuerza, movilidad y flexibilidad.'};
+    return {key:'favorable', label:'Favorable', text:'La fuerza y la movilidad muestran una base funcional adecuada.'};
+  }
+  function metabolicLevel(bmi,abd){ if(bmi==null && abd?.level==='No evaluado') return {key:'observacion', label:'Datos parciales', text:'Completa peso, talla y perímetro abdominal para interpretarla.'}; if((bmi??0)>=30 || abd?.level==='Muy elevado') return {key:'atencion', label:'Requiere atención', text:'Los indicadores metabólicos sugieren dar seguimiento profesional.'}; if((bmi??0)>=25 || abd?.level==='Elevado') return {key:'observacion', label:'En observación', text:'Existen indicadores metabólicos que conviene vigilar y mejorar.'}; return {key:'favorable', label:'Favorable', text:'Los valores de composición corporal se muestran favorables.'}; }
+  function overallKey(diff,cards){ if(diff!=null){ if(diff>0) return 'atencion'; if(diff<0) return 'favorable'; }
+    const arr=cards.map(c=>c.key); if(arr.includes('atencion')) return 'atencion'; if(arr.includes('observacion')) return 'observacion'; return 'favorable'; }
+  function overallText(key,diff){ if(diff==null) return ['Evaluación en proceso','Completa las mediciones para mostrar la interpretación global.']; if(diff>0) return ['Prioridad de mejora','Tu edad biológica está por encima de la cronológica. El programa recomienda reforzar hábitos y seguimiento.']; if(diff<0) return ['Muy buen resultado','Tu edad biológica está por debajo de la cronológica. Mantén las conductas protectoras actuales.']; if(key==='observacion') return ['Buen punto de partida','El resultado está dentro del rango esperado, con áreas puntuales a reforzar.']; return ['Resultado favorable','Los indicadores muestran un equilibrio adecuado para tu evaluación actual.']; }
+  function summaryMessage(diff){ if(diff==null) return 'Completa las mediciones clínicas para obtener la estimación de edad biológica.'; const a=Math.abs(diff); if(diff>0) return `Tu edad biológica es ${a} año${a===1?'':'s'} mayor que tu edad cronológica.`; if(diff<0) return `Tu edad biológica es ${a} año${a===1?'':'s'} menor que tu edad cronológica.`; return 'Tu edad biológica coincide con tu edad cronológica.'; }
+  function deltaLabel(diff){ if(diff==null) return 'Pendiente'; const a=Math.abs(diff); if(diff>0) return `+${a} año${a===1?'':'s'}`; if(diff<0) return `−${a} año${a===1?'':'s'}`; return 'Sin diferencia'; }
+  function cardHTML(card, i){
+    return `<article class="v185-card ${card.key}" style="animation-delay:${0.1 + i*0.08}s"><div class="v185-head"><div style="display:flex;gap:14px"><div class="v185-icon">${card.icon}</div><div><h5>${esc(card.title)}</h5><div class="v185-sub">${esc(card.subtitle)}</div></div></div><span class="v185-badge ${card.key}">${esc(card.badge)}</span></div><div class="v185-chiprow">${card.metrics.map(m=>`<div class="v185-chip"><span>${m.icon}</span><div>${esc(m.label)} <b>${esc(m.value)}</b></div></div>`).join('')}</div><p class="v185-copy">${esc(card.text)}</p><div class="v185-list">${card.recs.map(r=>`<div class="v185-item"><span>✓</span><small>${esc(r)}</small></div>`).join('')}</div></article>`;
+  }
+  function nextSteps(mode,diff,cards){
+    const strong=[]; const improve=[]; const steps=[];
+    cards.forEach(c=>{ if(c.key==='favorable') strong.push(c.shortStrong||c.title); else improve.push(c.shortImprove||c.title); });
+    if(!strong.length) strong.push('Se cuenta con información suficiente para iniciar un plan de mejora.');
+    if(!improve.length) improve.push('Mantener seguimiento preventivo y hábitos saludables.');
+    if(diff!=null && diff>0) steps.push('Priorizar seguimiento de la edad biológica en las próximas semanas.');
+    if(mode==='corta') steps.push('Si deseas una visión más completa, complementa con la FHT integral.');
+    else steps.push('Repetir la evaluación FHT según el protocolo de la jornada o indicación profesional.');
+    steps.push('Mantener comunicación con el equipo NUMED para acompañamiento personalizado.');
+    return {strong, improve, steps};
+  }
+  function renderPremium(){
+    const r=window.adminCurrentPatient; if(!r) return;
+    const m=r.measurements||{}; const mode=modeOf(r,m); const gender=r.gender||r.sexo||r.patient_gender||''; const bio=n(m.edadBiologica); const age=n(r.age); const diff=(bio!=null&&age!=null)?bio-age:null;
+    const sys=n(m.presionSistolica), dia=n(m.presionDiastolica), fc=n(m.frecuenciaCardiaca), bmi=n(m.imc), force=n(m.fuerza), flex=n(m.flexibilidad), abdVal=n(m.abdomen), abd=classifyAbd(gender,abdVal), pss=n(r.pss?.score), pssL=pssLevel(pss), life=lifestyleLevel(r), cardio=cardioLevel(sys,dia,fc), functional=functionalLevel(force,flex,mode), metabolic=metabolicLevel(bmi,abd);
+    const cards=[];
+    if(mode!=='corta') cards.push({title:'Condición cardiovascular', subtitle:'Presión arterial y frecuencia cardíaca', icon:'❤', badge:cardio.label, key:cardio.key, text:cardio.text, metrics:[{icon:'🩺',label:'PA',value:sys!=null&&dia!=null?`${sys}/${dia} mmHg`:'—'},{icon:'🫀',label:'FC',value:fmt1(fc,' lpm')}], recs:[ 'Mantener una rutina de actividad física y descanso adecuados.', cardio.key==='atencion'?'Solicitar seguimiento de los signos vitales y repetir la medición.':'Vigilar la evolución de la presión arterial y el pulso en próximos controles.' ], shortStrong:'Cardiovascular favorable', shortImprove:'Seguimiento cardiovascular'});
+    cards.push({title:'Condición metabólica', subtitle:'IMC, peso, talla y perímetro abdominal', icon:'⚖', badge:metabolic.label, key:metabolic.key, text:metabolic.text, metrics:[{icon:'📊',label:'IMC',value:fmt1(bmi,' kg/m²')},{icon:'📏',label:'Abdomen',value:fmt1(abdVal,' cm')},{icon:'🏷',label:'Nivel',value:abd.level}], recs:[ 'Favorecer alimentación equilibrada y constancia en el movimiento diario.', metabolic.key==='atencion'?'Dar seguimiento profesional al peso y al perímetro abdominal.':'Controlar la evolución de la composición corporal en próximos controles.' ], shortStrong:'Perfil metabólico favorable', shortImprove:'Mejorar perfil metabólico'});
+    cards.push({title:'Condición funcional', subtitle:mode==='corta'?'Fuerza muscular y capacidad funcional rápida':'Fuerza muscular y flexibilidad', icon:'💪', badge:functional.label, key:functional.key, text:functional.text, metrics: mode==='corta' ? [{icon:'🏋',label:'Fuerza',value:fmt1(force,' kg')},{icon:'⚡',label:'Modalidad',value:'Rápida'}] : [{icon:'🏋',label:'Fuerza',value:fmt1(force,' kg')},{icon:'🤸',label:'Flexibilidad',value:fmt1(flex,' cm')}], recs:[ 'Incorporar ejercicios de fuerza de forma regular y progresiva.', mode==='corta'?'Si se requiere más detalle funcional, complementar con FHT integral.':'Añadir movilidad y flexibilidad al plan de actividad física.' ], shortStrong:'Capacidad funcional adecuada', shortImprove:'Reforzar capacidad funcional'});
+    cards.push({title:'Condición psicosocial', subtitle:'Estrés percibido y recuperación', icon:'☯', badge:pssL.label, key:pssL.key, text:pssL.text, metrics:[{icon:'🧠',label:'PSS-10',value:pss!=null?`${pss}/40`:'—'},{icon:'🌿',label:'Hábitos',value:life.label}], recs:[ 'Reforzar sueño, pausas activas y estrategias de manejo del estrés.', pssL.key==='atencion'?'Valorar apoyo profesional si el estrés se mantiene elevado.':'Repetir la evaluación psicosocial según seguimiento del programa.' ], shortStrong:'Estrés bien manejado', shortImprove:'Trabajar manejo del estrés'});
+    const overallK=overallKey(diff,cards), ov=overallText(overallK,diff), steps=nextSteps(mode,diff,cards);
+    const container = document.getElementById('detail-content'); if(!container) return;
+    const dateLabel = new Date().toLocaleDateString('es-DO', {day:'2-digit', month:'short', year:'numeric'});
+    container.innerHTML = `<div class="v185-result">
+      <section class="v185-hero v185-anim">
+        <span class="v185-kicker">Resultado premium dentro del programa</span>
+        <div class="v185-hero-main">
+          <div>
+            <h2>Perfil de salud por condiciones</h2>
+            <p>Visual individual más clara, dinámica y moderna para interpretar el estado general de salud y la edad biológica.</p>
+            <div class="v185-pills">
+              <span class="v185-pill">👤 <b>${esc((r.first||'') + ' ' + (r.last||''))}</b></span>
+              <span class="v185-pill">🧾 Modalidad: <b>${mode==='corta'?'Edad Biológica Rápida':'FHT · Integral'}</b></span>
+              <span class="v185-pill">📅 ${esc(dateLabel)}</span>
+              <span class="v185-pill">📌 Estado: <b>${r.measured?'Completado':'Pendiente clínico'}</b></span>
+            </div>
+          </div>
+          <aside class="v185-overall ${overallK}">
+            <small>Lectura general</small>
+            <strong>${esc(ov[0])}</strong>
+            <span>${esc(ov[1])}</span>
+          </aside>
+        </div>
+      </section>
+      <section class="v185-bio-card v185-anim v185-delay-1">
+        <div class="v185-section-title"><div><h3>Edad biológica</h3><p>Estimación orientativa basada en el algoritmo NUMED actual.</p></div></div>
+        <div class="v185-bio-grid">
+          <div class="v185-agebox"><small>Edad cronológica</small><strong data-v185-count="${age??0}">${age??'—'}</strong><em>años</em></div>
+          <div class="v185-bio-mid"><div class="v185-arrow">→</div><div class="v185-delta ${(diff==null)?'observacion':diff>0?'atencion':diff<0?'favorable':'observacion'}">${esc(deltaLabel(diff))}</div></div>
+          <div class="v185-agebox bio"><small>Edad biológica</small><strong data-v185-count="${bio??0}">${bio??'—'}</strong><em>años</em></div>
+        </div>
+        <div class="v185-bio-msg">${esc(summaryMessage(diff))}</div>
+      </section>
+      <section class="v185-anim v185-delay-2">
+        <div class="v185-section-title"><div><h4>Condiciones evaluadas</h4><p>${mode==='corta'?'La modalidad rápida resume los indicadores principales sin flexibilidad ni presión arterial.':'Vista resumida de las principales áreas incluidas en la FHT integral.'}</p></div></div>
+        <div class="v185-grid">${cards.map(cardHTML).join('')}</div>
+      </section>
+      <section class="v185-next v185-anim v185-delay-3">
+        <div class="v185-section-title"><div><h4>Interpretación rápida</h4><p>Resumen de fortalezas, puntos de atención y próximos pasos sugeridos.</p></div></div>
+        <div class="v185-next-grid">
+          <div class="v185-next-card"><h5>Lo que va bien</h5><ul>${steps.strong.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+          <div class="v185-next-card"><h5>Lo que debes reforzar</h5><ul>${steps.improve.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+          <div class="v185-next-card"><h5>Próximos pasos</h5><ul>${steps.steps.slice(0,4).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+        </div>
+      </section>
+      <section class="v185-actions v185-anim v185-delay-4"><div class="v185-actions-left"><button class="v185-btn primary" onclick="downloadBioReport()" ${r.measured?'':'disabled'}>⬇ Descargar informe integral</button><button class="v185-btn secondary" onclick="downloadPSSReport()">♡ Descargar PSS-10</button>${typeof window.pb46Open==='function'?`<button class="v185-btn ghost" onclick="pb46Open()" ${r.measured?'':'disabled'}>📸 Crear ficha Photo Booth</button>`:''}</div><div class="v185-actions-note">Los PDF siguen iguales; esta mejora es para la visual del programa.</div></section>
+      <section class="v185-note">Los resultados son orientativos y no constituyen un diagnóstico médico o psicológico. Deben complementarse con valoración profesional. Las animaciones son únicamente visuales y no alteran los cálculos clínicos.</section>
+    </div>`;
+    requestAnimationFrame(()=>{
+      container.querySelectorAll('[data-v185-count]').forEach(el=>{
+        const target=Number(el.getAttribute('data-v185-count')); if(!Number.isFinite(target) || target<=0){return;}
+        const start=performance.now(), dur=900; const fmt=(v)=>Math.round(v).toString();
+        function step(ts){ const p=Math.min(1,(ts-start)/dur); const e=1-Math.pow(1-p,3); el.textContent=fmt(target*e); if(p<1) requestAnimationFrame(step); else el.textContent=fmt(target); }
+        el.textContent='0'; requestAnimationFrame(step);
+      });
+    });
+  }
+  window.detailTab = function(tab, btn){
+    const out = typeof oldDetailTab === 'function' ? oldDetailTab.apply(this, arguments) : undefined;
+    if(tab==='result' && window.adminCurrentPatient){ renderPremium(); }
+    return out;
+  };
+})();
+</script>
