@@ -7674,3 +7674,102 @@ document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>window.refreshCo
  window.NUMED_V183_refreshResults=render;
 })();
 </script>
+
+
+<style id="numed-v184-qr-premium-css">
+#admin-share .v181-share-grid{gap:22px;margin-top:22px}
+#admin-share .v181-share-card{border-radius:26px;padding:26px;border:1px solid #e0e8ed;box-shadow:0 16px 44px rgba(12,46,77,.075);transition:transform .25s ease,box-shadow .25s ease}
+#admin-share .v181-share-card:hover{transform:translateY(-4px);box-shadow:0 22px 52px rgba(12,46,77,.13)}
+#admin-share .v181-share-card.active{border-color:#abc942}
+#admin-share .v181-share-card h3{font-size:22px;letter-spacing:-.03em}
+#admin-share .v181-share-card p{font-size:12px;line-height:1.7}
+.v184-mark{width:44px;height:44px;display:grid;place-items:center;background:#eff6dc;border-radius:15px;font-size:23px;margin-bottom:13px}
+.v184-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.v184-btn{border:1px solid #dae5e9;border-radius:11px;background:#fff;color:#174263;font:700 11px Montserrat,Arial,sans-serif;padding:11px 13px;min-height:42px;cursor:pointer;transition:.2s ease}
+.v184-btn:hover{border-color:#abc942;background:#f4f9e9;transform:translateY(-2px)}
+.v184-btn.primary{background:#abc942;border-color:#abc942;color:#17344c}
+.v184-btn.navy{background:#274c71;border-color:#274c71;color:white}
+.v184-preview{margin-top:18px;border:1px solid #e0eaf1;border-radius:18px;padding:15px;background:#f9fcfd;display:flex;align-items:center;gap:12px}
+.v184-preview-icon{height:40px;width:40px;border-radius:12px;background:#e8f3dc;display:grid;place-items:center;font-size:22px}
+.v184-preview strong{display:block;color:#153c61;font-size:11px}
+.v184-preview small{display:block;color:#647d8c;font-size:10px;margin-top:4px;line-height:1.5}
+.v184-modal-tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 4px}
+.v184-modal-caption{text-align:center;font-size:10px;color:#6d8393;margin:8px 0}
+.v184-toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);z-index:12000;background:#163c60;color:#fff;padding:13px 20px;border-radius:14px;box-shadow:0 18px 42px #102f5540;font:700 12px Montserrat,Arial,sans-serif;opacity:0;pointer-events:none;transition:.3s}
+.v184-toast.visible{opacity:1;transform:translate(-50%,0)}
+@media(max-width:600px){#admin-share .v181-share-card{padding:19px}.v184-tools .v184-btn{flex:1 1 130px}.v184-modal-tools .v184-btn{flex:1 1 145px}}
+@media(prefers-reduced-motion:reduce){.v184-btn,.v181-share-card,.v184-toast{transition:none!important}}
+</style>
+<script id="numed-v184-qr-premium-js">
+(function(){
+'use strict';
+const label=m=>m==='corta'?'Edad Biológica Rápida':'FHT Integral';
+const safeMode=m=>m==='corta'?'corta':'fht';
+function urlFor(m){const u=new URL(location.href);u.hash='';u.search='';u.searchParams.set('mode','patient');u.searchParams.set('source','qr');u.searchParams.set('eval',safeMode(m));return u.href;}
+function toast(msg){let el=document.getElementById('v184-toast');if(!el){el=document.createElement('div');el.id='v184-toast';el.className='v184-toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=msg;el.classList.add('visible');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('visible'),2800)}
+function whatsapp(m){const msg='Hola, te compartimos el acceso a '+label(m)+' de NUMED CARE. Completa tu evaluación aquí: '+urlFor(m);window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
+function openAccess(m){window.open(urlFor(m),'_blank','noopener,noreferrer')}
+function getLogo(){const el=document.querySelector('.wc-logo')||document.getElementById('portal-logo');return el&&el.src||''}
+async function imageFrom(src){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src})}
+async function buildPoster(m){
+ m=safeMode(m);
+ if(!window.QRCode)throw new Error('No se ha cargado el generador QR. Conecta a Internet y vuelve a intentarlo.');
+ const offscreen=document.createElement('div');offscreen.style.cssText='position:fixed;left:-9999px;top:-9999px;background:white;padding:0;';document.body.appendChild(offscreen);
+ try{
+  new QRCode(offscreen,{text:urlFor(m),width:580,height:580,correctLevel:QRCode.CorrectLevel.H});
+  const node=offscreen.querySelector('canvas,img');if(!node)throw new Error('No se pudo generar el QR');
+  const qr=node.tagName==='CANVAS'?node:await imageFrom(node.src);
+  const c=document.createElement('canvas');c.width=1000;c.height=1400;const ctx=c.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,1000,1400);
+  ctx.fillStyle='#274c71';ctx.fillRect(0,0,1000,18);
+  ctx.fillStyle='#abc942';ctx.fillRect(0,18,1000,11);
+  ctx.fillStyle='#274c71';ctx.font='bold 54px Montserrat,Arial,sans-serif';ctx.textAlign='center';ctx.fillText('NUMED CARE',500,140);
+  ctx.fillStyle='#698097';ctx.font='bold 24px Montserrat,Arial,sans-serif';ctx.fillText('EVALUACIÓN DIGITAL',500,199);
+  ctx.fillStyle='#274c71';ctx.font='bold 46px Montserrat,Arial,sans-serif';ctx.fillText(label(m),500,303);
+  ctx.fillStyle='#71859b';ctx.font='26px Montserrat,Arial,sans-serif';ctx.fillText('Escanea el código e inicia tu evaluación',500,360);
+  ctx.fillStyle='#f4f9e9';ctx.beginPath();ctx.roundRect(132,430,736,736,44);ctx.fill();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.roundRect(167,465,666,666,25);ctx.fill();
+  ctx.imageSmoothingEnabled=false;ctx.drawImage(qr,210,508,580,580);ctx.imageSmoothingEnabled=true;
+  ctx.fillStyle='#274c71';ctx.font='bold 26px Montserrat,Arial,sans-serif';ctx.fillText('Rápido · Digital · NUMED',500,1228);
+  ctx.font='21px Montserrat,Arial,sans-serif';ctx.fillStyle='#6f8395';ctx.fillText(m==='corta'?'Sin flexibilidad ni presión arterial':'Evaluación funcional integral',500,1280);
+  ctx.fillStyle='#abc942';ctx.fillRect(0,1378,1000,22);
+  return c;
+ }finally{offscreen.remove()}
+}
+function saveCanvas(c,filename){const link=document.createElement('a');link.href=c.toDataURL('image/png');link.download=filename;document.body.appendChild(link);link.click();link.remove()}
+async function exportQR(m,kind){m=safeMode(m);try{
+ const c=await buildPoster(m);const name='NUMED_'+(m==='corta'?'Edad_Biologica_Rapida':'FHT')+'_QR';
+ if(kind==='png'){saveCanvas(c,name+'.png');toast('QR PNG preparado')}else{
+ if(!window.jspdf||!window.jspdf.jsPDF)throw new Error('No se cargó jsPDF. Comprueba tu conexión a Internet.');
+ const pdf=new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+ pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,210,294);pdf.save(name+'.pdf');toast('Cartel PDF preparado');
+ }
+ }catch(e){console.error('NUMED QR export:',e);alert(e.message||'No se pudo preparar el QR')}
+}
+function addTools(card,m){if(!card||card.querySelector('.v184-tools'))return;
+ const icon=document.createElement('div');icon.className='v184-mark';icon.textContent=m==='corta'?'⚡':'✚';card.insertBefore(icon,card.firstChild);
+ const row=document.createElement('div');row.className='v184-tools';
+ [['📱 WhatsApp',()=>whatsapp(m),'primary'],['↗ Probar acceso',()=>openAccess(m),''],['↓ PNG',()=>exportQR(m,'png'),''],['↓ PDF',()=>exportQR(m,'pdf'),'']].forEach(([name,fn,cls])=>{const b=document.createElement('button');b.type='button';b.className='v184-btn '+cls;b.textContent=name;b.addEventListener('click',fn);row.appendChild(b)});
+ card.appendChild(row);
+ const hint=document.createElement('div');hint.className='v184-preview';hint.innerHTML='<span class="v184-preview-icon">☑</span><div><strong>Enlace exclusivo de '+label(m)+'</strong><small>El QR lleva al formulario correcto, sin pasar por el selector general.</small></div>';card.appendChild(hint);
+}
+function enhanceShare(){addTools(document.getElementById('v181-share-card-fht'),'fht');addTools(document.getElementById('v181-share-card-corta'),'corta')}
+function enhanceModal(){
+ for(const m of ['fht','corta']){
+ const card=document.getElementById('v181-qr-card-'+m);if(!card||card.querySelector('.v184-modal-tools'))continue;
+ const row=document.createElement('div');row.className='v184-modal-tools';
+ [['WhatsApp',()=>whatsapp(m)],['Probar acceso',()=>openAccess(m)],['Descargar PNG',()=>exportQR(m,'png')],['Descargar PDF',()=>exportQR(m,'pdf')]].forEach(([name,fn])=>{const b=document.createElement('button');b.type='button';b.className='v184-btn';b.textContent=name;b.addEventListener('click',fn);row.appendChild(b)});
+ card.appendChild(row);
+ const desc=document.createElement('div');desc.className='v184-modal-caption';desc.textContent='Escanea con la cámara de tu celular o comparte el enlace.';card.appendChild(desc);
+ }
+}
+const oldOpen=window.openPatientQR;
+window.openPatientQR=function(){if(typeof oldOpen==='function')oldOpen.apply(this,arguments);enhanceModal()};
+const oldOpenFor=window.openPatientQRFor;
+window.openPatientQRFor=function(m){if(typeof oldOpenFor==='function')oldOpenFor.apply(this,arguments);enhanceModal()};
+const oldNav=window.adminNav;
+window.adminNav=function(){const result=typeof oldNav==='function'?oldNav.apply(this,arguments):undefined;enhanceShare();return result};
+document.addEventListener('DOMContentLoaded',()=>{enhanceShare();enhanceModal();});
+window.NUMED_V184={exportQR,whatsapp,openAccess,enhanceShare,enhanceModal};
+})();
+</script>
