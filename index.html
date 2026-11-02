@@ -7181,3 +7181,70 @@ const oldOpen=window.openAdminPatient;if(typeof oldOpen==='function')window.open
 document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>window.refreshConsentSync176?.(),700));setTimeout(()=>window.refreshConsentSync176?.(),1200);window.NUMED_RUNTIME_VERSION='176-CONSENTIMIENTO-SINCRONIZADO';
 })();
 </script>
+<!-- NUMED v177: evento 18 noviembre / dashboard actualizado -->
+
+<style id="numed-v177-event-upgrade">
+:root{--evt-ink:#16365a;--evt-green:#a8c73d}
+#numed-event177{margin:0 0 24px;color:#16365a;font-family:Montserrat,Arial,sans-serif}
+.e177-hero{position:relative;overflow:hidden;padding:29px;border-radius:24px;background:linear-gradient(118deg,#123d68 0%,#176484 70%,#24877c 100%);color:#fff;box-shadow:0 16px 42px #123d6822}
+.e177-hero:after{content:"";position:absolute;right:-75px;top:-110px;width:340px;height:340px;border:1px solid #ffffff44;border-radius:50%;box-shadow:0 0 0 37px #ffffff0d,0 0 0 76px #ffffff0b;pointer-events:none}
+.e177-top{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
+.e177-kicker{display:block;font-size:10px;font-weight:800;letter-spacing:.15em;color:#c7ee84;margin-bottom:12px;text-transform:uppercase}
+.e177-hero h2{font-size:clamp(22px,2.6vw,32px);line-height:1.2;color:#fff;margin:0 0 9px;font-weight:800}
+.e177-hero p{font-size:12px;line-height:1.6;color:#dfecf3;margin:0}
+.e177-tools{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.e177-tools button{font-size:11px;font-weight:800;background:#ffffff1d;color:#fff;border:1px solid #ffffff60;border-radius:12px;padding:11px 15px;cursor:pointer}
+.e177-tools button:hover{background:#ffffff35}.e177-tools button:focus-visible{outline:3px solid #d0ea8e}
+.e177-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}
+.e177-kpi{background:#fff;border:1px solid #e1eaf0;border-radius:18px;padding:20px;box-shadow:0 8px 25px #15365a0a}
+.e177-kpi small{display:block;color:#73879b;font-size:10px;font-weight:800;text-transform:uppercase;line-height:1.5;letter-spacing:.04em}
+.e177-kpi strong{display:block;font-size:32px;margin:12px 0 4px;color:#153a60}
+.e177-kpi span{color:#7890a2;font-size:10px}
+.e177-panels{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+.e177-panel{background:white;border:1px solid #e0e9f0;border-radius:20px;padding:22px;box-shadow:0 9px 26px #1736540a;min-width:0}
+.e177-panel h3{font-size:16px;color:#163a60;margin:0 0 4px}.e177-panel>p{font-size:11px;color:#70889c;line-height:1.5;margin:0 0 18px}
+.e177-progress{height:14px;background:#edf3f5;border-radius:50px;overflow:hidden;margin-bottom:11px}
+.e177-fill{height:100%;background:linear-gradient(90deg,#9fc43c,#34aa8b);transition:width .5s ease;width:0}
+.e177-progress-label{display:flex;justify-content:space-between;gap:9px;font-size:11px;font-weight:800;color:#365b76}
+.e177-split{margin-top:19px;display:grid;gap:12px}.e177-split-row{display:grid;grid-template-columns:130px 1fr 40px;align-items:center;gap:10px;font-size:10px;color:#526d83}.e177-split-track{height:9px;background:#edf2f5;border-radius:20px;overflow:hidden}.e177-split-track>i{display:block;height:100%;background:#84b733;border-radius:20px}.e177-split-row b{text-align:right;color:#244f75}
+.e177-alert{border-radius:12px;padding:14px;background:#f6f9ed;color:#496a29;font-size:11px;line-height:1.65;border:1px solid #e4ebcb}
+.e177-note{color:#72889a;font-size:10px;line-height:1.65;margin-top:12px}
+.e177-pill{display:inline-block;padding:6px 10px;background:#ebf5e7;color:#537d29;border-radius:30px;font-weight:800;font-size:10px}
+#numed-event177 .e177-muted{color:#74889b;font-size:11px}
+#doctor-admin #admin-dashboard>.admin-kpis{margin-top:8px}
+#doctor-admin #admin-dashboard>.admin-title-row p{max-width:650px}
+/* Ocultar selector de localidad en la vista de jornada; el historial sigue intacto */
+#doctor-admin #admin-dashboard #measure134-locality,#doctor-admin #admin-dashboard #d140-locality,#doctor-admin #admin-patients #admin-locality-filter,#doctor-admin #admin-patients .admin-tools [class*="locality"]{display:none!important}
+@media(max-width:1050px){.e177-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.e177-panels{grid-template-columns:1fr}}
+@media(max-width:600px){.e177-hero{padding:22px}.e177-kpis{gap:9px}.e177-kpi{padding:15px}.e177-kpi strong{font-size:26px}.e177-panel{padding:17px}.e177-split-row{grid-template-columns:100px 1fr 30px}}
+@media(prefers-reduced-motion:reduce){#numed-event177 *{transition:none!important;animation:none!important}}
+</style>
+
+<script id="numed-v177-event-dashboard">
+(function(){'use strict';
+ const EVENT_DAY='2026-11-18',EVENT_TITLE='Encuentro Nacional de Mujeres en Exportación',ZONE='America/Santo_Domingo';
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const dateKey=v=>{if(!v)return'';let d=new Date(v);if(Number.isNaN(+d))return'';return new Intl.DateTimeFormat('en-CA',{timeZone:ZONE,year:'numeric',month:'2-digit',day:'2-digit'}).format(d)};
+ const num=v=>v!==''&&v!==null&&v!==undefined&&Number.isFinite(Number(v));
+ function rows(){try{return typeof window.getPendingPatients==='function'?window.getPendingPatients():[]}catch(e){console.warn('NUMED dashboard: lectura no disponible',e);return []}}
+ function timeFor(r){return r.pss?.createdAt||r.completedAt||r.createdAt||r.created_at||r.fecha||r.registeredAt||''}
+ function isEvent(r){const tag=String(r.eventName||r.event_name||r.evento||'').toLowerCase();return tag.includes('exportaci')||dateKey(timeFor(r))===EVENT_DAY}
+ function metrics(){const all=rows(),data=all.filter(isEvent),measured=data.filter(r=>r.measured===true),finished=data.filter(r=>!!r.measured&&!!(r.pss||r.bio||r.lifestyle||r.questionnaireCompleted));return{all,data,measured,finished,pending:data.length-measured.length,pss:data.filter(r=>r.pss?.score!=null||r.pss?.total!=null),bio:data.filter(r=>r.bio?.biologicalAge!=null||r.biologicalAge!=null)}}
+ function draw(){const dash=document.getElementById('admin-dashboard');if(!dash)return;let root=document.getElementById('numed-event177');if(!root){root=document.createElement('section');root.id='numed-event177';root.setAttribute('aria-label','Dashboard del evento 18 de noviembre');const anchor=dash.querySelector('#admin-kpis');if(anchor)anchor.before(root);else dash.prepend(root)}
+ const m=metrics(),total=m.data.length,done=m.measured.length,pct=total?Math.round(done/total*100):0;
+ const currentDay=dateKey(new Date()),isBefore=currentDay<EVENT_DAY;
+ const outcome=total===0?(isBefore?'La jornada aún no comienza. Los indicadores del 18 de noviembre aparecerán aquí cuando se registren participantes en Supabase.':'No aparecen participantes vinculadas a la jornada del 18 de noviembre. Revisa la sincronización y las fechas de registro.'):`Hay ${m.pending} participante${m.pending===1?'':'s'} pendiente${m.pending===1?'':'s'} de medición clínica. Los indicadores se calculan únicamente con datos registrados.`;
+ const kpi=(name,v,desc)=>`<article class="e177-kpi"><small>${name}</small><strong>${v}</strong><span>${desc}</span></article>`;
+ const bar=(name,n)=>`<div class="e177-split-row"><span>${name}</span><div class="e177-split-track"><i style="width:${total?Math.round(n/total*100):0}%"></i></div><b>${n}</b></div>`;
+ root.innerHTML=`<div class="e177-hero"><div class="e177-top"><div><span class="e177-kicker">NUMED CARE · Dashboard de jornada</span><h2>${EVENT_TITLE}</h2><p>18 de noviembre de 2026 · Seguimiento clínico y registro en vivo</p></div><div class="e177-tools"><button id="e177-refresh" type="button">↻ Actualizar</button><button id="e177-export" type="button">↓ CSV jornada</button></div></div></div><div class="e177-kpis">${kpi('Participantes registradas',total,'Jornada · 18 de noviembre')}${kpi('Mediciones realizadas',done,'Con registro clínico')}${kpi('Pendientes',m.pending,'Esperando mediciones')}${kpi('Cobertura de evaluación',pct+'%','Sobre las registradas')}</div><div class="e177-panels"><article class="e177-panel"><h3>Progreso de la jornada</h3><p>Actualización desde los registros disponibles en el sistema.</p><div class="e177-progress"><div class="e177-fill" style="width:${pct}%"></div></div><div class="e177-progress-label"><span>${done} evaluadas</span><span>${pct}% completado</span></div><div class="e177-split">${bar('Mediciones',done)}${bar('PSS-10',m.pss.length)}${bar('Edad biológica',m.bio.length)}${bar('Pendientes',m.pending)}</div><p class="e177-note">El conteo del evento usa la fecha local de registro del 18/11/2026 o una etiqueta explícita del evento. Las estadísticas históricas permanecen más abajo y no se mezclan en estos indicadores.</p></article><article class="e177-panel"><h3>Estado operativo</h3><p>Lectura automática de la jornada</p><div class="e177-alert">${esc(outcome)}</div><div class="e177-note"><span class="e177-pill">Sin filtro de localidades</span><p class="e177-note">Para consultar registros antiguos, utiliza las tablas y reportes históricos existentes. No se generan datos simulados.</p></div></article></div>`;
+ root.querySelector('#e177-refresh').addEventListener('click',async()=>{const btn=root.querySelector('#e177-refresh');btn.disabled=true;try{if(typeof window.loadAdminPatients==='function')await window.loadAdminPatients();else if(typeof window.refreshAdminData==='function')await window.refreshAdminData();if(typeof window.renderAdminAll==='function')window.renderAdminAll()}catch(e){console.warn(e)}finally{btn.disabled=false;draw()}});
+ root.querySelector('#e177-export').addEventListener('click',()=>{const columns=['Nombre','Apellido','Cedula','Fecha registro','Mediciones','PSS-10','Edad biologica'];const value=(r)=>[r.nombre||r.name||'',r.apellido||r.lastName||'',r.cedula||r.id||'',timeFor(r),r.measured?'Si':'No',r.pss?.score??r.pss?.total??'',r.bio?.biologicalAge??r.biologicalAge??''];const csv='\uFEFF'+[columns,...m.data.map(value)].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='NUMED_Jornada_2026-11-18.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+ const note=dash.querySelector('.measure134-head h2');if(note)note.textContent='Indicadores clínicos del histórico';
+ }
+ function init(){draw();const fn=window.renderAdminAll;if(typeof fn==='function'&&!fn.__v177){const wrap=function(...args){const out=fn.apply(this,args);requestAnimationFrame(draw);return out};wrap.__v177=true;window.renderAdminAll=wrap}setInterval(()=>{if(document.getElementById('admin-dashboard')?.classList.contains('active'))draw()},12000)}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,200));else setTimeout(init,200);
+})();
+</script>
+
+</body>
+</html>
